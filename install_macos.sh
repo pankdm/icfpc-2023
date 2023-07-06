@@ -24,10 +24,15 @@ function ask_and_install_deps() {
 function install_python_deps() {
     echo ">>>>>> Installing Python deps"
     maybe_brew_install python3
+    echo installed Python deps.
+}
+
+function install_pyenv() {
+    echo ">>>>>> Installing Pyenv"
     maybe_brew_install pyenv
     pyenv virtualenv --help 1>/dev/null || brew install pyenv-virtualenv
     bash ./pyenv-init.sh
-    echo installed Python deps.
+    echo installed Pyenv deps.
 }
 
 function install_cpp_deps() {
@@ -41,7 +46,6 @@ function install_cpp_deps() {
 function install_ui_deps() {
     echo ">>>>>> Installing UI deps"
     maybe_brew_install node
-    maybe_brew_install nvm
     maybe_brew_install pnpm
     cd ./ui
     pnpm i
@@ -50,5 +54,6 @@ function install_ui_deps() {
 }
 
 ask_and_install_deps Python install_python_deps
+ask_and_install_deps Pyenv install_pyenv
 ask_and_install_deps C++ install_cpp_deps
 ask_and_install_deps UI install_ui_deps

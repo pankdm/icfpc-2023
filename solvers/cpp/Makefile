@@ -10,7 +10,7 @@ ifndef SOLVER
 	make usage
 	exit 1
 endif
-	g++ -std=c++11 ./src/${SOLVER}.cpp -o ./${SOLVER}
+	g++ -std=c++11 ./src/${SOLVER}.cpp -o ./${SOLVER}.solver
 
 usage:
 	@echo "$$USAGE"

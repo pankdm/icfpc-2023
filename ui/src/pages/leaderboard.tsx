@@ -4,7 +4,7 @@ import API, { useAPIData } from '../api'
 import { Scoreboard } from '../api/types'
 
 export default function Leaderboard() {
-  const { data } = useAPIData<Scoreboard>({
+  const { data, isLoading } = useAPIData<Scoreboard>({
     fetch: () => API.getScoreboard(),
   })
   return (
@@ -30,6 +30,7 @@ export default function Leaderboard() {
           enableFullScreenToggle={false}
           enableColumnActions={false}
           enableStickyHeader
+          state={{ isLoading }}
           data={data?.scoreboard || []}
         />
       </Container>

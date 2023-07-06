@@ -12,6 +12,7 @@ function maybe_brew_install() {
 }
 
 function ask_and_install_deps() {
+    echo
     read -n1 -p "Install $1 deps? [y,n]" doit
     echo
     case $doit in

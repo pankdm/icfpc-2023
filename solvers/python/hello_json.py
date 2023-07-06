@@ -1,5 +1,6 @@
 import sys
 import json
+from src.utils import meaning_of_life
 
 if len(sys.argv) < 2:
     print('Usage: python ./solver.py PROBLEM_ID')

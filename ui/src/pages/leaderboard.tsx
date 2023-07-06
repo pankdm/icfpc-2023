@@ -1,14 +1,23 @@
 import { Box, Container } from '@mantine/core'
 import { MantineReactTable as Table } from 'mantine-react-table'
+import API, { useAPIData } from '../api'
+import { Scoreboard } from '../api/types'
 
 export default function Leaderboard() {
+  const { data } = useAPIData<Scoreboard>({
+    fetch: () => API.getScoreboard(),
+  })
   return (
-    <Box w="100%" h="100%">
-      <Container>
+    <Box w="100%" h="100%" sx={{ overflow: 'auto' }}>
+      <Container maw={1200} p={0} h='100%'>
         <Table
+          mantinePaperProps={{
+            radius: 0,
+            mah: '100%',
+          }}
           columns={[
             {
-              accessorKey: 'name',
+              accessorKey: 'username',
               header: 'Name',
             },
             {
@@ -20,11 +29,8 @@ export default function Leaderboard() {
           enableHiding={false}
           enableFullScreenToggle={false}
           enableColumnActions={false}
-          data={[
-            { name: 'Player 1', score: 1337 },
-            { name: 'Player 2', score: 560 },
-            { name: 'Player 3', score: 1234 },
-          ]}
+          enableStickyHeader
+          data={data?.scoreboard || []}
         />
       </Container>
     </Box>

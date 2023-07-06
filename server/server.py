@@ -102,6 +102,9 @@ def get_all_solutions(nickname=None):
 def get_solutions():
     return {'solutions': sorted(get_all_solutions())}
 
+@app.get("/scoreboard")
+def get_scoreboard():
+    return ICFPC.get_cached_scoreboard()
 
 @app.get("/solutions/<nickname>")
 @app.get("/solutions/<nickname>/")

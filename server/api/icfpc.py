@@ -51,6 +51,16 @@ def submit(username: str, problem: str, solution: str):
         response.raise_for_status()
     return response.json()
 
+def get_scoreboard():
+    ensure_auth()
+    response = icfpc_client.session.get(API_ROOT+f'/scoreboard')
+    response.raise_for_status()
+    return response.json()
+
+@cached(ttl=60)
+def get_cached_scoreboard():
+    return get_scoreboard()
+
 def get_results_scoreboard():
     ensure_auth()
     raise Exception('implement me')

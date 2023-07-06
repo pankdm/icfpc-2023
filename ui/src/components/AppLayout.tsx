@@ -9,12 +9,13 @@ export default function AppLayout({ children, ...props }: PropsWithChildren) {
       header={<HeaderBar />}
       styles={(theme) => ({
         root: {
-          minHeight: '100vh',
+          height: '100vh',
           display: 'flex',
           flexDirection: 'column',
         },
         body: {
           flex: 1,
+          overflow: 'auto',
         },
         main: {
           padding: 0,

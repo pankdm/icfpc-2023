@@ -17,7 +17,9 @@ export default function HeaderBar({ children, ...props }: GroupProps) {
       {...props}
     >
       <NavLink to="/">
-        <Title order={2}>ICFPC 2023</Title>
+        <Title order={2} w={150}>
+          ICFPC 2023
+        </Title>
       </NavLink>
       <Group>
         <NavLink to="/problems">
@@ -35,7 +37,9 @@ export default function HeaderBar({ children, ...props }: GroupProps) {
           )}
         </NavLink>
       </Group>
-      <Group></Group>
+      <Group w={150} position='right'>
+        <Text fw="bolder">To the moon! 🚀</Text>
+      </Group>
     </Group>
   )
 }

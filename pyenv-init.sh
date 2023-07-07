@@ -9,3 +9,5 @@ echo icfpc-2023 > .python-version
 
 echo '-> Updating pip'
 pip install --upgrade pip
+echo '-> Pulling deps'
+pip install -r requirements.txt

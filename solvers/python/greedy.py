@@ -97,9 +97,9 @@ class GreedySolver:
         for i in range(len(solution)):
             x = solution[i].x
             y = solution[i].y
-            placemenets.append({"x": x, "y": y})
-        output = {"placemenets": placemenets}
-        user = os.environ["USERNAME"]
+            placemenets.append({"x": float(x), "y": float(y)})
+        output = {"placements": placemenets}
+        user = os.environ["USER"]
         path = f"./solutions/{user}/23.json"
         print(f"Writing solution to {path}")
         with open(path, "w") as f:

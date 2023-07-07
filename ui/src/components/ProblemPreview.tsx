@@ -16,7 +16,7 @@ const ProblemPreview = ({
         {false && problem && (
           <Preview
             sx={{ flexShrink: 0 }}
-            problem={problem}
+            problem={problem as any}
             withBorder={false}
             size={size}
           />

@@ -79,6 +79,9 @@ export default function Problems() {
             <Text size="sm">
               Scene: {problem?.stage_width} x {problem?.stage_height}
             </Text>
+            <Text size="sm">Attendees: {problem?.attendees.length}</Text>
+            <Text size="sm">Musicians: {problem?.musicians.length}</Text>
+            <Text size="sm">Tastes: {problem?.attendees[0].tastes.length}</Text>
           </Stack>
         </Center>
       </Box>

@@ -33,7 +33,8 @@ class GreedySolver:
         dx = px - x
         dy = py - y
         sin_a = dy / math.sqrt(dx**2 + dy**2)
-        return sin_a >= 0.5
+        # This boundary is inclusive: we consider the sound as blocked even if the intersection consists of one point
+        return sin_a > 0.5
 
     def _compute_score(self, x, y, channel):
         total_score = 0

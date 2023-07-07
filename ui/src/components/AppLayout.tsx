@@ -7,7 +7,7 @@ export default function AppLayout({ children, ...props }: PropsWithChildren) {
   return (
     <AppShell
       header={<HeaderBar />}
-      styles={(theme) => ({
+      styles={() => ({
         root: {
           height: '100vh',
           display: 'flex',

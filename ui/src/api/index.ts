@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Scoreboard } from './types'
+import { Problem, Problems, Scoreboard } from './types'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
-console.log(import.meta.env)
 
 const fetchAPI = async (
   path: string,
@@ -19,14 +18,21 @@ const fetchAPI = async (
 
 const API = {
   getScoreboard: async () => fetchAPI(`/scoreboard`) as Promise<Scoreboard>,
+  getProblems: async () => fetchAPI(`/problems`) as Promise<Problems>,
+  getProblem: async (problemId: number | string) =>
+    fetchAPI(`/problems/${problemId}`) as Promise<Problem>,
 }
 
 export function useAPIData<T extends Record<string, any>>({
   fetch,
+  beforeFetch,
+  onSuccess,
   skip = false,
   deps = [],
 }: {
-  fetch: () => Promise<any>
+  fetch: () => Promise<T>
+  beforeFetch?: () => any
+  onSuccess?: (data: T) => any
   skip?: boolean | (() => boolean)
   deps?: any[]
 }) {
@@ -39,9 +45,11 @@ export function useAPIData<T extends Record<string, any>>({
     }
     setIsLoading(true)
     setError(null)
+    beforeFetch?.()
     fetch()
       .then((result) => {
         setData(result)
+        onSuccess?.(result)
       })
       .catch((err) => {
         setError(err)

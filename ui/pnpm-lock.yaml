@@ -14,6 +14,9 @@ dependencies:
   '@mantine/hooks':
     specifier: ^6.0.16
     version: 6.0.16(react@18.2.0)
+  '@nanostores/persistent':
+    specifier: ^0.9.0
+    version: 0.9.0(nanostores@0.9.3)
   '@nanostores/react':
     specifier: ^0.7.1
     version: 0.7.1(nanostores@0.9.3)(react@18.2.0)
@@ -26,6 +29,9 @@ dependencies:
   dayjs:
     specifier: ^1.11.9
     version: 1.11.9
+  lodash:
+    specifier: ^4.17.21
+    version: 4.17.21
   mantine-react-table:
     specifier: 1.0.0-beta.24
     version: 1.0.0-beta.24(@emotion/react@11.11.1)(@mantine/core@6.0.16)(@mantine/dates@6.0.16)(@mantine/hooks@6.0.16)(@tabler/icons-react@2.23.0)(react-dom@18.2.0)(react@18.2.0)
@@ -43,6 +49,9 @@ dependencies:
     version: 6.14.1(react-dom@18.2.0)(react@18.2.0)
 
 devDependencies:
+  '@types/lodash':
+    specifier: ^4.14.195
+    version: 4.14.195
   '@types/react':
     specifier: ^18.0.37
     version: 18.0.37
@@ -580,6 +589,15 @@ packages:
       react: 18.2.0
     dev: false
 
+  /@nanostores/persistent@0.9.0(nanostores@0.9.3):
+    resolution: {integrity: sha512-9OvMOWs0NRiFXmZQXYsb7vGKTt+3XM0/gHl/gGdRTGvYBSaUwJrcmrOx8oc2jmj3QEGoT7JoeUStTGZUy0fSsw==}
+    engines: {node: ^16.0.0 || ^18.0.0 || >=20.0.0}
+    peerDependencies:
+      nanostores: ^0.9.0
+    dependencies:
+      nanostores: 0.9.3
+    dev: false
+
   /@nanostores/react@0.7.1(nanostores@0.9.3)(react@18.2.0):
     resolution: {integrity: sha512-EXQg9N4MdI4eJQz/AZLIx3hxQ6BuBmV4Q55bCd5YCSgEOAW7tGTsIZxpRXxvxLXzflNvHTBvfrDNY38TlSVBkQ==}
     engines: {node: ^16.0.0 || ^18.0.0 || >=20.0.0}
@@ -898,6 +916,10 @@ packages:
 
   /@types/json-schema@7.0.12:
     resolution: {integrity: sha512-Hr5Jfhc9eYOQNPYO5WLDq/n4jqijdHNlDXjuAQkkt+mWdQR+XJToOHrsD4cPaMXpn6KO7y2+wM8AZEs8VpBLVA==}
+    dev: true
+
+  /@types/lodash@4.14.195:
+    resolution: {integrity: sha512-Hwx9EUgdwf2GLarOjQp5ZH8ZmblzcbTBC2wtQWNKARBSxM9ezRIAUpeDTgoQRAFB0+8CNWXVA9+MaSOzOF3nPg==}
     dev: true
 
   /@types/parse-json@4.0.0:
@@ -1736,6 +1758,10 @@ packages:
   /lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
     dev: true
+
+  /lodash@4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+    dev: false
 
   /loose-envify@1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}

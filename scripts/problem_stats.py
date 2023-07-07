@@ -1,6 +1,6 @@
 import json
 
-print("problem muscicians attendees tastes [w x h]")
+print("problem musicians attendees tastes [w x h]")
 
 for i in range(1, 45):
     path = "./problems/{}.json".format(i)

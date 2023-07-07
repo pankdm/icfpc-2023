@@ -11,3 +11,6 @@ start-server:
 
 start-ui:
 	cd ui; pnpm dev
+
+start-ui-compiled:
+	cd ui; pnpm build && pnpm preview

@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from flask_cors import CORS
 from flask import Flask, request, send_from_directory
 
+from scripts.problem_stats import get_problem_stats
 from solvers.python import hello_json
 from .api import icfpc as ICFPC
 from .utils import get_sanitized_args, cached
@@ -96,6 +97,10 @@ def get_problem_ids():
 @app.get("/problems/")
 def get_problems():
     return { 'problems': get_problem_ids() }
+
+@app.get("/problems/stats")
+def get_problems_stats():
+    return { 'problems': get_problem_stats() }
 
 @app.get("/problems/<id>")
 def get_problem(id):

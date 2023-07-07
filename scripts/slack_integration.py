@@ -1,5 +1,8 @@
 import sys
+from dotenv import load_dotenv
 
+if not os.environ.get("SLACK_API_TOKEN"):
+    load_dotenv()
 
 def post_to_slack(s):
     try:

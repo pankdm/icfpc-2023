@@ -11,6 +11,7 @@ export default function Leaderboard() {
     <Box w="100%" h="100%" sx={{ overflow: 'auto' }}>
       <Container maw={1200} p={0} h='100%'>
         <Table
+          enableRowNumbers
           mantinePaperProps={{
             radius: 0,
             mah: '100%',
@@ -30,7 +31,8 @@ export default function Leaderboard() {
           enableFullScreenToggle={false}
           enableColumnActions={false}
           enableStickyHeader
-          state={{ isLoading }}
+          enableDensityToggle={false}
+          state={{ isLoading, density: 'xs' }}
           data={data?.scoreboard || []}
         />
       </Container>

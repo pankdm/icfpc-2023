@@ -1,12 +1,28 @@
 from src.utils import load_problem
 import math
 
+import json
+from queue import PriorityQueue
+import os
+from dotenv import load_dotenv
+
+
 BORDER_RADIUS = 10
+
+load_dotenv()
 
 
 def compute_score(x, y, px, py, taste):
     d2 = (x - px) ** 2 + (y - py) ** 2
     return int(math.ceil(10**6 * taste / d2))
+
+
+class Task:
+    def __init__(self, score, channel, x, y):
+        self.score = score
+        self.channel = channel
+        self.x = x
+        self.y = y
 
 
 class GreedySolver:
@@ -36,19 +52,58 @@ class GreedySolver:
         )
         x_stage_start = self.spec["stage_bottom_left"][0]
         x_stage_end = x_stage_start + self.spec["stage_width"]
-        step = 10
+
+        step = 1
+        tasks = []
         for x in range(
             int(x_stage_start + BORDER_RADIUS),
             int(x_stage_end - BORDER_RADIUS + 1),
             step,
         ):
             score = self._compute_score(x=float(x), y=y, channel=channel)
-            print(f"{x:3} {score}")
+            # print(f"{x:3} {score}")
+            tasks.append(Task(channel=channel, score=score, x=x, y=y))
+        return tasks
 
     def solve(self):
+        solution = []
+
+        q = PriorityQueue()
         n_channels = len(self.spec["attendees"][0]["tastes"])
         for channel in range(n_channels):
-            self._precompute(channel)
+            tasks = self._precompute(channel)
+            for task in tasks:
+                q.put((-task.score, task))
+
+        while True:
+            if q.empty():
+                break
+            if len(solution) == len(self.spec["musicians"]):
+                break
+            score, cur = q.get()
+
+            has_near = False
+            for taken in solution:
+                if math.fabs(taken.x - cur.x) < 10:
+                    has_near = True
+                    break
+            if not has_near:
+                print(f"added {cur.score} at {cur.x}")
+                solution.append(cur)
+
+        num = 0
+        # print(solution)
+        placemenets = []
+        for i in range(len(solution)):
+            x = solution[i].x
+            y = solution[i].y
+            placemenets.append({"x": x, "y": y})
+        output = {"placemenets": placemenets}
+        user = os.environ["USERNAME"]
+        path = f"./solutions/{user}/23.json"
+        print(f"Writing solution to {path}")
+        with open(path, "w") as f:
+            f.write(json.dumps(output, indent=2))
 
 
 def solve(i):

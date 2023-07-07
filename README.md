@@ -24,6 +24,18 @@ To check server authentication with ICFPC API, do this:
 curl -X POST localhost:8000/check-auth
 ```
 
+Download all problems:
+
+```bash
+curl localhost:8000/problems/download
+```
+
+Show problems stats:
+
+```bash
+python3 ./scripts/problem_stats.py
+```
+
 ## Repo Structure
 
 - `./problems`  - problem descriptions

@@ -9,7 +9,7 @@ from flask import Flask, request, send_from_directory
 
 from solvers.python import hello_json
 from .api import icfpc as ICFPC
-from .utils import get_sanitized_args
+from .utils import get_sanitized_args, cached
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -50,9 +50,9 @@ def post_check_auth():
     return ICFPC.check_auth()
 
 
-@app.get("/problems/<id>")
-def get_problem(id):
-    return send_from_directory('../problems', id+'.json')
+# @app.get("/problems/<id>")
+# def get_problem(id):
+#     return send_from_directory('../problems', id+'.json')
 
 @app.post("/run_solver")
 def post_run_solver():
@@ -76,15 +76,37 @@ def post_run_solver():
         )
         return { "output": str(done.stdout), "code": done.returncode }
 
+problem_data_cache = {}
+def get_problem_data(id):
+    if problem_data_cache.get(id):
+        return problem_data_cache[id]
+    with open(f'problems/{id}.json', 'r') as file:
+        data = json.loads(file.read())
+        problem_data_cache[id] = data
+        return data
+
+def get_problem_ids():
+    problems_dir = os.path.dirname(__file__)+'/../problems'
+    problems_files = os.listdir(problems_dir)
+    problems_ids = sorted([int(p.rstrip('.json'))
+                      for p in problems_files if '.json' in p])
+    return problems_ids
 
 @app.get("/problems")
 @app.get("/problems/")
 def get_problems():
-    problems_dir = os.path.dirname(__file__)+'/../problems'
-    problems_files = os.listdir(problems_dir)
-    problems = sorted([int(p.rstrip('.json'))
-                      for p in problems_files if '.json' in p])
-    return { 'problems': problems }
+    return { 'problems': get_problem_ids() }
+
+@app.get("/problems/<id>")
+def get_problem(id):
+    return send_from_directory('../problems', id+'.json')
+
+@app.get("/problems/all")
+def get_problems_all():
+    problems_data = []
+    for id in get_problem_ids():
+        problems_data.append(get_problem_data(id))
+    return { 'problems': problems_data }
 
 @app.get("/problems/total")
 def get_total_available_problems():

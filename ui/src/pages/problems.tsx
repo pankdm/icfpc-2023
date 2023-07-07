@@ -3,9 +3,9 @@ import { useStore } from '@nanostores/react'
 import {
   Box,
   Center,
-  Code,
   Group,
   NavLink,
+  Space,
   Stack,
   Text,
   Title,
@@ -13,6 +13,8 @@ import {
 import { $problem, $problemId, setProblemId } from '../state/problem'
 import API, { useAPIData } from '../api'
 import TrafficLight from '../components/TrafficLight'
+import Visualizer from '../components/visualizer/Visualizer'
+import ProblemPreview from '../components/ProblemPreview'
 
 export default function Problems() {
   const problemId = useStore($problemId)
@@ -41,7 +43,12 @@ export default function Problems() {
               key={_problemId}
               onClick={() => setProblemId(_problemId)}
               active={_problemId === problemId}
-              label={<Box>Problem {_problemId}</Box>}
+              label={
+                <Group>
+                  <ProblemPreview size="2rem" problemId={_problemId} />
+                  Problem {_problemId}
+                </Group>
+              }
             />
           ))}
       </Stack>
@@ -55,34 +62,22 @@ export default function Problems() {
           green={!isLoading}
         />
         <Center>
-          <Stack align="center">
+          <Stack align="center" spacing={0}>
             <Title order={2}>Problem {problemId}</Title>
-            <Box
-              bg="gray.2"
-              w={'60vmin'}
-              h={'60vmin'}
-              sx={{ overflow: 'auto', whiteSpace: 'pre' }}
-            >
-              <Code w="100%" h="100%">
-                {problem &&
-                  JSON.stringify(
-                    {
-                      ...problem,
-                      musicians: problem.musicians.slice(0, 10),
-                      attendees: problem.attendees
-                        .slice(0, 10)
-                        .map((a: any) => ({
-                          ...a,
-                          tastes: a.tastes.slice(0, 10),
-                        })),
-                    },
-                    undefined,
-                    2
-                  )}
-              </Code>
-            </Box>
+            <Space h="xl" />
+            <Center w={'70vmin'} h={'70vmin'}>
+              <Box sx={{ flexGrow: 0, flexShrink: 0 }}>
+                {problem && (
+                  <Visualizer size="70vmin" mah="100%" problem={problem} />
+                )}
+              </Box>
+            </Center>
+            <Space h="xl" />
             <Text size="sm">
-              Data preview: arrays trimmed down to 10 elements.
+              Room: {problem?.room_width} x {problem?.room_height}
+            </Text>
+            <Text size="sm">
+              Scene: {problem?.stage_width} x {problem?.stage_height}
             </Text>
           </Stack>
         </Center>

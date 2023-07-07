@@ -10,7 +10,7 @@ for i in range(1, 45):
         # print(js.keys())
         tastes = len(set(js["musicians"]))
         print(
-            "{}\t-> {}\t{}\t{}\t{}".format(
+            "{:2} -> {:5} {:5} {:5} {:5}".format(
                 i,
                 len(js["musicians"]),
                 len(js["attendees"]),

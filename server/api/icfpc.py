@@ -3,14 +3,18 @@ from datetime import datetime, timezone, timedelta
 from dateutil.parser import parse as dateparse
 from ..utils import cached
 import os
+import json
 import requests
 import requests.auth
+from bs4 import BeautifulSoup
 
 from time import time
 import os
 from collections import defaultdict
 
+WEBSITE_ROOT = 'https://www.icfpcontest.com'
 API_ROOT = 'https://api.icfpcontest.com'
+CDN_ROOT = 'https://cdn.icfpcontest.com'
 PROBLEMS_URL_TEMPLATE = 'https://cdn.icfpcontest.com/problems/{problem_id}.json'
 ICFPC_USER_EMAIL = os.environ.get('ICFPC_USER_EMAIL')
 ICFPC_USER_PASSWORD = os.environ.get('ICFPC_USER_PASSWORD')
@@ -22,6 +26,7 @@ class Client:
     expires:datetime = None
     session:requests.Session = None
 
+common_session = requests.Session()
 icfpc_client = Client()
 
 def login(email, password):
@@ -90,6 +95,18 @@ def check_auth():
     ensure_auth()
     return { 'user': icfpc_client.email, 'expires': icfpc_client.expires.isoformat() }
 
+def get_number_of_problems():
+    webpage = common_session.get(WEBSITE_ROOT+f'/problems')
+    webpage.raise_for_status()
+    soup = BeautifulSoup(webpage.text, 'html.parser')
+    script = soup.find('script', { "id": "__NEXT_DATA__" })
+    data = json.loads(script.text)
+    return data['props']['pageProps']['numberOfProblems']
+
+def get_problem(id):
+    response = common_session.get(CDN_ROOT+f'/problems/{id}.json')
+    response.raise_for_status()
+    return response.json()
 
 def get_submission(id):
     ensure_auth()

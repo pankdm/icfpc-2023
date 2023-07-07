@@ -1,7 +1,8 @@
+import os
+import json
 import logging
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
-import os
 from dotenv import load_dotenv
 from flask_cors import CORS
 from flask import Flask, request, send_from_directory
@@ -23,6 +24,8 @@ os.path.basename(__file__)
 
 IMG_CACHE = {}
 
+def root_folder_path(path):
+    return os.path.dirname(__file__)+'/../' + path
 
 def open_image_as_np(n):
     global IMG_CACHE
@@ -82,6 +85,33 @@ def get_problems():
     problems = sorted([int(p.rstrip('.json'))
                       for p in problems_files if '.json' in p])
     return { 'problems': problems }
+
+@app.get("/problems/total")
+def get_total_available_problems():
+    return {
+        "total_problems": ICFPC.get_number_of_problems()
+    }
+
+@app.get("/problems/download")
+def get_download_all_available_problems():
+    total_problems = ICFPC.get_number_of_problems()
+    executor = ThreadPoolExecutor(max_workers=5)
+    futures = []
+    for i in range(total_problems):
+        futures.append(executor.submit(ICFPC.get_problem, i+1))
+    executor.shutdown()
+    for idx, future in enumerate(futures):
+        problem = future.result()
+        with open(f'{root_folder_path("problems/")}{idx+1}.json', 'w') as file:
+            file.write(json.dumps(problem, indent=2))
+    return { "status": "ok", "downloads_count": len(futures) }
+
+@app.get("/problems/<id>/download")
+def get_download_problem(id):
+    problem = ICFPC.get_problem(id)
+    with open(f'{root_folder_path("problems/")}{id}.json', 'w') as file:
+        file.write(json.dumps(problem, indent=2))
+    return problem
 
 def get_all_solutions(nickname=None):
     solutions_dir = os.path.dirname(__file__)+'/../solutions'

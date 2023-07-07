@@ -9,6 +9,7 @@ const ProblemPreview = ({
 }: { size: MantineSize; problemId: number } & PaperProps) => {
   const { data: problem } = useAPIData({
     fetch: () => API.getProblem(problemId),
+    skip: true,
   })
   return (
     <Paper w={size} h={size} bg="gray.8" {...props}>

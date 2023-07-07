@@ -1,9 +1,13 @@
 import json
+import itertools
+import os
 
 print("problem musicians attendees tastes [w x h]")
 
-for i in range(1, 45):
-    path = "./problems/{}.json".format(i)
+for i in itertools.count(start=1):
+    path = f"./problems/{i}.json"
+    if not os.path.exists(path):
+        break
     with open(path, "r") as f:
         data = f.read()
         js = json.loads(data)

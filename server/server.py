@@ -158,6 +158,10 @@ def get_solutions():
 def get_scoreboard():
     return ICFPC.get_cached_scoreboard()
 
+@app.get("/userboard")
+def get_userboard():
+    return ICFPC.get_cached_userboard()
+
 @app.get("/solutions/<nickname>")
 @app.get("/solutions/<nickname>/")
 def get_user_solutions(nickname):

@@ -7,6 +7,13 @@ export type Scoreboard = {
   updated_at: string
 }
 
+export type Userboard = {
+  problems: {
+    id: number
+    score: number | null
+  }
+}
+
 export type Problems = {
   problems: number[]
 }

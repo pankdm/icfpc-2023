@@ -66,6 +66,18 @@ def get_scoreboard():
 def get_cached_scoreboard():
     return get_scoreboard()
 
+def get_userboard():
+    ensure_auth()
+    response = icfpc_client.session.get(API_ROOT+f'/userboard')
+    response.raise_for_status()
+    scores = response.json()['Success']['problems']
+    userboard = { id: score for id, score in zip(range(1, len(scores) + 1), scores) }
+    return userboard
+
+@cached(ttl=60)
+def get_cached_userboard():
+    return get_userboard()
+
 def get_results_scoreboard():
     ensure_auth()
     raise Exception('implement me')

@@ -5,7 +5,7 @@ import json
 from queue import PriorityQueue
 import os
 from dotenv import load_dotenv
-
+from collections import defaultdict
 
 BORDER_RADIUS = 10
 
@@ -24,10 +24,18 @@ class Task:
         self.x = x
         self.y = y
 
+    def __lt__(self, other):
+        return self.score < other.score
+
+    def __repr__(self):
+        return f"Task({self.score})@({self.x}, {self.y})"
+
 
 class GreedySolver:
-    def __init__(self, spec):
+    def __init__(self, i):
+        spec = load_problem(i)
         self.spec = spec
+        self.i = i
 
     def _within_sector(self, x, y, px, py):
         dx = px - x
@@ -66,8 +74,29 @@ class GreedySolver:
             tasks.append(Task(channel=channel, score=score, x=x, y=y))
         return tasks
 
+    def write_solution(self, assignment):
+        # print(solution)
+        placemenets = []
+        for i in range(len(self.spec["musicians"])):
+            x = assignment[i].x
+            y = assignment[i].y
+            placemenets.append({"x": float(x), "y": float(y)})
+        output = {"placements": placemenets}
+        user = os.environ["USER"]
+        path = f"./solutions/{user}/{self.i}.json"
+        print(f"Writing solution to {path}")
+        with open(path, "w") as f:
+            f.write(json.dumps(output, indent=2))
+
     def solve(self):
-        solution = []
+        assignment = {}
+        count = 0
+
+        ids_per_channel = defaultdict(list)
+        for idx, channel in enumerate(self.spec["musicians"]):
+            ids_per_channel[channel].append(idx)
+
+        print(ids_per_channel)
 
         q = PriorityQueue()
         n_channels = len(self.spec["attendees"][0]["tastes"])
@@ -79,39 +108,41 @@ class GreedySolver:
         while True:
             if q.empty():
                 break
-            if len(solution) == len(self.spec["musicians"]):
+            if len(assignment) == len(self.spec["musicians"]):
                 break
             score, cur = q.get()
 
+            ids = ids_per_channel[cur.channel]
+            # print(score, cur, ids)
+
+            musician_id = None
+            if len(ids) > 0:
+                musician_id = ids[0]
+            else:
+                continue
+
             has_near = False
-            for taken in solution:
+            for taken in assignment.values():
                 if math.fabs(taken.x - cur.x) < 10:
                     has_near = True
                     break
             if not has_near:
-                print(f"added {cur.score} at {cur.x}")
-                solution.append(cur)
+                print(f"added {cur.score} at {cur.x} for musician {musician_id}")
+                assert musician_id not in assignment
+                assignment[musician_id] = cur
+                ids.pop(0)
 
-        num = 0
-        # print(solution)
-        placemenets = []
-        for i in range(len(solution)):
-            x = solution[i].x
-            y = solution[i].y
-            placemenets.append({"x": float(x), "y": float(y)})
-        output = {"placements": placemenets}
-        user = os.environ["USER"]
-        path = f"./solutions/{user}/23.json"
-        print(f"Writing solution to {path}")
-        with open(path, "w") as f:
-            f.write(json.dumps(output, indent=2))
+        print(assignment)
+        self.write_solution(assignment)
 
 
 def solve(i):
-    spec = load_problem(i)
-    solver = GreedySolver(spec)
+    print()
+    print(f"Solving problem {i}")
+    solver = GreedySolver(i)
     solver.solve()
 
 
 if __name__ == "__main__":
-    solve(23)
+    for i in range(22, 28):
+        solve(i)

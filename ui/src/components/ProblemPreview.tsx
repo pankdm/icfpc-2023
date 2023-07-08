@@ -5,7 +5,7 @@ const ProblemPreview = ({
   size,
   problemId,
   ...props
-}: { size: MantineSize; problemId: number } & PaperProps) => {
+}: { size: MantineSize; problemId: number | string } & PaperProps) => {
   return (
     <Paper w={size} h={size} bg="gray.8" {...props}>
       <Image src={`${API_URL}/problems/${problemId}/preview`} />

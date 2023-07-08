@@ -1,18 +1,26 @@
 import _ from 'lodash'
 import { Link } from 'react-router-dom'
-import { Container } from '@mantine/core'
+import { Container, Group, Space } from '@mantine/core'
 import { MantineReactTable as Table, MRT_ColumnDef } from 'mantine-react-table'
 import API, { useAPIData } from '../../api'
 import { ProblemStats } from '../../api/types'
 import { formatNumber, formatNumberExp } from '../../utils/numbers'
+import ProblemPreview from '../../components/ProblemPreview'
 
 const columns = {
   id: {
     id: 'id',
     accessorFn: (row) =>
-      row.id && <Link to={`/problems/${row.id}`}># {row.id}</Link>,
+      row.id && (
+        <Link to={`/problems/${row.id}`}>
+          <Group p={0} spacing={0}>
+            <ProblemPreview problemId={row.id} size="8rem" />
+            <Space w="xs" /># {row.id}
+          </Group>
+        </Link>
+      ),
     header: 'Problem',
-    size: 150,
+    size: 140,
   },
   ...Object.fromEntries(
     [

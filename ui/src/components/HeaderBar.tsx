@@ -57,7 +57,7 @@ export default function HeaderBar({ children, ...props }: GroupProps) {
           loading={isUpdatingServer}
           onClick={triggerServerUpdate}
         >
-          {!isUpdatingServer ? 'Update' : 'Updating'} server
+          Git {!isUpdatingServer ? 'pull' : 'pulling'}
         </Button>
       </Group>
     </Group>

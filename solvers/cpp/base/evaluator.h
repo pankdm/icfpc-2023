@@ -42,7 +42,7 @@ class Evaluator : public solvers::Evaluator {
     for (unsigned i = 0; i < s.positions.size(); ++i) {
       if (i == k) continue;
       auto& pi = s.positions[i];
-      D2ClosedSegment st(pi - ln, pi + ln);
+      D2OpenSegment st(pi - ln, pi + ln);
       if (Intersect(sak, st)) return true;
     }
     return false;

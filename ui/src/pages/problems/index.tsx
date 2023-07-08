@@ -61,7 +61,7 @@ export default function Problems() {
     stageSize: `${data.stage_width} x ${data.stage_height}`,
   }))
   return (
-    <Container size="xl">
+    <Container maw={1200} p={0}>
       <Table
         mantinePaperProps={{
           radius: 0,

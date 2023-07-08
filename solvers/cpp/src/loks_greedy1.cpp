@@ -1,6 +1,9 @@
 #include "base/evaluator.h"
 #include "base/problem.h"
 #include "base/solution.h"
+#include "utils/one_musician.h"
+
+#include "common/geometry/d2/utils/midpoint.h"
 
 #include <iostream>
 
@@ -11,6 +14,13 @@ int main(int argc, char *argv[]) {
   }
   Problem p;
   bool b = p.Load(argv[1]);
-  std::cout << "Load problem: " << b << std::endl;
+  if (!b) {
+    std::cout << "Problem was not loaded" << std::endl;
+    return 2;
+  }
+
+  auto v = OneMusucian::FindBestLocations_IB(p, 0, 100, true);
+  std::cout << "Size = " << v.size() << std::endl;
+
   return 0;
 }

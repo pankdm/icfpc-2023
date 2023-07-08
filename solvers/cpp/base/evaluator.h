@@ -46,8 +46,8 @@ class Evaluator : public solvers::Evaluator {
   }
 
   // DScore for Attendee
-  double DScoreIgnoreBlockedAttendee(const Attendee& a, const Problem& p,
-                                     const Solution& s) {
+  static double DScoreIgnoreBlockedAttendee(const Attendee& a, const Problem& p,
+                                            const Solution& s) {
     double dscore = 0.;
     for (unsigned i = 0; i < s.positions.size(); ++i) {
       dscore += score_mult * a.tastes[p.instruments[i]] /
@@ -57,8 +57,9 @@ class Evaluator : public solvers::Evaluator {
   }
 
   // DScore for musician
-  double DScoreIgnoreBlockedMusician(const Problem& p, unsigned instrument,
-                                     const D2Point& pos) {
+  static double DScoreIgnoreBlockedMusician(const Problem& p,
+                                            unsigned instrument,
+                                            const D2Point& pos) {
     double dscore = 0.;
     for (auto& a : p.attendees)
       dscore += score_mult * a.tastes[instrument] /
@@ -67,20 +68,20 @@ class Evaluator : public solvers::Evaluator {
   }
 
   // DScore for musician
-  double DScoreIgnoreBlockedMusician(const Problem& p, const Solution& s,
-                                     unsigned k) {
+  static double DScoreIgnoreBlockedMusician(const Problem& p, const Solution& s,
+                                            unsigned k) {
     return DScoreIgnoreBlockedMusician(p, p.instruments[k], s.positions[k]);
   }
 
-  double DScoreIgnoreBlocked(const Problem& p, const Solution& s) {
+  static double DScoreIgnoreBlocked(const Problem& p, const Solution& s) {
     double dscore = 0.;
     for (auto& a : p.attendees) dscore += DScoreIgnoreBlockedAttendee(a, p, s);
     return dscore;
   }
 
   // DScore for Attendee
-  double DScoreAttendee(const Attendee& a, const Problem& p,
-                        const Solution& s) {
+  static double DScoreAttendee(const Attendee& a, const Problem& p,
+                               const Solution& s) {
     double dscore = 0.;
     for (unsigned i = 0; i < s.positions.size(); ++i) {
       if (Blocked(a, s, i)) continue;
@@ -91,8 +92,8 @@ class Evaluator : public solvers::Evaluator {
   }
 
   // IScore for Attendee
-  int64_t IScoreAttendee(const Attendee& a, const Problem& p,
-                         const Solution& s) {
+  static int64_t IScoreAttendee(const Attendee& a, const Problem& p,
+                                const Solution& s) {
     int64_t iscore = 0.;
     for (unsigned i = 0; i < s.positions.size(); ++i) {
       if (Blocked(a, s, i)) continue;
@@ -102,19 +103,19 @@ class Evaluator : public solvers::Evaluator {
     return iscore;
   }
 
-  double DScore(const Problem& p, const Solution& s) {
+  static double DScore(const Problem& p, const Solution& s) {
     double dscore = 0.;
     for (auto& a : p.attendees) dscore += DScoreAttendee(a, p, s);
     return dscore;
   }
 
-  int64_t IScore(const Problem& p, const Solution& s) {
+  static int64_t IScore(const Problem& p, const Solution& s) {
     int64_t iscore = 0.;
     for (auto& a : p.attendees) iscore += IScoreAttendee(a, p, s);
     return iscore;
   }
 
-  Result Apply(const Problem& p, const Solution& s) {
+  static Result Apply(const Problem& p, const Solution& s) {
     return Valid(p, s) ? Result(true, IScore(p, s)) : Result(false, 0);
   }
 };

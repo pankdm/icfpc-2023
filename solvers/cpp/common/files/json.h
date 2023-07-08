@@ -4,6 +4,7 @@
 #include "common/files/file_to_string.h"
 
 #include <cctype>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -425,6 +426,7 @@ class JSON {
 
   void Save(const std::string& filename) const {
     std::ofstream f(filename);
+    f << std::fixed << std::setprecision(9);
     ToOStream(f);
   }
 

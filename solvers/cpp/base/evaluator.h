@@ -7,6 +7,8 @@
 
 #include "common/geometry/d2/distance/distance_l2.h"
 #include "common/geometry/d2/line_pv.h"
+#include "common/geometry/d2/segment.h"
+#include "common/geometry/d2/utils/intersect_segment.h"
 #include "common/solvers/evaluator.h"
 
 class Evaluator : public solvers::Evaluator {
@@ -33,14 +35,15 @@ class Evaluator : public solvers::Evaluator {
 
   static bool Blocked(const Attendee& a, const Solution& s, unsigned k) {
     auto &pa = a.position, &pk = s.positions[k];
-    auto d2 = SquaredDistanceL2(pa, pk);
     D2LinePV l(pa, pk);
     l.Normalize();
+    auto ln = l.Normal() * musician_block_radius;
+    D2ClosedSegment sak(pa, pk);
     for (unsigned i = 0; i < s.positions.size(); ++i) {
+      if (i == k) continue;
       auto& pi = s.positions[i];
-      if ((i != k) && (l(pi) <= musician_block_radius) &&
-          (SquaredDistanceL2(pa, pi) < d2))
-        return true;
+      D2ClosedSegment st(pi - ln, pi + ln);
+      if (Intersect(sak, st)) return true;
     }
     return false;
   }
@@ -96,6 +99,12 @@ class Evaluator : public solvers::Evaluator {
                                 const Solution& s) {
     int64_t iscore = 0.;
     for (unsigned i = 0; i < s.positions.size(); ++i) {
+      // if (Blocked(a, s, i)) {
+      //   std::cout << "Blocked score = "
+      //             << ceil(score_mult * a.tastes[p.instruments[i]] /
+      //                     SquaredDistanceL2(a.position, s.positions[i]))
+      //             << std::endl;
+      // }
       if (Blocked(a, s, i)) continue;
       iscore += ceil(score_mult * a.tastes[p.instruments[i]] /
                      SquaredDistanceL2(a.position, s.positions[i]));

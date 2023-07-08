@@ -5,6 +5,7 @@
 
 #include "common/files/json.h"
 #include "common/geometry/d2/axis/rectangle.h"
+#include "common/geometry/d2/circle.h"
 #include "common/geometry/d2/point.h"
 #include "common/solvers/problem.h"
 
@@ -18,6 +19,7 @@ class Problem : public solvers::Problem {
   unsigned total_instruments;
   std::vector<unsigned> instruments;
   std::vector<Attendee> attendees;
+  std::vector<D2Circle> pillars;
 
  public:
   bool Load(const std::string& _id) {
@@ -60,6 +62,16 @@ class Problem : public solvers::Problem {
       ai.tastes.resize(total_instruments);
       for (unsigned j = 0; j < total_instruments; ++j)
         ai.tastes[j] = json_atastes.GetFloating(j);
+    }
+    auto& json_pillars = json.GetValue("pillars");
+    pillars.resize(json_pillars.Size());
+    for (unsigned i = 0; i < pillars.size(); ++i) {
+      auto& pi = pillars[i];
+      auto& json_pi = json_pillars.GetValue(i);
+      auto& json_xy = json_pi.GetValue("center");
+      pi.c.x = json_xy.GetFloating(0);
+      pi.c.y = json_xy.GetFloating(1);
+      pi.r = json_pi.GetFloating("radius");
     }
     return true;
   }

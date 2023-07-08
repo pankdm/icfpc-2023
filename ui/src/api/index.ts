@@ -33,7 +33,14 @@ const API = {
     fetchAPI(`/problems/${problemId}/stats`) as Promise<ProblemStats>,
   getProblem: async (problemId: number | string) =>
     fetchAPI(`/problems/${problemId}`) as Promise<Problem>,
+  uploadPreview: async (problemId: number | string, imageBlob: Blob) =>
+    fetchAPI(`/problems/${problemId}/preview`, {
+      method: 'POST',
+      body: imageBlob,
+    }) as Promise<Problem>,
 }
+
+window.API = API
 
 export function useAPIData<T extends Record<string, any>>({
   fetch,

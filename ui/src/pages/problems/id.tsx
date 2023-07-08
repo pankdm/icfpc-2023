@@ -63,7 +63,7 @@ export default function ProblemInspector() {
       </Stack>
       <Box sx={{ flex: 1 }}>
         <TrafficLight
-          sx={{ zIndex: 10 }}
+          sx={{ zIndex: 10000 }}
           pos="absolute"
           top={0}
           right={0}
@@ -78,7 +78,12 @@ export default function ProblemInspector() {
             <Box w={'70vmin'} h={'70vmin'} pos="relative">
               <LoadingOverlay visible={isLoading} overlayBlur={2} />
               {problem && (
-                <Visualizer3D size="70vmin" mah="100%" problem={problem} />
+                <Visualizer3D
+                  bg="black"
+                  size="70vmin"
+                  problemId={problemId}
+                  problem={problem}
+                />
               )}
             </Box>
             <Space h="xl" />

@@ -1,9 +1,10 @@
+import { RefObject, useRef, useState } from 'react'
 import { MantineSize, Paper, PaperProps } from '@mantine/core'
 import { Problem } from '../../api/types'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Rect } from './primitives.3d'
 import { Attendee } from './elements.3d'
-import { useState } from 'react'
+import API from '../../api'
 
 const CameraPositioner = ({
   roomWidth,
@@ -32,11 +33,36 @@ const CameraPositioner = ({
   return null
 }
 
+const ScreenshotHandler = ({
+  requestRef,
+  onScreenshotCaptured,
+}: {
+  requestRef: RefObject<{ value: boolean }>
+  onScreenshotCaptured?: (blob: Blob) => void
+}) => {
+  const three = useThree()
+  useFrame(() => {
+    if (requestRef.current?.value) {
+      requestRef.current.value = false
+      three.gl.render(three.scene, three.camera)
+      ;(
+        document.querySelector('#visualizer canvas') as HTMLCanvasElement
+      ).toBlob((blob) => {
+        if (blob) {
+          onScreenshotCaptured?.(blob)
+        }
+      })
+    }
+  })
+  return null
+}
+
 export default function Visualizer3D({
   size,
+  problemId,
   problem,
   ...props
-}: { size: MantineSize; problem: Problem } & PaperProps) {
+}: { problemId: number; size: MantineSize; problem: Problem } & PaperProps) {
   const {
     room_width,
     room_height,
@@ -47,17 +73,14 @@ export default function Visualizer3D({
   const rmin = Math.min(room_width, room_height)
   const [stageHovered, setStageHovered] = useState(false)
   const [stageHeld, setStageHeld] = useState(false)
+
+  const screenshotRequestRef = useRef({ value: false })
+  const triggerScreenshot = () => (screenshotRequestRef.current.value = true)
+  const handleScreenshot = (blob: Blob) => {
+    // API.uploadPreview(problemId, blob)
+  }
   return (
-    <Paper
-      w={size}
-      h={size}
-      shadow="md"
-      withBorder
-      pos="relative"
-      radius={0}
-      onResize={console.log}
-      {...props}
-    >
+    <Paper w={size} h={size} shadow="md" radius={0} {...props}>
       <Canvas
         id="visualizer"
         orthographic
@@ -70,8 +93,13 @@ export default function Visualizer3D({
           near: 1,
           far: 100000,
         }}
+        // onClick={triggerScreenshot}
       >
         <CameraPositioner roomWidth={room_width} roomHeight={room_height} />
+        <ScreenshotHandler
+          requestRef={screenshotRequestRef}
+          onScreenshotCaptured={handleScreenshot}
+        />
         <ambientLight intensity={1} color={'#fff'} />
         {/* room */}
         <Rect

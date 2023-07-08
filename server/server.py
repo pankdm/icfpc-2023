@@ -6,6 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dotenv import load_dotenv
 from flask_cors import CORS
 from flask import Flask, request, send_from_directory
+import urllib
 
 from scripts.problem_stats import get_problem_stats
 from solvers.python import hello_json
@@ -50,11 +51,6 @@ def ping():
 def post_check_auth():
     return ICFPC.check_auth()
 
-
-# @app.get("/problems/<id>")
-# def get_problem(id):
-#     return send_from_directory('../problems', id+'.json')
-
 @app.post("/run_solver")
 def post_run_solver():
     payload = request.get_json()
@@ -76,15 +72,6 @@ def post_run_solver():
             text=True
         )
         return { "output": str(done.stdout), "code": done.returncode }
-
-problem_data_cache = {}
-def get_problem_data(id):
-    if problem_data_cache.get(id):
-        return problem_data_cache[id]
-    with open(f'problems/{id}.json', 'r') as file:
-        data = json.loads(file.read())
-        problem_data_cache[id] = data
-        return data
 
 def get_problem_ids():
     problems_dir = os.path.dirname(__file__)+'/../problems'
@@ -118,17 +105,34 @@ def handle_get_problems_stats():
 def get_problem(id):
     return send_from_directory('../problems', id+'.json')
 
+@app.post("/problems/<id>/preview")
+def handle_post_problem_preview(id):
+    print(f'>>>> received image preview for problem {id}:', request.headers.get('content-type'), request.content_length, 'bytes')
+    image_bytes = request.get_data()
+    with open(f"previews/{id}.png", "wb") as f:
+        f.write(image_bytes)
+    return { "status": "ok" }
+
 @app.get("/problems/<id>/stats")
 def handle_get_problem_id_stats(id):
     stats = get_cached_problem_stats()
     return stats[int(id)]
 
-@app.get("/problems/all")
-def get_problems_all():
-    problems_data = []
-    for id in get_problem_ids():
-        problems_data.append(get_problem_data(id))
-    return { 'problems': problems_data }
+# problem_data_cache = {}
+# def get_problem_data(id):
+#     if problem_data_cache.get(id):
+#         return problem_data_cache[id]
+#     with open(f'problems/{id}.json', 'r') as file:
+#         data = json.loads(file.read())
+#         problem_data_cache[id] = data
+#         return data
+
+# @app.get("/problems/all")
+# def get_problems_all():
+#     problems_data = []
+#     for id in get_problem_ids():
+#         problems_data.append(get_problem_data(id))
+#     return { 'problems': problems_data }
 
 @app.get("/problems/total")
 def get_total_available_problems():

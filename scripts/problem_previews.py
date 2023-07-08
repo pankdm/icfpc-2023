@@ -3,7 +3,7 @@ import sys
 from problem_ids import get_problem_ids
 from PIL import Image, ImageDraw
 
-def generate_problem_preview(id, preview_size=1024, attendee_size=10, attendee_color='white', pillar_color='#222', scene_color='#3163aa'):
+def generate_problem_preview(id, preview_size=1024, attendee_size=10, attendee_color='white', pillar_color='#e72626', scene_color='#3163aa'):
     with open(f'problems/{id}.json', 'r') as file:
         problem = json.loads(file.read())
 

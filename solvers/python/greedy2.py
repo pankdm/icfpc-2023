@@ -10,10 +10,11 @@ import os
 from dotenv import load_dotenv
 from collections import defaultdict
 import sys
+from pprint import pprint
 
 load_dotenv()
 
-STEP = 10
+STEP = 5
 
 
 class Task:
@@ -36,6 +37,10 @@ class GreedySolver2:
         self.spec = Problem(i)
         self.border = self._precompute_border_grid()
         # print (self.border)
+
+    def _within_stage(self, x, y):
+        return ((self.spec.stage_min_x + BORDER_RADIUS <= x <= self.spec.stage_max_x - BORDER_RADIUS) and
+        (self.spec.stage_min_y + BORDER_RADIUS <= y <= self.spec.stage_max_y - BORDER_RADIUS))
 
     # visiblity is a list of visible attendees
     def _compute_score(self, x, y, channel, visible):
@@ -97,12 +102,35 @@ class GreedySolver2:
 
         return list(sorted(set(result)))
 
-    def _precompute_grid_tasks(self, assignment, ids_per_channel):
+    def _get_neighbours_for_assignment(self, assignment):
+        all_possible = []
+        for task in assignment.values():
+            all_possible.append((task.x, task.y + NEARBY_MUSICIAN_RADIUS))
+            all_possible.append((task.x, task.y - NEARBY_MUSICIAN_RADIUS))
+            all_possible.append((task.x + NEARBY_MUSICIAN_RADIUS, task.y))
+            all_possible.append((task.x - NEARBY_MUSICIAN_RADIUS, task.y))
+
+            all_possible.append((task.x + NEARBY_MUSICIAN_RADIUS, task.y + NEARBY_MUSICIAN_RADIUS))
+            all_possible.append((task.x - NEARBY_MUSICIAN_RADIUS, task.y + NEARBY_MUSICIAN_RADIUS))
+            all_possible.append((task.x + NEARBY_MUSICIAN_RADIUS, task.y - NEARBY_MUSICIAN_RADIUS))
+            all_possible.append((task.x - NEARBY_MUSICIAN_RADIUS, task.y - NEARBY_MUSICIAN_RADIUS))
+        return all_possible
+
+    def _precompute_neighbor_tasks(self, assignment, ids_per_channel):
+        neighbours = self._get_neighbours_for_assignment(assignment)
+        return self._precompute_tasks_for_candidates(assignment, ids_per_channel, neighbours)
+
+    def _precompute_border_tasks(self, assignment, ids_per_channel):
+        return self._precompute_tasks_for_candidates(assignment, ids_per_channel, self.border)
+
+    def _precompute_tasks_for_candidates(self, assignment, ids_per_channel, candidates):
         tasks = []
-        for (x, y) in self.border:
+        for (x, y) in candidates:
+            if not self._within_stage(x, y):
+                continue
             has_near = False
             for task in assignment.values():
-                if math.fabs(task.x - x) < NEARBY_MUSICIAN_RADIUS:
+                if (task.x - x)**2 + (task.y - y)**2 < NEARBY_MUSICIAN_RADIUS**2:
                     has_near = True
                     break
             if has_near:
@@ -132,6 +160,10 @@ class GreedySolver2:
 
 
     def solve(self):
+        if self.spec.nmus > 40:
+            print (f'too many musicians, {self.spec.nmus}, skipping')
+            return
+
         # map from musician id to placement (task)
         assignment = {}
         ids_per_channel = defaultdict(list)
@@ -147,19 +179,32 @@ class GreedySolver2:
             # repeat
             if len(assignment) == self.spec.nmus:
                 break
-            tasks = self._precompute_grid_tasks(assignment, ids_per_channel)
-            best_task = max(tasks, key = lambda x: x.score)
+            tasks = self._precompute_border_tasks(assignment, ids_per_channel)
+            best_task = None
+            if len(tasks) > 0:
+                best_task = max(tasks, key = lambda x: x.score)
+            if best_task is None or best_task.score < 0:
+                print (f"Trying neighbours instead {best_task}")
+                tasks2 = self._precompute_neighbor_tasks(assignment, ids_per_channel)
+                pprint (tasks2)
+                best_task2 = max(tasks2, key = lambda x: x.score)
+                if best_task is None or best_task2.score > best_task.score:
+                    tasks = tasks2
+                    best_task = best_task2
+                else:
+                    print (f"border is still better for {best_task} vs {best_task2}!")
+                    raise Exception(f"Negative best_task: {best_task}")
+
             # update old musicians visibility
             for task in assignment.values():
                 blocked = self._compute_blocked(task.x, task.y, best_task.x, best_task.y)
                 for b_idx in blocked:
                     if b_idx in task.visible:
                         task.visible.remove(b_idx)
-                
+
             ids = ids_per_channel[best_task.channel]
             m_idx = ids.pop(0)
             assignment[m_idx] = best_task
-            assert(best_task.score >= 0)
             print (f"[{len(assignment)}/{self.spec.nmus}] assign {m_idx} (ch={best_task.channel}) to {best_task}")
         
         print(assignment)
@@ -191,4 +236,12 @@ def solve(i):
 
 
 if __name__ == "__main__":
-    solve(sys.argv[1])
+    if sys.argv[1] == "range":        
+        for i in range(29, 56):
+            try:
+                solve(i)
+            except Exception as err:
+                print(err)
+    else:
+        solve(sys.argv[1])
+    

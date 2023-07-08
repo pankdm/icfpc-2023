@@ -132,6 +132,7 @@ def get_number_of_problems():
 def get_problem(id):
     response = common_session.get(CDN_ROOT+f'/problems/{id}.json')
     response.raise_for_status()
+    print(f'downloaded problem {id}')
     return response.json()
 
 def get_submission(id):

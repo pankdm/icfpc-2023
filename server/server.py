@@ -147,11 +147,13 @@ def get_total_available_problems():
 @app.get("/problems/download")
 def get_download_all_available_problems():
     total_problems = ICFPC.get_number_of_problems()
+    print(f'found total of {total_problems} problems available')
     executor = ThreadPoolExecutor(max_workers=5)
     futures = []
     for i in range(total_problems):
         futures.append(executor.submit(ICFPC.get_problem, i+1))
     executor.shutdown()
+    print(f'downloaded all {total_problems} problems')
     for idx, future in enumerate(futures):
         problem = future.result()
         with open(f'{root_folder_path("problems/")}{idx+1}.json', 'w') as file:

@@ -122,6 +122,26 @@ def handle_get_problem_id_stats(id):
     stats = get_cached_problem_stats()
     return stats[int(id)]
 
+@app.post("/update-server")
+def post_update_server():
+    try:
+        done = subprocess.run(
+            [
+                'git', 'pull',
+            ],
+            capture_output=True,
+            text=True,
+        )
+        return {
+            "status_code": done.check_returncode(),
+            "stdout": done.stdout,
+            "stderr": done.stderr,
+        }
+    except Exception as err:
+        return {
+            "error": str(err),
+        }
+
 # problem_data_cache = {}
 # def get_problem_data(id):
 #     if problem_data_cache.get(id):

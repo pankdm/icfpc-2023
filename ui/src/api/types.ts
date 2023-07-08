@@ -7,6 +7,12 @@ export type Scoreboard = {
   updated_at: string
 }
 
+export type SubprocessResult = {
+  status_code: number
+  stdout?: string
+  stderr?: string
+}
+
 export type Userboard = {
   problems: {
     id: number

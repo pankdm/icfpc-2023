@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  ui:
+    container_name: icfpc2023-ui
+    volumes:
+      - ./ui:/src
+    build:
+      context: .
+      dockerfile: Dockerfile.ui
+    command: pnpm dev
+    ports:
+      - "5173:5173"
+  server:
+    container_name: icfpc2023-server
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    command: make start-server
+    volumes:
+      - .:/src
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env

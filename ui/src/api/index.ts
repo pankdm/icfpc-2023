@@ -7,6 +7,7 @@ import {
   Scoreboard,
   Solution,
   Solutions,
+  SubprocessResult,
   Userboard,
 } from './types'
 import useRandomKey from '../hooks/useRandomKey'
@@ -27,7 +28,10 @@ const fetchAPI = async (
     })
 
 const API = {
-  getScoreboard: async () => fetchAPI(`/scoreboard`) as Promise<Scoreboard>,
+  updateServer: async () =>
+    fetchAPI(`/update-server`, { method: 'POST' }) as Promise<Scoreboard>,
+  getScoreboard: async () =>
+    fetchAPI(`/scoreboard`) as Promise<SubprocessResult>,
   getUserboard: async () => fetchAPI(`/userboard`) as Promise<Userboard>,
   getProblems: async () => fetchAPI(`/problems`) as Promise<Problems>,
   getProblemsStats: async () =>

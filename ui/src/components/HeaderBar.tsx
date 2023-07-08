@@ -1,7 +1,21 @@
-import { Group, GroupProps, Text, Title } from '@mantine/core'
 import { NavLink } from 'react-router-dom'
+import { Button, Group, GroupProps, Text, Title } from '@mantine/core'
+import { IconRefresh } from '@tabler/icons-react'
+import API from '../api'
+import { useState } from 'react'
 
 export default function HeaderBar({ children, ...props }: GroupProps) {
+  const [isUpdatingServer, setIsUpdatingServer] = useState(false)
+  const triggerServerUpdate = () => {
+    setIsUpdatingServer(true)
+    API.updateServer()
+      .then((res) => {
+        //...
+      })
+      .finally(() => {
+        setIsUpdatingServer(false)
+      })
+  }
   return (
     <Group
       position="apart"
@@ -37,8 +51,14 @@ export default function HeaderBar({ children, ...props }: GroupProps) {
           )}
         </NavLink>
       </Group>
-      <Group w={150} position='right'>
-        <Text fw="bolder">To the moon! 🚀</Text>
+      <Group w={150} position="right">
+        <Button
+          leftIcon={<IconRefresh />}
+          loading={isUpdatingServer}
+          onClick={triggerServerUpdate}
+        >
+          {!isUpdatingServer ? 'Update' : 'Updating'} server
+        </Button>
       </Group>
     </Group>
   )

@@ -51,10 +51,15 @@ export default function ProblemInspector() {
                 key={_problemId}
                 onClick={() => setProblemId(_problemId)}
                 active={_problemId === problemId}
+                p={4}
                 label={
                   <Group>
-                    <ProblemPreview size="2rem" problemId={_problemId} />
-                    Problem {_problemId}
+                    <ProblemPreview
+                      size="4rem"
+                      problemId={_problemId}
+                      radius={0}
+                    />
+                    # {_problemId}
                   </Group>
                 }
               />

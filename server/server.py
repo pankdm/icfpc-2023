@@ -13,6 +13,7 @@ from solvers.python import hello_json
 from .api import icfpc as ICFPC
 from .utils import get_sanitized_args, cached
 import numpy as np
+import PIL
 
 logger = logging.getLogger(__name__)
 
@@ -104,6 +105,10 @@ def handle_get_problems_stats():
 @app.get("/problems/<id>")
 def get_problem(id):
     return send_from_directory('../problems', id+'.json')
+
+@app.get("/problems/<id>/preview")
+def get_problem_preview(id):
+    return send_from_directory('../previews', id+'.png')
 
 @app.post("/problems/<id>/preview")
 def handle_post_problem_preview(id):

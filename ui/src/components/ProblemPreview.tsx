@@ -1,28 +1,14 @@
-import { Center, MantineSize, Paper, PaperProps } from '@mantine/core'
-import API, { useAPIData } from '../api'
-import Preview from './visualizer/Preview'
+import { Image, MantineSize, Paper, PaperProps } from '@mantine/core'
+import { API_URL } from '../api'
 
 const ProblemPreview = ({
   size,
   problemId,
   ...props
 }: { size: MantineSize; problemId: number } & PaperProps) => {
-  const { data: problem } = useAPIData({
-    fetch: () => API.getProblem(problemId),
-    skip: true,
-  })
   return (
     <Paper w={size} h={size} bg="gray.8" {...props}>
-      <Center h="100%">
-        {false && problem && (
-          <Preview
-            sx={{ flexShrink: 0 }}
-            problem={problem as any}
-            withBorder={false}
-            size={size}
-          />
-        )}
-      </Center>
+      <Image src={`${API_URL}/problems/${problemId}/preview`} />
     </Paper>
   )
 }

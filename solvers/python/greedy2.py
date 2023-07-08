@@ -185,7 +185,7 @@ class GreedySolver2:
             if len(tasks) > 0:
                 best_task = max(tasks, key = lambda x: x.score)
             if best_task is None or best_task.score < 0:
-                print (f"  Trying neighbours instead {best_task}")
+                print (f"  border_task={best_task}, trying neighbours instead")
                 tasks2 = self._precompute_neighbor_tasks(assignment, ids_per_channel)
                 # pprint (tasks2)
                 if len(tasks2) > 0:

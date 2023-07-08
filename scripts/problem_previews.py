@@ -3,7 +3,7 @@ import sys
 from problem_ids import get_problem_ids
 from PIL import Image, ImageDraw
 
-def generate_problem_preview(id, preview_size=512, attendee_size=10, attendee_color='white', scene_color='#3163aa'):
+def generate_problem_preview(id, preview_size=1024, attendee_size=10, attendee_color='white', pillar_color='#222', scene_color='#3163aa'):
     with open(f'problems/{id}.json', 'r') as file:
         problem = json.loads(file.read())
 
@@ -25,18 +25,22 @@ def generate_problem_preview(id, preview_size=512, attendee_size=10, attendee_co
             return (scale*(_x+x), scale*(_y+y))
         else:
             return (scale*(_x+x), preview_size-scale*(_y+y))
+    def draw_circle(x, y, radius, color='#fff'):
+        draw.ellipse(rect(x-radius/2, y-radius/2, x+radius/2, y+radius/2), fill=color)
     stage_width = problem['stage_width']
     stage_height = problem['stage_height']
     stage_x0, stage_y0 = problem['stage_bottom_left']
     stage_x1, stage_y1 = stage_x0 + stage_width, stage_y0 + stage_height
     image = Image.new('RGBA', (preview_size, preview_size))
     draw = ImageDraw.Draw(image)
-    # draw.rectangle(rect(0, 0, 0, 0), fill='black')
     draw.rectangle(rect(0, 0, room_width, room_height), fill='#444')
     draw.rectangle(rect(stage_x0, stage_y0, stage_x1, stage_y1), fill=scene_color)
+    pillars = problem['pillars']
+    for p in pillars:
+        draw_circle(*p['center'], p['radius'], color=pillar_color)
     attendees = problem['attendees']
     for a in attendees:
-        draw.ellipse(rect(a['x']-attendee_size/2, a['y']-attendee_size/2, a['x']+attendee_size/2, a['y']+attendee_size/2), fill=attendee_color, width=attendee_size)
+        draw_circle(a['x'], a['y'], attendee_size, color=attendee_color)
     return image
 
 

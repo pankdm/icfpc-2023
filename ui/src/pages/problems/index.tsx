@@ -27,6 +27,7 @@ const columns = {
       ['instruments', 'Instruments'],
       ['musicians', 'Musicians'],
       ['attendees', 'Attendees'],
+      ['pillars', 'Pillars'],
     ].map(([accessorKey, header]) => [
       accessorKey,
       {
@@ -79,6 +80,7 @@ export default function Problems() {
           columns.instruments,
           columns.musicians,
           columns.attendees,
+          columns.pillars,
           columns.stageSize,
           columns.score,
           columns.scoreExp,

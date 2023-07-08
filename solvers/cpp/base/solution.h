@@ -17,8 +17,19 @@ class Solution : public solvers::Solution {
     return "../../solutions/" + solver_name + "/" + id + ".json";
   }
 
-  bool Load(const std::string& /* id */, const std::string& /* solver_name */) {
-    return false;
+  bool Load(const std::string& id, const std::string& solver_name) {
+    SetId(id);
+    auto filename = FileName(GetId(), solver_name);
+    files::JSON json;
+    if (!json.Load(filename)) return false;
+    auto& json_placement = json.GetValue("placements");
+    positions.resize(json_placement.Size());
+    for (unsigned i = 0; i < positions.size(); ++i) {
+      auto& json_pi = json_placement.GetValue(i);
+      positions[i].x = json_pi.GetFloating("x");
+      positions[i].y = json_pi.GetFloating("y");
+    }
+    return true;
   }
 
   void Save(const std::string& solver_name) const {

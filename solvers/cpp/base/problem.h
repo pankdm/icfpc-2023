@@ -15,6 +15,7 @@ class Problem : public solvers::Problem {
  public:
   D2ARectangle room;
   D2ARectangle stage;  // Already adjusted by musician_collision_radius
+  unsigned total_instruments;
   std::vector<unsigned> instruments;
   std::vector<Attendee> attendees;
 
@@ -43,7 +44,7 @@ class Problem : public solvers::Problem {
     }
     auto& json_musicians = json.GetValue("musicians");
     instruments.resize(json_musicians.Size());
-    unsigned total_instruments = 0;
+    total_instruments = 0;
     for (unsigned i = 0; i < instruments.size(); ++i) {
       instruments[i] = json_musicians.GetInteger(i);
       total_instruments = std::max(total_instruments, instruments[i] + 1);

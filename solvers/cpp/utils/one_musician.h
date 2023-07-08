@@ -105,6 +105,10 @@ class OneMusucian {
       auto yf = (p.stage.p1.y != p.stage.p2.y)
                     ? p.stage.p1.y * yi + p.stage.p2.y * (1 - yi)
                     : p.stage.p1.y;
+      if (iteration < 4) {
+        xf = (iteration & 1) ? p.stage.p2.x : p.stage.p1.x;
+        yf = (iteration < 2) ? p.stage.p1.y : p.stage.p2.y;
+      }
       bool b = FindBestLocationEarlyStop_IB(p, instrument, {xf, yf}, v, m,
                                             print_log, iteration);
       bool skip = false;

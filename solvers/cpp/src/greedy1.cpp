@@ -1,3 +1,5 @@
+#include "solvers/greedy1.h"
+
 #include "base/evaluator.h"
 #include "base/problem.h"
 #include "base/solution.h"
@@ -19,8 +21,8 @@ int main(int argc, char *argv[]) {
     return 2;
   }
 
-  auto v = OneMusucian::FindBestLocations_IB(p, 0, 100, true);
-  std::cout << "Size = " << v.size() << std::endl;
+  Greedy1 slvr;
+  auto s = slvr.Solve(p);
 
   return 0;
 }

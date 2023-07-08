@@ -4,6 +4,9 @@ FLASK               := ${PYTHON} -m flask
 EXPORT_PYTHONPATH   := export PYTHONPATH="$(shell pwd)";
 
 install:
+	bash ./install.sh all
+
+install-prompt:
 	bash ./install.sh
 
 start-server:

@@ -7,19 +7,25 @@ if ! type "brew" 1>/dev/null; then
     exit 1
 fi
 
+INSTALL_OPT=$1
+
 function maybe_brew_install() {
     type $1 1>/dev/null || brew install $1
 }
 
 function ask_and_install_deps() {
-    echo
-    read -n1 -p "Install $1 deps? [y,n]" doit
-    echo
-    case $doit in
-    y|Y) $2 ;;
-    n|N) ;;
-    *) ;;
-    esac
+    if [[ "${INSTALL_OPT}" == "all" ]]; then
+        $2
+    else
+        echo
+        read -n1 -p "Install $1 deps? [y,n]" doit
+        echo
+        case $doit in
+        y|Y) $2 ;;
+        n|N) ;;
+        *) ;;
+        esac
+    fi
 }
 
 function install_python_deps() {

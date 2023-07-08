@@ -15,5 +15,8 @@ start-ui:
 compile-ui:
 	cd ui; pnpm build
 
-start-ui-compiled:
+preview-ui:
 	cd ui; pnpm preview
+
+deploy-ui:
+	cd ui; pnpm build && surge dist icfpc2023-snakes-lambdas.surge.sh

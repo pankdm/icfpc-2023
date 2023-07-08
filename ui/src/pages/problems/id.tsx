@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { Helmet } from 'react-helmet'
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useStore } from '@nanostores/react'
@@ -22,6 +23,7 @@ import Visualizer from '../../components/visualizer/Visualizer'
 import Visualizer3D from '../../components/visualizer/Visualizer.3d'
 import ProblemPreview from '../../components/ProblemPreview'
 import { $renderMode } from '../../state/renderMode'
+import config from '../../config'
 
 export default function ProblemInspector() {
   const { problemId: problemIdStr } = useParams()
@@ -61,6 +63,11 @@ export default function ProblemInspector() {
   const VisualizerComponent = renderMode === '3d' ? Visualizer3D : Visualizer
   return (
     <Group h="100%" pos="relative">
+      <Helmet>
+        <title>
+          Problem {problemId.toString()} - {config.HTML_TITLE}
+        </title>
+      </Helmet>
       <Stack
         h="100%"
         bg="gray.3"

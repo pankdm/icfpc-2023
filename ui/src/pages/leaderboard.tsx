@@ -1,8 +1,10 @@
+import { Helmet } from 'react-helmet'
 import { Box, Container } from '@mantine/core'
 import { MantineReactTable as Table } from 'mantine-react-table'
 import API, { useAPIData } from '../api'
 import { Scoreboard } from '../api/types'
 import { formatNumber, formatNumberExp } from '../utils/numbers'
+import config from '../config'
 
 export default function Leaderboard() {
   const { data, isLoading } = useAPIData<Scoreboard>({
@@ -10,6 +12,9 @@ export default function Leaderboard() {
   })
   return (
     <Box w="100%" h="100%" sx={{ overflow: 'auto' }}>
+      <Helmet>
+        <title>Leaderboard - {config.HTML_TITLE}</title>
+      </Helmet>
       <Container maw={1200} p={0} h="100%">
         <Table
           enableRowNumbers

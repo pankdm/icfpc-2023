@@ -1,11 +1,13 @@
 import _ from 'lodash'
 import { Link } from 'react-router-dom'
+import { Helmet } from 'react-helmet'
 import { Container, Group, Space } from '@mantine/core'
 import { MantineReactTable as Table, MRT_ColumnDef } from 'mantine-react-table'
 import API, { useAPIData } from '../../api'
 import { ProblemStats } from '../../api/types'
 import { formatNumber, formatNumberExp } from '../../utils/numbers'
 import ProblemPreview from '../../components/ProblemPreview'
+import config from '../../config'
 
 const columns = {
   id: {
@@ -71,6 +73,9 @@ export default function Problems() {
   }))
   return (
     <Container maw={1200} p={0}>
+      <Helmet>
+        <title>Problems - {config.HTML_TITLE}</title>
+      </Helmet>
       <Table
         mantinePaperProps={{
           radius: 0,

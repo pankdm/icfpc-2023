@@ -194,12 +194,9 @@ def get_solution(path):
     print(path)
     return send_from_directory('../solutions', path)
 
-@app.post("/solutions/<problem_id>")
-def post_solution(problem_id):
-    payload = request.get_json()
-    solution = payload.get('solution')
-    assert solution, 'Required input: solution'
-    return ICFPC.submit(problem_id, solution)
+@app.post("/solutions/<username>/<problem_id>")
+def post_solution(username, problem_id):
+    return ICFPC.submit(username, problem_id)
 
 
 @app.get("/best_solutions/<path:path>")

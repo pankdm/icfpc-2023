@@ -44,17 +44,15 @@ def ensure_auth():
     icfpc_client.session = requests.Session()
     icfpc_client.session.headers.update({'Authorization': f'Bearer {icfpc_client.token}'})
 
-def submit(username: str, problem: str, solution: str):
+def submit(username: str, problem: str):
     ensure_auth()
-    raise Exception('Implement me!')
-    files = {
-        'file': (f'solutions/{problem}.isl', solution, 'text/plain'),
-    }
-    response = icfpc_client.session.post(API_ROOT+f'/submissions/{problem}/create', files=files)
+    with open(f'solutions/{username}/{problem}.json', 'r') as file:
+        solution = file.read()
+        response = icfpc_client.session.post(API_ROOT+'/submission', json={ "problem_id": int(problem), "contents": solution })
     if response.status_code >= 300:
         print(response.text)
         response.raise_for_status()
-    return response.json()
+    return response.text
 
 def get_scoreboard():
     ensure_auth()

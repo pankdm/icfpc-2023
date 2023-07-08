@@ -3,7 +3,6 @@ import itertools
 import os
 from types import SimpleNamespace
 
-print("problem musicians attendees tastes [w x h]")
 
 def get_problem_stats():
     all_problem_stats = {}
@@ -27,8 +26,11 @@ def get_problem_stats():
             }
     return all_problem_stats
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     problem_stats = get_problem_stats()
+
+    print("problem musicians attendees tastes [w x h]")
     for id, stats in problem_stats.items():
         print(
             "{:2} -> {:5} {:5} {:5} [{} x {}] ".format(

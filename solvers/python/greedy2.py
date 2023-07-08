@@ -34,6 +34,8 @@ class GreedySolver2:
     def __init__(self, i):
         self.i = i
         self.spec = Problem(i)
+        self.border = self._precompute_border_grid()
+        # print (self.border)
 
     # visiblity is a list of visible attendees
     def _compute_score(self, x, y, channel, visible):
@@ -69,15 +71,35 @@ class GreedySolver2:
 
         return blocked
     
+    def _precompute_border_grid(self):
+        result = []
+        y_border_min = int(self.spec.stage_min_y + BORDER_RADIUS)
+        y_border_max = int(self.spec.stage_max_y - BORDER_RADIUS)
+        
+        x_border_min = int(self.spec.stage_min_x + BORDER_RADIUS)
+        x_border_max = int(self.spec.stage_max_x - BORDER_RADIUS)
+
+        for x in range(
+            x_border_min,
+            x_border_max +1,
+            STEP,
+        ):
+            result.append((x, y_border_min))
+            result.append((x, y_border_max))
+
+        for y in range(
+            y_border_min,
+            y_border_max +1,
+            STEP,
+        ):
+            result.append((x_border_min, y))
+            result.append((x_border_max, y))
+
+        return list(sorted(set(result)))
 
     def _precompute_grid_tasks(self, assignment, ids_per_channel):
         tasks = []
-        y = self.spec.stage_min_y + BORDER_RADIUS
-        for x in range(
-            int(self.spec.stage_min_x + BORDER_RADIUS),
-            int(self.spec.stage_max_x - BORDER_RADIUS + 1),
-            STEP,
-        ):
+        for (x, y) in self.border:
             has_near = False
             for task in assignment.values():
                 if math.fabs(task.x - x) < NEARBY_MUSICIAN_RADIUS:
@@ -137,7 +159,8 @@ class GreedySolver2:
             ids = ids_per_channel[best_task.channel]
             m_idx = ids.pop(0)
             assignment[m_idx] = best_task
-            print (f"assign {m_idx} (ch={best_task.channel}) to {best_task}")
+            assert(best_task.score >= 0)
+            print (f"[{len(assignment)}/{self.spec.nmus}] assign {m_idx} (ch={best_task.channel}) to {best_task}")
         
         print(assignment)
         self.write_solution(assignment)

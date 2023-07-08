@@ -4,7 +4,7 @@ import { Problem, Solution } from '../../api/types'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Rect } from './primitives.3d'
 import { Attendee, Musician } from './elements.3d'
-import API from '../../api'
+// import API from '../../api'
 
 const CameraPositioner = ({
   roomWidth,
@@ -81,8 +81,8 @@ export default function Visualizer3D({
   const [stageHeld, setStageHeld] = useState(false)
 
   const screenshotRequestRef = useRef({ value: false })
-  const triggerScreenshot = () => (screenshotRequestRef.current.value = true)
-  const handleScreenshot = (blob: Blob) => {
+  // const triggerScreenshot = () => (screenshotRequestRef.current.value = true)
+  const handleScreenshot = (_blob: Blob) => {
     // API.uploadPreview(problemId, blob)
   }
   return (

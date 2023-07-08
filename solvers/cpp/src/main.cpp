@@ -6,6 +6,8 @@
 #include "solvers/packer.h"
 #include "utils/check_with_adjuster.h"
 #include "utils/evaluate_solution.h"
+#include "utils/estimate_max_score.h"
+
 
 #include "common/files/command_line.h"
 #include "common/solvers/ext/run_n.h"
@@ -49,6 +51,8 @@ int main(int argc, char** argv) {
     CheckWithAdjuster<AdjusterAssignment>(cmd.GetString("solution"));
   } else if (mode == "update") {
     // UpdateBest(cmd.GetString("solution"));
+  } else if (mode == "estimate") {
+    EstimateAllProblems();
   } else if (mode == "run") {
     auto solver_name = cmd.GetString("solver");
     auto s = CreateSolver(cmd, solver_name);

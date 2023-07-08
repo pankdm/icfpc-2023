@@ -43,7 +43,6 @@ class Packer : public BaseSolver {
 
   Solution Solve(const TProblem& p) override {
     Timer t;
-    const double d2 = musician_collision_radius * musician_collision_radius;
 
     Solution s;
     s.SetId(p.Id());

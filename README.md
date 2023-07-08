@@ -36,6 +36,12 @@ Submit a solution:
 curl -X POST localhost:8000/solutions/<username>/<task_id>
 ```
 
+Submit all solutions:
+
+```bash
+curl -X POST localhost:8000/solutions/username
+```
+
 Show problems stats:
 
 ```bash

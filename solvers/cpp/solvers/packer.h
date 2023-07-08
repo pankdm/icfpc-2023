@@ -31,75 +31,74 @@ class Packer : public BaseSolver {
   bool SkipSolutionRead() const override { return true; }
   // bool SkipBest() const override { return true; }
 
+  bool CheckNonOverlapping(const std::vector<D2Point>& candidates, D2Point pt) {
+    const double d2 = musician_collision_radius * musician_collision_radius;
+    for (const auto& p : candidates) {
+      if (SquaredDistanceL2(p, pt) < d2) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   Solution Solve(const TProblem& p) override {
     Timer t;
-    const double dx = (sqrt(5.0) - 1.0) / 2.0;
-    const double dy = sqrt(2.0) - 1.0;
     const double d2 = musician_collision_radius * musician_collision_radius;
-    unsigned iteration = 0;
-    OneMusucian md{{}, -1e16};
-    std::vector<OneMusucian> cur_best(p.total_instruments, md);
+
     Solution s;
     s.SetId(p.Id());
     s.positions.resize(p.instruments.size(), D2Point{0., 0.});
-    std::vector<std::vector<unsigned>> imap(p.total_instruments);
-    for (unsigned i = 0; i < p.instruments.size(); ++i)
-      imap[p.instruments[i]].push_back(i);
-    std::vector<unsigned> vic(p.total_instruments, 0);
-    std::vector<OneMusucian> vm;
-    double expected_dscore_ib = 0.;
-    bool all_found = true;
-    for (unsigned k = 0; k < p.instruments.size(); ++k) {
-      if (t.GetSeconds() > max_time_in_seconds) {
-        // Time to stop
-        all_found = false;
+
+    std::vector<D2Point> candidates;
+    double y = p.stage.p2.y;
+    while (y >= p.stage.p1.y) {
+      // candidates.push_back(D2Point{p.stage.p1.x, y});
+      candidates.push_back(D2Point{p.stage.p2.x, y});
+      y -= musician_collision_radius;
+    }
+
+    double x = p.stage.p2.x;
+    while (x >= p.stage.p2.y) {
+      candidates.push_back(D2Point{x, p.stage.p2.y});
+      x -= musician_collision_radius;
+    }
+
+    auto cur = p.stage.p1;
+    while (true) {
+      if (candidates.size() >= s.positions.size()) {
         break;
       }
-      double best = md.score;
-      unsigned best_i = p.total_instruments;
-      for (unsigned i = 0; i < p.total_instruments; ++i) {
-        if (t.GetSeconds() > max_time_in_seconds) break;
-        if (vic[i] == imap[i].size()) continue;
-        if (cur_best[i].score == md.score) {
-          for (unsigned j = 0; j < 100; ++j) {
-            auto xi = dx * iteration, yi = dy * iteration;
-            xi -= floor(xi);
-            yi -= floor(yi);
-            auto xf = (p.stage.p1.x != p.stage.p2.x)
-                          ? p.stage.p1.x * xi + p.stage.p2.x * (1 - xi)
-                          : p.stage.p1.x;
-            auto yf = (p.stage.p1.y != p.stage.p2.y)
-                          ? p.stage.p1.y * yi + p.stage.p2.y * (1 - yi)
-                          : p.stage.p1.y;
-            if (j < 4) {
-              xf = (iteration & 1) ? p.stage.p2.x : p.stage.p1.x;
-              yf = (iteration < 2) ? p.stage.p1.y : p.stage.p2.y;
-            }
-            OneMusucian::FindBestLocationEarlyStop2_IB(
-                p, i, {xf, yf}, vm, cur_best[i], false, iteration++);
-          }
+      while (true) {
+        if (CheckNonOverlapping(candidates, cur)) {
+          candidates.push_back(cur);
+          break;
         }
-        if (cur_best[i].score > best) {
-          best = cur_best[i].score;
-          best_i = i;
+        cur.x += musician_collision_radius;
+        if (cur.x > p.stage.p2.x) {
+          cur.x = 0;
+          cur.y += musician_collision_radius;
         }
-      }
-      if (best_i == p.total_instruments) {
-        // Can't insert any good candidate
-        all_found = false;
-        break;
-      }
-      auto m = cur_best[best_i];
-      vm.push_back(m);
-      s.positions[imap[best_i][vic[best_i]++]] = m.pos;
-      expected_dscore_ib += best;
-      for (unsigned i = 0; i < p.total_instruments; ++i) {
-        if (SquaredDistanceL2(cur_best[i].pos, m.pos) < d2) cur_best[i] = md;
       }
     }
+
+    for (int i = 0; i < s.positions.size(); ++i) {
+      s.positions[i] = candidates[i];
+    }
+    auto snew = s;
+    std::cout << " Started assignment run for problem " << p.Id() << std::endl;
+    AdjusterAssignment adj;
+    if (adj.Check(p, snew)) {
+      auto score_old = Evaluator::Apply(p, s).score;
+      auto score_new = Evaluator::Apply(p, snew).score;
+      std::cout << "New solution from adjuster for problem " << p.Id() << ":\t"
+                << score_old << " -> " << score_new << std::endl;
+      s = snew;
+    }
+
+
+    bool all_found = true;
     if (all_found) {
       std::cout << "Packer:\t" << p.Id() << "\t" << t.GetSeconds() << "\t"
-                << expected_dscore_ib << "\t"
                 << Evaluator::DScoreIgnoreBlocked(p, s) << "\t"
                 << Evaluator::DScore(p, s) << "\t" << Evaluator::IScore(p, s)
                 << std::endl;

@@ -1,3 +1,5 @@
+SOLVER := main
+
 define USAGE
 usage:
   - make -- see this message
@@ -6,11 +8,11 @@ endef
 export USAGE
 
 compile:
-ifndef SOLVER
-	make usage
-	exit 1
-endif
-	g++ -std=c++11 -I "./" -O3 -Wall -DNDEBUG ./src/${SOLVER}.cpp -o ./${SOLVER}.solver
+	g++ -std=c++17 -I "./" -O3 -Wall -DNDEBUG ./src/${SOLVER}.cpp -o ./${SOLVER}.solver
+
+compile-fast:
+	g++ -std=c++17 -I "./" -O0 -Wall -DNDEBUG ./src/main.cpp -o ./main.solver
+
 
 usage:
 	@echo "$$USAGE"

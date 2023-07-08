@@ -58,8 +58,22 @@ def dist_pt_line(pt: tuple, line_start: tuple, line_end: tuple):
     x0, y0 = pt
     x1, y1 = line_start
     x2, y2 = line_end
+
+    cos1 = (x0 - x1) * (x2 - x1) + (y0 - y1) * (y2 - y1)
+    cos2 = (x0 - x2) * (x1 - x2) + (y0 - y2) * (y1 - y2)
+
     triangle_area2 = abs(x0*(y1-y2) + x1*(y2-y0) + x2*(y0-y1))
     return triangle_area2 / math.sqrt((y2-y1)**2 + (x2-x1)**2)
+
+
+def pt_projets_into_segment(pt: tuple, line_start: tuple, line_end: tuple):
+    x0, y0 = pt
+    x1, y1 = line_start
+    x2, y2 = line_end
+
+    cos1 = (x0 - x1) * (x2 - x1) + (y0 - y1) * (y2 - y1)
+    cos2 = (x0 - x2) * (x1 - x2) + (y0 - y2) * (y1 - y2)
+    return cos1 >= 0 and cos2 >= 0
 
 
 def solution_score(problem_id: int, solution: list[tuple]):

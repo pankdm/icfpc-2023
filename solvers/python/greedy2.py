@@ -160,9 +160,9 @@ class GreedySolver2:
 
 
     def solve(self):
-        if self.spec.nmus > 40:
-            print (f'too many musicians, {self.spec.nmus}, skipping')
-            return
+        # if self.spec.nmus > 40:
+        #     print (f'too many musicians, {self.spec.nmus}, skipping')
+        #     return
 
         # map from musician id to placement (task)
         assignment = {}
@@ -181,19 +181,21 @@ class GreedySolver2:
                 break
             tasks = self._precompute_border_tasks(assignment, ids_per_channel)
             best_task = None
+            best_task2 = None
             if len(tasks) > 0:
                 best_task = max(tasks, key = lambda x: x.score)
             if best_task is None or best_task.score < 0:
-                print (f"Trying neighbours instead {best_task}")
+                print (f"  Trying neighbours instead {best_task}")
                 tasks2 = self._precompute_neighbor_tasks(assignment, ids_per_channel)
-                pprint (tasks2)
-                best_task2 = max(tasks2, key = lambda x: x.score)
-                if best_task is None or best_task2.score > best_task.score:
-                    tasks = tasks2
-                    best_task = best_task2
-                else:
-                    print (f"border is still better for {best_task} vs {best_task2}!")
-                    raise Exception(f"Negative best_task: {best_task}")
+                # pprint (tasks2)
+                if len(tasks2) > 0:
+                    best_task2 = max(tasks2, key = lambda x: x.score)
+                    if best_task is None or best_task2.score > best_task.score:
+                        tasks = tasks2
+                        best_task = best_task2
+                    else:
+                        print (f"  border is still better for {best_task} vs {best_task2}!")
+                        # raise Exception(f"Negative best_task: {best_task}")
 
             # update old musicians visibility
             for task in assignment.values():

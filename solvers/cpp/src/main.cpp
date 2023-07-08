@@ -1,19 +1,7 @@
-// #include "adjusters/simple.h"
-// #include "settings.h"
-// #include "solvers/dp_opt.h"
-// #include "solvers/dp_opt2.h"
-// #include "solvers/dp_opt2f.h"
-// #include "solvers/dp_opt3.h"
-// #include "solvers/dp_opt4.h"
-// #include "solvers/dp_proxy.h"
-// #include "solvers/one_color.h"
-// #include "solvers/x4_proxy.h"
-// #include "utils/check_with_adjuster.h"
-// #include "utils/evaluate_solution.h"
-
 #include "base/constants.h"
 #include "solvers/base.h"
 #include "solvers/greedy1.h"
+#include "solvers/greedy2.h"
 
 #include "common/files/command_line.h"
 #include "common/solvers/ext/run_n.h"
@@ -35,6 +23,8 @@ BaseSolver::PSolver CreateSolver(const files::CommandLine& cmd,
   auto timelimit = cmd.GetInt("timelimit");
   if (solver_name == "greedy1") {
     return std::make_shared<Greedy1>(timelimit);
+  } else if (solver_name == "greedy2") {
+    return std::make_shared<Greedy2>(timelimit);
   } else {
     std::cerr << "Unknown solver type: " << solver_name << std::endl;
     exit(-1);

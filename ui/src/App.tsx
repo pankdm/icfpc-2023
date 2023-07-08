@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import AppLayout from './components/AppLayout'
-import Problems from './pages/problems'
+import Problems from './pages/problems/scoreboard'
 import ProblemInspector from './pages/problems/id'
 import Leaderboard from './pages/leaderboard'
 import Root from './pages/root'

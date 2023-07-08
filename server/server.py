@@ -104,7 +104,15 @@ def get_cached_problem_stats():
 
 @app.get("/problems/stats")
 def handle_get_problems_stats():
-    return { 'problems': get_cached_problem_stats() }
+    scores = ICFPC.get_cached_userboard()
+    stats = get_cached_problem_stats()
+    merged_stats = {
+        id: {
+            **stats[id],
+            "score": scores[id]
+        }
+    for id in stats.keys()}
+    return { 'problems': merged_stats }
 
 @app.get("/problems/<id>")
 def get_problem(id):

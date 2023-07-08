@@ -18,15 +18,17 @@ export type Problems = {
   problems: number[]
 }
 
+export type ProblemStats = {
+  attendees: number
+  instruments: number
+  musicians: number
+  stage_height: number
+  stage_width: number
+  score: number | null
+}
 export type ProblemsStats = {
   problems: {
-    [id: string]: {
-      attendees: number
-      instruments: number
-      musicians: number
-      stage_height: number
-      stage_width: number
-    }
+    [id: string]: ProblemStats
   }
 }
 

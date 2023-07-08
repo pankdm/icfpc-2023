@@ -10,11 +10,19 @@ class Solution : public solvers::Solution {
  public:
   std::vector<D2Point> positions;
 
-  bool Load(const std::string& /* id */, const std::string& /* filename */) {
+  bool Empty() const { return positions.empty(); }
+
+  static std::string FileName(const std::string& id,
+                              const std::string& solver_name) {
+    return "../../solutions/" + solver_name + "/" + id + ".json";
+  }
+
+  bool Load(const std::string& /* id */, const std::string& /* solver_name */) {
     return false;
   }
 
-  void Save(const std::string& filename) const {
+  void Save(const std::string& solver_name) const {
+    auto filename = FileName(GetId(), solver_name);
     files::JSON json_placements;
     json_placements.SetArray();
     for (auto& p : positions) {

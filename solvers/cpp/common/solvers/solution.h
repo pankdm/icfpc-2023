@@ -11,7 +11,7 @@ class Solution {
   const std::string& GetId() const { return id; }
   void SetId(const std::string& new_id) { id = new_id; }
 
-  bool Load(const std::string& /* id */, const std::string& /* filename */);
-  void Save(const std::string& /* filename */) const;
+  bool Load(const std::string& /* id */, const std::string& /* solver_name */);
+  void Save(const std::string& /* solver_name */) const;
 };
 }  // namespace solvers

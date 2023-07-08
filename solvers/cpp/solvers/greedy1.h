@@ -4,6 +4,7 @@
 #include "base/evaluator.h"
 #include "base/problem.h"
 #include "base/solution.h"
+#include "solvers/base.h"
 #include "utils/one_musician.h"
 
 #include "common/geometry/d2/point.h"
@@ -12,14 +13,20 @@
 #include <algorithm>
 #include <vector>
 
-class Greedy1 : public solvers::Solver<Problem, Solution, Evaluator> {
+class Greedy1 : public BaseSolver {
  public:
-  using TBase = solvers::Solver<Problem, Solution, Evaluator>;
+  using TBase = BaseSolver;
   using PSolver = TBase::PSolver;
 
  public:
-  PSolver Clone() const override { return std::shared_ptr<TSelf>(); }
+  Greedy1() : BaseSolver() {}
+  explicit Greedy1(unsigned _max_time) : BaseSolver(_max_time) {}
+
+  PSolver Clone() const override { return std::make_shared<Greedy1>(*this); }
+
   std::string Name() const override { return "loks_greedy1"; }
+
+  bool SkipBest() const override { return true; }
 
   Solution Solve(const TProblem& p) override {
     std::vector<std::vector<OneMusucian>> vvc(p.total_instruments);

@@ -125,28 +125,32 @@ export default function ProblemInspector() {
               />
             </Group>
             <Space h="xl" />
-            <Box w={'70vmin'} h={'70vmin'} pos="relative">
-              <LoadingOverlay visible={isLoading} overlayBlur={2} />
-              {problem && (
-                <VisualizerComponent
-                  bg="black"
-                  size="70vmin"
-                  problemId={problemId}
-                  problem={problem}
-                  solution={solution}
-                />
-              )}
-            </Box>
-            <Space h="xl" />
-            <Text size="sm">
-              Room: {problem?.room_width} x {problem?.room_height}
-            </Text>
-            <Text size="sm">
-              Scene: {problem?.stage_width} x {problem?.stage_height}
-            </Text>
-            <Text size="sm">Instruments: {stats?.instruments}</Text>
-            <Text size="sm">Musicians: {stats?.musicians}</Text>
-            <Text size="sm">Attendees: {stats?.attendees}</Text>
+            <Group position="center">
+              <Box w={'70vmin'} h={'70vmin'} pos="relative">
+                <LoadingOverlay visible={isLoading} overlayBlur={2} />
+                {problem && (
+                  <VisualizerComponent
+                    bg="black"
+                    size="70vmin"
+                    problemId={problemId}
+                    problem={problem}
+                    solution={solution}
+                  />
+                )}
+              </Box>
+              <Space h="xl" />
+              <Stack spacing={0}>
+                <Text size="sm">
+                  Room: {problem?.room_width} x {problem?.room_height}
+                </Text>
+                <Text size="sm">
+                  Scene: {problem?.stage_width} x {problem?.stage_height}
+                </Text>
+                <Text size="sm">Instruments: {stats?.instruments}</Text>
+                <Text size="sm">Musicians: {stats?.musicians}</Text>
+                <Text size="sm">Attendees: {stats?.attendees}</Text>
+              </Stack>
+            </Group>
           </Stack>
         </Center>
       </Box>

@@ -15,7 +15,7 @@ import {
 import { $problem, setProblemId } from '../../state/problem'
 import API, { useAPIData } from '../../api'
 import TrafficLight from '../../components/TrafficLight'
-import Visualizer from '../../components/visualizer/Visualizer'
+import Visualizer3D from '../../components/visualizer/Visualizer.3d'
 import ProblemPreview from '../../components/ProblemPreview'
 
 export default function ProblemInspector() {
@@ -63,6 +63,7 @@ export default function ProblemInspector() {
       </Stack>
       <Box sx={{ flex: 1 }}>
         <TrafficLight
+          sx={{ zIndex: 10 }}
           pos="absolute"
           top={0}
           right={0}
@@ -78,7 +79,7 @@ export default function ProblemInspector() {
               <LoadingOverlay visible={isLoading} overlayBlur={2} />
               <Box sx={{ flexGrow: 0, flexShrink: 0 }}>
                 {problem && (
-                  <Visualizer size="70vmin" mah="100%" problem={problem} />
+                  <Visualizer3D size="70vmin" mah="100%" problem={problem} />
                 )}
               </Box>
             </Center>

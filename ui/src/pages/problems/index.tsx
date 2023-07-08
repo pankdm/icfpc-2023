@@ -72,13 +72,14 @@ export default function Problems() {
     stageSize: `${data.stage_width} x ${data.stage_height}`,
   }))
   return (
-    <Container maw={1200} p={0}>
+    <Container maw={1200} h="100%" p={0}>
       <Helmet>
         <title>Problems - {config.HTML_TITLE}</title>
       </Helmet>
       <Table
         mantinePaperProps={{
           radius: 0,
+          mah: '100%',
         }}
         columns={[
           columns.id,

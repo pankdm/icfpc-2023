@@ -314,6 +314,8 @@ class JSON {
           SkipSpaces(s, index);
         }
         if (!ContextAssert(s, index, ']')) return false;
+        if ((value_array.size() == 1) && (value_array[0].type == EMPTY))
+          value_array.clear();
         ++index;
       } break;
       case '"': {
@@ -334,7 +336,7 @@ class JSON {
         } else if (ss == "false") {
           type = BOOLEAN;
           value_boolean = false;
-        } else if (ss == "null") {
+        } else if ((ss == "null") || ss.empty()) {
           type = EMPTY;
         } else {
           char* p = nullptr;

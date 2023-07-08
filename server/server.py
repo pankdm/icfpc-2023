@@ -198,6 +198,9 @@ def get_solution(path):
 def post_solution(username, problem_id):
     return ICFPC.submit(username, problem_id)
 
+@app.post("/solutions/<username>")
+def post_all_solutions(username):
+    return ICFPC.submit_all(username)
 
 @app.get("/best_solutions/<path:path>")
 def get_best_solution(path):

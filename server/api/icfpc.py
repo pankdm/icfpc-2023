@@ -47,8 +47,24 @@ def ensure_auth():
 def submit(username: str, problem: str):
     ensure_auth()
     with open(f'solutions/{username}/{problem}.json', 'r') as file:
-        solution = file.read()
-        response = icfpc_client.session.post(API_ROOT+'/submission', json={ "problem_id": int(problem), "contents": solution })
+        return submit_solution(problem, file.read())
+
+def submit_all(username: str):
+    ensure_auth()
+
+    submitted = 0
+    with os.scandir(f'solutions/{username}') as dir:
+        for entry in dir:
+            if not entry.name.startswith('.') and entry.is_file():
+                problem, _ = os.path.splitext(os.path.basename(entry))
+                with open(entry, 'r') as file:
+                    submit_solution(problem, file.read())
+                    submitted += 1
+
+    return f'{submitted}'
+
+def submit_solution(problem: str, solution: str):
+    response = icfpc_client.session.post(API_ROOT+'/submission', json={ "problem_id": int(problem), "contents": solution })
     if response.status_code >= 300:
         print(response.text)
         response.raise_for_status()

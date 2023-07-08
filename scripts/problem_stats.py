@@ -3,6 +3,16 @@ import itertools
 import os
 from types import SimpleNamespace
 
+def get_estimated_scores():
+    path = "./metadata/estimated.json"
+    if not os.path.exists(path):
+        return {}
+    with open(path, "r") as f:
+        data = f.read()
+        js = json.loads(data)
+        # convert keys to strings
+        return {int(i): value for (i, value) in js.items()}
+
 
 def get_problem_stats():
     all_problem_stats = {}

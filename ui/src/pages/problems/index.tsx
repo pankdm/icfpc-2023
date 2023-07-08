@@ -45,11 +45,17 @@ const columns = {
     size: 120,
     accessorFn: (originalRow) => formatNumber(originalRow.score),
   },
-  scoreExp: {
-    id: 'scoreExp',
-    header: 'Score Exp',
+  estimatedMax: {
+    id: 'estimatedMax',
+    header: 'Estimated Max',
     size: 120,
-    accessorFn: (originalRow) => formatNumberExp(originalRow.score),
+    accessorFn: (originalRow) => formatNumber(originalRow.estimated_max),
+  },
+  percentOfMax: {
+    id: 'percentOfMax',
+    header: 'Estimated Max',
+    size: 120,
+    accessorFn: (originalRow) => `${(100 * (originalRow.score ?? 0) / (originalRow.estimated_max || 1)).toFixed(1)}%`,
   },
   stageSize: {
     id: 'stageSize',
@@ -89,7 +95,8 @@ export default function Problems() {
           columns.pillars,
           columns.stageSize,
           columns.score,
-          columns.scoreExp,
+          columns.estimatedMax,
+          columns.percentOfMax
         ]}
         enableStickyHeader
         enablePagination={false}

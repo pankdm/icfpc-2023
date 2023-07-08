@@ -31,6 +31,7 @@ export type ProblemStats = {
   stage_height: number
   stage_width: number
   score: number | null
+  estimated_max: number | null
 }
 export type ProblemsStats = {
   problems: {

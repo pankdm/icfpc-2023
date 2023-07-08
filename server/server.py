@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from flask_cors import CORS
 from flask import Flask, request, send_from_directory
 
-from scripts.problem_stats import get_problem_stats
+from scripts.problem_stats import get_estimated_scores, get_problem_stats
 from solvers.python import hello_json
 from .api import icfpc as ICFPC
 from .utils import get_sanitized_args, cached
@@ -89,10 +89,13 @@ def get_problems():
 def get_cached_problem_stats():
     scores = ICFPC.get_cached_userboard()
     stats = get_problem_stats()
+    estimated_max = get_estimated_scores()
+    print(estimated_max)
     merged_stats = {
         id: {
             **stats[id],
-            "score": scores[id]
+            "score": scores[id],
+            "estimated_max": estimated_max.get(id, -1)
         }
     for id in stats.keys()}
     return merged_stats

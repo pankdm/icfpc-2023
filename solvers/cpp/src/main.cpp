@@ -2,6 +2,7 @@
 #include "solvers/base.h"
 #include "solvers/greedy1.h"
 #include "solvers/greedy2.h"
+#include "utils/evaluate_solution.h"
 
 #include "common/files/command_line.h"
 #include "common/solvers/ext/run_n.h"
@@ -38,7 +39,7 @@ int main(int argc, char** argv) {
 
   const auto mode = cmd.GetString("mode");
   if (mode == "eval") {
-    // EvaluateSolution(cmd.GetString("solution"));
+    EvaluateSolution(cmd.GetString("solution"));
   } else if (mode == "adjust") {
     // CheckWithAdjuster<adj::Simple>(cmd.GetString("solution"));
   } else if (mode == "update") {

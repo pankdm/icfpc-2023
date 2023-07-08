@@ -23,6 +23,6 @@ int main(int argc, char *argv[]) {
 
   Greedy1 slvr;
   auto s = slvr.Solve(p);
-
+  s.Save("../../solutions/" + slvr.Name() + "/" + s.GetId() + ".json");
   return 0;
 }

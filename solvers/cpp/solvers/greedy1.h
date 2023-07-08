@@ -19,7 +19,7 @@ class Greedy1 : public solvers::Solver<Problem, Solution, Evaluator> {
 
  public:
   PSolver Clone() const override { return std::shared_ptr<TSelf>(); }
-  std::string Name() const override { return "greedy1"; }
+  std::string Name() const override { return "loks_greedy1"; }
 
   Solution Solve(const TProblem& p) override {
     std::vector<std::vector<OneMusucian>> vvc(p.total_instruments);
@@ -31,6 +31,7 @@ class Greedy1 : public solvers::Solver<Problem, Solution, Evaluator> {
                 });
     }
     Solution s;
+    s.SetId(p.Id());
     s.positions.resize(p.instruments.size(), D2Point{0., 0.});
     std::vector<std::vector<unsigned>> imap(p.total_instruments);
     for (unsigned i = 0; i < p.instruments.size(); ++i)
@@ -77,7 +78,8 @@ class Greedy1 : public solvers::Solver<Problem, Solution, Evaluator> {
     if (all_found) {
       std::cout << "Greedy1:\t" << p.Id() << "\t" << expected_dscore_ib << "\t"
                 << Evaluator::DScoreIgnoreBlocked(p, s) << "\t"
-                << Evaluator::DScore(p, s) << std::endl;
+                << Evaluator::DScore(p, s) << "\t" << Evaluator::IScore(p, s)
+                << std::endl;
     }
     return s;
   }

@@ -38,7 +38,7 @@ class Evaluator : public solvers::Evaluator {
     l.Normalize();
     for (unsigned i = 0; i < s.positions.size(); ++i) {
       auto& pi = s.positions[i];
-      if ((i != k) && (l(pi) < musician_block_radius) &&
+      if ((i != k) && (l(pi) <= musician_block_radius) &&
           (SquaredDistanceL2(pa, pi) < d2))
         return true;
     }

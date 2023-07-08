@@ -110,7 +110,7 @@ def get_problem(id):
 
 @app.get("/problems/<id>/preview")
 def get_problem_preview(id):
-    return send_from_directory('../previews', id+'.png')
+    return send_from_directory('../previews', id+'.svg')
 
 @app.post("/problems/<id>/preview")
 def handle_post_problem_preview(id):

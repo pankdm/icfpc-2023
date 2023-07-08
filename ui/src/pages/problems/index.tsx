@@ -1,26 +1,36 @@
 import _ from 'lodash'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet'
-import { Container, Group, Space } from '@mantine/core'
+import { useStore } from '@nanostores/react'
+import { Container, Group, SegmentedControl, Space } from '@mantine/core'
 import { MantineReactTable as Table, MRT_ColumnDef } from 'mantine-react-table'
 import API, { useAPIData } from '../../api'
 import { ProblemStats } from '../../api/types'
 import { formatNumber, formatNumberExp } from '../../utils/numbers'
 import ProblemPreview from '../../components/ProblemPreview'
 import config from '../../config'
+import { $userboardDisplayMode } from '../../state/userboardDisplayMode'
 
 const columns = {
   id: {
     id: 'id',
-    accessorFn: (row) =>
-      row.id && (
-        <Link to={`/problems/${row.id}`}>
-          <Group p={0} spacing={0}>
-            <ProblemPreview problemId={row.id} size="8rem" />
-            <Space w="xs" /># {row.id}
-          </Group>
-        </Link>
-      ),
+    accessorFn: (row) => {
+      const displayMode = useStore($userboardDisplayMode)
+      const isShowBigPreviews = displayMode === 'Previews'
+      return (
+        row.id && (
+          <Link to={`/problems/${row.id}`}>
+            <Group p={0} spacing={0} position="center">
+              <ProblemPreview
+                problemId={row.id}
+                size={isShowBigPreviews ? '50vmin' : '8rem'}
+              />
+              <Space w="xs" /># {row.id}
+            </Group>
+          </Link>
+        )
+      )
+    },
     header: 'Problem',
     size: 140,
   },
@@ -77,10 +87,12 @@ const columns = {
 } as Record<string, MRT_ColumnDef<{ id: string } & ProblemStats>>
 
 export default function Problems() {
+  const displayMode = useStore($userboardDisplayMode)
   const { isLoading, data: stats } = useAPIData({
     fetch: () => API.getProblemsStats(),
     deps: [],
   })
+
   const data = _.map(stats?.problems, (data, id) => ({
     id,
     ...data,
@@ -92,6 +104,16 @@ export default function Problems() {
         <title>Problems - {config.HTML_TITLE}</title>
       </Helmet>
       <Table
+        renderTopToolbarCustomActions={() => (
+          <Group p={0}>
+            <SegmentedControl
+              size="sm"
+              data={['Table', 'Previews']}
+              value={displayMode}
+              onChange={$userboardDisplayMode.set}
+            />
+          </Group>
+        )}
         mantinePaperProps={{
           radius: 0,
           mah: '100%',

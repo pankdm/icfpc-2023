@@ -30,6 +30,12 @@ Download all problems:
 curl localhost:8000/problems/download
 ```
 
+Submit a solution:
+
+```bash
+curl -X POST localhost:8000/solutions/<username>/<task_id>
+```
+
 Show problems stats:
 
 ```bash

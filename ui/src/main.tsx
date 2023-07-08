@@ -1,9 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter, HashRouter } from 'react-router-dom'
 import { MantineProvider } from '@mantine/core'
 import './index.css'
+
+const RouterComponent =
+  import.meta.env.MODE === 'production' ? HashRouter : BrowserRouter
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
@@ -11,14 +14,13 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       withGlobalStyles
       withNormalizeCSS
       theme={{
-        colors: {
-        },
+        colors: {},
         primaryColor: 'orange',
       }}
     >
-      <BrowserRouter>
+      <RouterComponent>
         <App />
-      </BrowserRouter>
+      </RouterComponent>
     </MantineProvider>
   </React.StrictMode>
 )

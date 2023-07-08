@@ -91,13 +91,14 @@ export default function ProblemInspector() {
           ))}
       </Stack>
       <Box sx={{ flex: 1 }}>
-        <Stack pos="absolute" top={0} right={0} align="center">
-          <TrafficLight
-            sx={{ zIndex: 10000 }}
-            size="10rem"
-            red={isLoading}
-            green={!isLoading}
-          />
+        <Stack
+          pos="absolute"
+          sx={{ zIndex: 10000 }}
+          top={0}
+          right={0}
+          align="center"
+        >
+          <TrafficLight size="10rem" red={isLoading} green={!isLoading} />
           <SegmentedControl
             data={['3d', 'svg']}
             value={renderMode}

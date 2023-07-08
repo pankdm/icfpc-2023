@@ -7,6 +7,7 @@ def meaning_of_life():
     return 42
 
 BORDER_RADIUS = 10
+NEARBY_MUSICIAN_RADIUS = 10
 BORDER_RADIUS_SQUARE = 100
 BLOCKING_RADIUS = 5
 

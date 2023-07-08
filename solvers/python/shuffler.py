@@ -93,10 +93,11 @@ def simulated_annealing(problem, solution: list[tuple[int, int]]=None, T=1000, c
 
 if __name__ == "__main__":
     for id in range(1, 56):
+      print("Problem", id)
       pr = Problem(id)
       if len(pr.attendees)>700:
         continue
       sol, score = simulated_annealing(id)
-      print(id, score)
+      print(score)
       write_solution(id, "xivaxy", sol)
 

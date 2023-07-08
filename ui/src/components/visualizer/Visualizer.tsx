@@ -1,13 +1,20 @@
 import { Box, MantineSize, Paper, PaperProps } from '@mantine/core'
-import { Problem } from '../../api/types'
+import { Problem, Solution } from '../../api/types'
 import { Rect } from './primitives'
-import { Attendee } from './elements'
+import { Attendee, Musician } from './elements'
 
 export default function Visualizer({
   size,
+  problemId,
   problem,
+  solution,
   ...props
-}: { size: MantineSize; problem: Problem } & PaperProps) {
+}: {
+  size: MantineSize
+  problemId: string | number
+  problem: Problem
+  solution?: Solution | null
+} & PaperProps) {
   const {
     room_width,
     room_height,
@@ -15,18 +22,13 @@ export default function Visualizer({
     stage_height,
     stage_bottom_left: [stage_x, stage_y],
   } = problem
-  const roomAspect = room_width / room_height
-  let [width, height] =
-    roomAspect >= 1
-      ? [size, `calc(${size} / ${roomAspect})`]
-      : [`calc(${size} * ${roomAspect})`, size]
+  const rmin = Math.min(room_width, room_height)
   return (
     <Paper
-      w={width}
-      h={height}
+      w={size}
+      h={size}
       shadow="md"
       withBorder
-      bg="#453f3f"
       pos="relative"
       radius={0}
       {...props}
@@ -40,6 +42,13 @@ export default function Visualizer({
       >
         {/* stage */}
         <Rect
+          x={0}
+          y={0}
+          width={room_width}
+          height={room_height}
+          color="#453f3f"
+        />
+        <Rect
           x={stage_x}
           y={stage_y}
           width={stage_width}
@@ -48,7 +57,11 @@ export default function Visualizer({
         />
         {/* attendees */}
         {problem.attendees.map((att, idx) => (
-          <Attendee key={idx} x={att.x} y={att.y} />
+          <Attendee key={idx} x={att.x} y={att.y} radius={rmin * 0.0025} />
+        ))}
+        {/* musicians */}
+        {solution?.placements?.map((p, idx) => (
+          <Musician key={idx} x={p.x} y={p.y} />
         ))}
       </Box>
     </Paper>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   Problem,
   ProblemStats,
@@ -62,6 +62,9 @@ export function useAPIData<T extends Record<string, any>>({
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
   const [data, setData] = useState<T | null>(null)
+  const clearData = useCallback(() => {
+    setData(null)
+  }, [])
   useEffect(() => {
     if ((skip as any)?.call ? (skip as () => boolean)() : skip) {
       setData(null)
@@ -82,7 +85,7 @@ export function useAPIData<T extends Record<string, any>>({
         setIsLoading(false)
       })
   }, [...deps])
-  return { isLoading, error, data }
+  return { isLoading, error, data, clearData }
 }
 
 export default API

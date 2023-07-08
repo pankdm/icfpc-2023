@@ -13,20 +13,21 @@ import {
   Title,
   LoadingOverlay,
   Select,
+  SegmentedControl,
 } from '@mantine/core'
 import { $problem, setProblemId } from '../../state/problem'
 import API, { useAPIData } from '../../api'
 import TrafficLight from '../../components/TrafficLight'
+import Visualizer from '../../components/visualizer/Visualizer'
 import Visualizer3D from '../../components/visualizer/Visualizer.3d'
 import ProblemPreview from '../../components/ProblemPreview'
+import { $renderMode } from '../../state/renderMode'
 
 export default function ProblemInspector() {
   const { problemId: problemIdStr } = useParams()
+  const renderMode = useStore($renderMode)
   const problemId = parseInt(problemIdStr as any)
   const [solutionId, setSolutionId] = useState<string | null>(null)
-  useEffect(() => {
-    setSolutionId(null)
-  }, [problemId])
   const problem = useStore($problem)
   const { data: problemsData } = useAPIData({
     fetch: API.getProblems,
@@ -45,14 +46,19 @@ export default function ProblemInspector() {
     fetch: () => API.getProblemSolutions(problemId),
     deps: [problemId],
   })
-  const { data: solution } = useAPIData({
+  const { data: solution, clearData: clearSolutionData } = useAPIData({
     fetch: () => API.getSolution(solutionId as string),
     skip: !solutionId,
     deps: [solutionId],
   })
+  useEffect(() => {
+    setSolutionId(null)
+    clearSolutionData()
+  }, [problemId])
   const solutionsSelectOpts = solutionsResp?.solutions?.length
     ? solutionsResp.solutions
     : [{ value: 'none', label: 'No solutions', disabled: true }]
+  const VisualizerComponent = renderMode === '3d' ? Visualizer3D : Visualizer
   return (
     <Group h="100%" pos="relative">
       <Stack
@@ -85,22 +91,25 @@ export default function ProblemInspector() {
           ))}
       </Stack>
       <Box sx={{ flex: 1 }}>
-        <TrafficLight
-          sx={{ zIndex: 10000 }}
-          pos="absolute"
-          top={0}
-          right={0}
-          size="10rem"
-          red={isLoading}
-          green={!isLoading}
-        />
+        <Stack pos="absolute" top={0} right={0} align="center">
+          <TrafficLight
+            sx={{ zIndex: 10000 }}
+            size="10rem"
+            red={isLoading}
+            green={!isLoading}
+          />
+          <SegmentedControl
+            data={['3d', 'svg']}
+            value={renderMode}
+            onChange={(v) => $renderMode.set(v as any)}
+          />
+        </Stack>
         <Center>
           <Stack align="center" spacing={0}>
             <Title order={2}>Problem {problemId}</Title>
             <Group>
-              <Text>Solutions:</Text>
               <Select
-                placeholder="None selected"
+                placeholder="Select solution"
                 data={solutionsSelectOpts}
                 value={solutionId}
                 onChange={setSolutionId}
@@ -110,7 +119,7 @@ export default function ProblemInspector() {
             <Box w={'70vmin'} h={'70vmin'} pos="relative">
               <LoadingOverlay visible={isLoading} overlayBlur={2} />
               {problem && (
-                <Visualizer3D
+                <VisualizerComponent
                   bg="black"
                   size="70vmin"
                   problemId={problemId}

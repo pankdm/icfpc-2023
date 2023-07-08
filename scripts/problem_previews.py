@@ -50,6 +50,10 @@ if __name__ == "__main__":
         image = generate_problem_preview(sys.argv[1])
         image.show()
     else:
-        for i in get_problem_ids():
+        problem_ids = get_problem_ids()
+        print(f'generating {len(problem_ids)} previews...')
+        for i in problem_ids:
             image = generate_problem_preview(i)
             image.save(f'previews/{i}.png', quality=100)
+            print(f'#{i}')
+        print('all done.')

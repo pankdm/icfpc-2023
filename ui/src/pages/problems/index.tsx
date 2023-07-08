@@ -43,19 +43,28 @@ const columns = {
     id: 'score',
     header: 'Score',
     size: 120,
-    accessorFn: (originalRow) => formatNumber(originalRow.score),
+    accessorKey: "score",
+    Cell: ({ cell }) => (<span> {formatNumber(cell.getValue<number>())} </span>),
   },
   estimatedMax: {
     id: 'estimatedMax',
     header: 'Estimated Max',
     size: 120,
-    accessorFn: (originalRow) => formatNumber(originalRow.estimated_max),
+    accessorKey: "estimated_max",
+    Cell: ({ cell }) => (<span> {formatNumber(cell.getValue<number>())} </span>),
   },
   percentOfMax: {
     id: 'percentOfMax',
-    header: 'Estimated Max',
-    size: 120,
+    header: 'Percent of Max',
+    size: 90,
     accessorFn: (originalRow) => `${(100 * (originalRow.score ?? 0) / (originalRow.estimated_max || 1)).toFixed(1)}%`,
+  },
+  deltaWithMax: {
+    id: 'deltaWithMax',
+    header: 'Delta',
+    size: 90,
+    accessorFn: (originalRow) => `${formatNumberExp((originalRow.estimated_max ?? 0) - (originalRow.score ?? 0))}`,
+    sortingFn: (rowA, rowB, columnId) => (parseFloat(rowA.getValue<string>(columnId)) < parseFloat(rowB.getValue<string>(columnId)) ? -1 : 1),
   },
   stageSize: {
     id: 'stageSize',
@@ -96,7 +105,8 @@ export default function Problems() {
           columns.stageSize,
           columns.score,
           columns.estimatedMax,
-          columns.percentOfMax
+          columns.percentOfMax,
+          columns.deltaWithMax,
         ]}
         enableStickyHeader
         enablePagination={false}

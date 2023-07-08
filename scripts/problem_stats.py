@@ -35,9 +35,9 @@ if __name__ == "__main__":
         print(
             "{:2} -> {:5} {:5} {:5} [{} x {}] ".format(
                 id,
-                stats["total_musicians"],
-                stats["total_attendees"],
-                stats["total_instruments"],
+                stats["musicians"],
+                stats["attendees"],
+                stats["instruments"],
                 stats["stage_width"],
                 stats["stage_height"],
             )

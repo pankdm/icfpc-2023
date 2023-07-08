@@ -2,7 +2,7 @@ import { Box, Container } from '@mantine/core'
 import { MantineReactTable as Table } from 'mantine-react-table'
 import API, { useAPIData } from '../api'
 import { Scoreboard } from '../api/types'
-import { formatNumber } from '../utils/numbers'
+import { formatNumber, formatNumberExp } from '../utils/numbers'
 
 export default function Leaderboard() {
   const { data, isLoading } = useAPIData<Scoreboard>({
@@ -28,7 +28,7 @@ export default function Leaderboard() {
               accessorFn: (row) => formatNumber(row.score),
             },
             {
-              accessorFn: (row) => row.score?.toExponential(3),
+              accessorFn: (row) => formatNumberExp(row.score),
               id: 'score-exp',
               header: 'Score Exp',
             },

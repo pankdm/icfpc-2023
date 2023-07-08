@@ -85,3 +85,15 @@ def solution_score(problem_id: int, solution: list[tuple]):
             score += single_score(x, y, px, py, pr.att_tastes[i][pr.mus_tastes[m]])
     return score
 
+
+def write_solution(problem: int, user: str, assignment: list[tuple[int, int]]):
+        placements = []
+        for i in range(len(assignment)):
+            x = assignment[i][0]
+            y = assignment[i][1]
+            placements.append({"x": float(x), "y": float(y)})
+        output = {"placements": placements}
+        path = f"../../solutions/{user}/{problem}.json"
+        print(f"Writing solution to {path}")
+        with open(path, "w") as f:
+            f.write(json.dumps(output, indent=2))

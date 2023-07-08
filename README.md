@@ -54,4 +54,4 @@ python3 ./scripts/problem_stats.py
   - `./solvers/python`  - Python
 - `./solvers/python/*.py`  -- python sources корневые скрипты питонячих солверов
 - `./server`  -- python flask server. Uses ICFPC API: download leaderboard, upload solutions, provides files for UI
-- `./ui`  -- DO NOT GO HERE!! It's a hell of UI! (ад, расчленёнка и тайпскрипт)
+- `./ui`  -- DO NOT GO HERE!! It's a hell of UI! (каша, мёд, говно и пчёлы)

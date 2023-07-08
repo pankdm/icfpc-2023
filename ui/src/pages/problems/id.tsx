@@ -31,6 +31,10 @@ export default function ProblemInspector() {
     onSuccess: (_problem) => $problem.set(_problem),
     deps: [problemId],
   })
+  const { data: stats } = useAPIData({
+    fetch: () => API.getProblemStats(problemId),
+    deps: [problemId],
+  })
   return (
     <Group h="100%" pos="relative">
       <Stack
@@ -42,7 +46,7 @@ export default function ProblemInspector() {
       >
         {problemsData?.problems &&
           _.map(problemsData.problems, (_problemId) => (
-            <Link to={`/problems/${_problemId}`}>
+            <Link key={_problemId} to={`/problems/${_problemId}`}>
               <NavLink
                 key={_problemId}
                 onClick={() => setProblemId(_problemId)}
@@ -85,9 +89,9 @@ export default function ProblemInspector() {
             <Text size="sm">
               Scene: {problem?.stage_width} x {problem?.stage_height}
             </Text>
-            <Text size="sm">Attendees: {problem?.attendees.length}</Text>
-            <Text size="sm">Musicians: {problem?.musicians.length}</Text>
-            <Text size="sm">Tastes: {problem?.attendees[0].tastes.length}</Text>
+            <Text size="sm">Instruments: {stats?.instruments}</Text>
+            <Text size="sm">Musicians: {stats?.musicians}</Text>
+            <Text size="sm">Attendees: {stats?.attendees}</Text>
           </Stack>
         </Center>
       </Box>

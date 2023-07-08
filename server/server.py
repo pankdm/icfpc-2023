@@ -100,23 +100,28 @@ def get_problems():
 
 @cached(ttl=60)
 def get_cached_problem_stats():
-    return get_problem_stats()
-
-@app.get("/problems/stats")
-def handle_get_problems_stats():
     scores = ICFPC.get_cached_userboard()
-    stats = get_cached_problem_stats()
+    stats = get_problem_stats()
     merged_stats = {
         id: {
             **stats[id],
             "score": scores[id]
         }
     for id in stats.keys()}
-    return { 'problems': merged_stats }
+    return merged_stats
+
+@app.get("/problems/stats")
+def handle_get_problems_stats():
+    return { 'problems': get_cached_problem_stats() }
 
 @app.get("/problems/<id>")
 def get_problem(id):
     return send_from_directory('../problems', id+'.json')
+
+@app.get("/problems/<id>/stats")
+def handle_get_problem_id_stats(id):
+    stats = get_cached_problem_stats()
+    return stats[int(id)]
 
 @app.get("/problems/all")
 def get_problems_all():

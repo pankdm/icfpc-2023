@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
   Problem,
+  ProblemStats,
   Problems,
   ProblemsStats,
   Scoreboard,
@@ -28,6 +29,8 @@ const API = {
   getProblems: async () => fetchAPI(`/problems`) as Promise<Problems>,
   getProblemsStats: async () =>
     fetchAPI(`/problems/stats`) as Promise<ProblemsStats>,
+  getProblemStats: async (problemId: string | number) =>
+    fetchAPI(`/problems/${problemId}/stats`) as Promise<ProblemStats>,
   getProblem: async (problemId: number | string) =>
     fetchAPI(`/problems/${problemId}`) as Promise<Problem>,
 }

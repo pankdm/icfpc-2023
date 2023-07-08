@@ -21,7 +21,7 @@ export const Rect = ({
   return (
     <group position={[x, y, z]} scale={[width, height, 1]}>
       <mesh {...props} position={[0.5, 0.5, 0]}>
-        <boxGeometry args={[1, 1, 1]} />
+        <planeGeometry args={[1, 1]} />
         <meshStandardMaterial color={color} />
       </mesh>
     </group>

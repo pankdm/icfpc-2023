@@ -3,7 +3,7 @@ import { MantineSize, Paper, PaperProps } from '@mantine/core'
 import { Problem, Solution } from '../../api/types'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Rect } from './primitives.3d'
-import { Attendee, Musician } from './elements.3d'
+import { Attendee, Musician, Pillar } from './elements.3d'
 // import API from '../../api'
 
 const CameraPositioner = ({
@@ -131,6 +131,11 @@ export default function Visualizer3D({
             (stageHeld && '#274672') || (stageHovered && '#284c7e') || '#3163aa'
           }
         />
+
+        {/* pillars */}
+        {problem.pillars.map((p, idx) => (
+          <Pillar key={idx} x={p.center[0]} y={p.center[1]} radius={p.radius} />
+        ))}
 
         {/* attendees */}
         {problem.attendees.map((att, idx) => (

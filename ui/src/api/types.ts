@@ -40,9 +40,8 @@ type Attendee = {
   tastes: InstrumentPreference[]
 }
 type Pillar = {
-  x: number
-  y: number
-  radius?: number
+  center: [x: number, y: number]
+  radius: number
 }
 
 export type Problem = {

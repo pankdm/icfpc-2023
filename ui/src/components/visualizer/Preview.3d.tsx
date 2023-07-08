@@ -2,7 +2,7 @@ import { MantineSize, Paper, PaperProps } from '@mantine/core'
 import { Problem } from '../../api/types'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Rect } from './primitives.3d'
-import { Attendee } from './elements.3d'
+import { Attendee, Pillar } from './elements.3d'
 
 const CameraPositioner = ({
   roomWidth,
@@ -88,6 +88,7 @@ export default function Visualizer({
           height={room_height}
           color="#444"
         />
+
         {/* stage */}
         <Rect
           x={stage_x}
@@ -97,6 +98,11 @@ export default function Visualizer({
           height={stage_height}
           color="rgb(49, 99, 170)"
         />
+
+        {/* pillars */}
+        {problem.pillars.map((p, idx) => (
+          <Pillar key={idx} x={p.center[0]} y={p.center[1]} radius={p.radius} />
+        ))}
 
         {/* attendees */}
         {problem.attendees.map((att, idx) => (

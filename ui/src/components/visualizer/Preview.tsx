@@ -1,7 +1,7 @@
 import { Box, MantineSize, Paper, PaperProps } from '@mantine/core'
 import { Problem } from '../../api/types'
 import { Rect } from './primitives'
-import { Attendee } from './elements'
+import { Attendee, Pillar } from './elements'
 
 export default function Preview({
   size,
@@ -46,6 +46,12 @@ export default function Preview({
           height={stage_height}
           color="blue.9"
         />
+
+        {/* pillars */}
+        {problem.pillars.map((p, idx) => (
+          <Pillar key={idx} x={p.center[0]} y={p.center[1]} radius={p.radius} />
+        ))}
+
         {/* attendees */}
         {problem.attendees.map((att, idx) => (
           <Attendee key={idx} x={att.x} y={att.y} />

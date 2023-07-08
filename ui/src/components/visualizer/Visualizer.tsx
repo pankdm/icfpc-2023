@@ -1,7 +1,7 @@
 import { Box, MantineSize, Paper, PaperProps } from '@mantine/core'
 import { Problem, Solution } from '../../api/types'
 import { Rect } from './primitives'
-import { Attendee, Musician } from './elements'
+import { Attendee, Musician, Pillar } from './elements'
 
 export default function Visualizer({
   size,
@@ -55,10 +55,17 @@ export default function Visualizer({
           height={stage_height}
           color="blue.9"
         />
+
+        {/* pillars */}
+        {problem.pillars.map((p, idx) => (
+          <Pillar key={idx} x={p.center[0]} y={p.center[1]} radius={p.radius} />
+        ))}
+
         {/* attendees */}
         {problem.attendees.map((att, idx) => (
           <Attendee key={idx} x={att.x} y={att.y} radius={rmin * 0.0025} />
         ))}
+
         {/* musicians */}
         {solution?.placements?.map((p, idx) => (
           <Musician key={idx} x={p.x} y={p.y} />

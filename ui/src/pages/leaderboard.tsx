@@ -29,8 +29,8 @@ export default function Leaderboard() {
             },
             {
               accessorFn: (row) => row.score?.toExponential(3),
-              id: 'approx-score',
-              header: 'Approx Score',
+              id: 'score-exp',
+              header: 'Score Exp',
             },
           ]}
           enablePagination={false}

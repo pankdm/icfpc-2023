@@ -39,11 +39,11 @@ inline void RunOne(TSolver& solver, const std::string& problem_id) {
   }
   if (!solver.SkipBest()) {
     TSolution sbest;
-    sbest.Load(problem_id, "best");
+    sbest.Load(problem_id, "loks_best");
     auto rbest = TEvaluator::Apply(p, sbest);
     if (TEvaluator::Compare(r, rbest)) {
       std::cout << "New best solution for problem: " << problem_id << std::endl;
-      s.Save("best");
+      s.Save("loks_best");
     }
   }
 }

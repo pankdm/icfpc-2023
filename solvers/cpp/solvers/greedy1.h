@@ -27,7 +27,7 @@ class Greedy1 : public BaseSolver {
   std::string Name() const override { return "loks_greedy1"; }
 
   // bool SkipSolutionRead() const override { return true; }
-  bool SkipBest() const override { return true; }
+  // bool SkipBest() const override { return true; }
 
   Solution Solve(const TProblem& p) override {
     std::vector<std::vector<OneMusucian>> vvc(p.total_instruments);

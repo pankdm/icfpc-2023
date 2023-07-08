@@ -10,6 +10,7 @@
 #include "common/geometry/d2/distance/distance_l2.h"
 #include "common/geometry/d2/point.h"
 #include "common/solvers/solver.h"
+#include "common/timer.h"
 
 #include <algorithm>
 #include <vector>
@@ -31,6 +32,7 @@ class Greedy2 : public BaseSolver {
   // bool SkipBest() const override { return true; }
 
   Solution Solve(const TProblem& p) override {
+    Timer t;
     const double dx = (sqrt(5.0) - 1.0) / 2.0;
     const double dy = sqrt(2.0) - 1.0;
     const double d2 = musician_collision_radius * musician_collision_radius;
@@ -48,9 +50,15 @@ class Greedy2 : public BaseSolver {
     double expected_dscore_ib = 0.;
     bool all_found = true;
     for (unsigned k = 0; k < p.instruments.size(); ++k) {
+      if (t.GetSeconds() > max_time_in_seconds) {
+        // Time to stop
+        all_found = false;
+        break;
+      }
       double best = md.score;
       unsigned best_i = p.total_instruments;
       for (unsigned i = 0; i < p.total_instruments; ++i) {
+        if (t.GetSeconds() > max_time_in_seconds) break;
         if (vic[i] == imap[i].size()) continue;
         if (cur_best[i].score == md.score) {
           for (unsigned j = 0; j < 100; ++j) {
@@ -90,12 +98,14 @@ class Greedy2 : public BaseSolver {
       }
     }
     if (all_found) {
-      std::cout << "Greedy2:\t" << p.Id() << "\t" << expected_dscore_ib << "\t"
+      std::cout << "Greedy2:\t" << p.Id() << "\t" << t.GetSeconds() << "\t"
+                << expected_dscore_ib << "\t"
                 << Evaluator::DScoreIgnoreBlocked(p, s) << "\t"
                 << Evaluator::DScore(p, s) << "\t" << Evaluator::IScore(p, s)
                 << std::endl;
     } else {
-      std::cout << "Greedy2:\t" << p.Id() << "\tfailed." << std::endl;
+      std::cout << "Greedy2:\t" << p.Id() << "\t" << t.GetSeconds()
+                << "\tfailed." << std::endl;
     }
     return s;
   }

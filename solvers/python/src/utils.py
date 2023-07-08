@@ -1,6 +1,9 @@
 import json
 from dataclasses import dataclass
 import math
+import numpy as np
+import vectormath as vm
+from types import SimpleNamespace
 
 
 def meaning_of_life():
@@ -34,7 +37,38 @@ class Problem:
         self.stage_max_x = spec["stage_bottom_left"][0]+spec["stage_width"]
         self.stage_min_y = spec["stage_bottom_left"][1]
         self.stage_max_y = spec["stage_bottom_left"][1]+spec["stage_height"]
+        self.stage_mid_x = spec["stage_bottom_left"][0]+spec["stage_width"]/2
+        self.stage_mid_y = spec["stage_bottom_left"][1]+spec["stage_height"]/2
         self.pillars = spec["pillars"]
+
+
+class ProblemX:
+
+    def __init__(self, problem_id):
+        spec = load(problem_id)
+        self.attendees = [(vm.Vector2(a.x, a.y), a.tastes) for a in spec.attendees]
+        self.channels = len(spec.attendees[0].tastes)
+        self.musicians = spec.musicians
+        self.size = len(spec.musicians)
+        self.stage_bl = vm.Vector2(spec.stage_bottom_left)
+        self.stage_size = vm.Vector2(spec.stage_width, spec.stage_height)
+        self.stage_tr = self.stage_bl + self.stage_size
+        self.stage_center = self.stage_bl + self.stage_size / 2
+        self.stage_bottom = self.stage_bl.y
+        self.stage_left = self.stage_bl.x
+        self.stage_top = self.stage_tr.y
+        self.stage_right = self.stage_tr.x
+        self.stage_br = vm.Vector2(self.stage_right, self.stage_bottom)
+        self.stage_tl = vm.Vector2(self.stage_left, self.stage_top)
+        self.stage_corners = [self.stage_bl, self.stage_br, self.stage_tl, self.stage_tr]
+        self.pillars = [(vm.Vector2(p.center), p.radius) for p in spec.pillars]
+
+
+
+def load(problem_id):
+    path = f'./problems/{problem_id}.json'
+    with open(path, "r") as f:
+        return json.load(f, object_hook=lambda d: SimpleNamespace(**d))
 
 
 def load_solution(i, user=""):

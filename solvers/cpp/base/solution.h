@@ -12,6 +12,8 @@ class Solution : public solvers::Solution {
 
   bool Empty() const { return positions.empty(); }
 
+  void Clear() { positions.clear(); }
+
   static std::string FileName(const std::string& id,
                               const std::string& solver_name) {
     return "../../solutions/" + solver_name + "/" + id + ".json";

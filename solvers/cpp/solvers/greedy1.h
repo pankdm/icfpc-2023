@@ -88,6 +88,8 @@ class Greedy1 : public BaseSolver {
                 << Evaluator::DScoreIgnoreBlocked(p, s) << "\t"
                 << Evaluator::DScore(p, s) << "\t" << Evaluator::IScore(p, s)
                 << std::endl;
+    } else {
+      s.Clear();
     }
     return s;
   }

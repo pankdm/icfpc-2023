@@ -1,7 +1,9 @@
+#include "adjusters/assignment.h"
 #include "base/constants.h"
 #include "solvers/base.h"
 #include "solvers/greedy1.h"
 #include "solvers/greedy2.h"
+#include "utils/check_with_adjuster.h"
 #include "utils/evaluate_solution.h"
 
 #include "common/files/command_line.h"
@@ -41,7 +43,7 @@ int main(int argc, char** argv) {
   if (mode == "eval") {
     EvaluateSolution(cmd.GetString("solution"));
   } else if (mode == "adjust") {
-    // CheckWithAdjuster<adj::Simple>(cmd.GetString("solution"));
+    CheckWithAdjuster<AdjusterAssignment>(cmd.GetString("solution"));
   } else if (mode == "update") {
     // UpdateBest(cmd.GetString("solution"));
   } else if (mode == "run") {

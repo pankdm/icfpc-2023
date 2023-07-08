@@ -106,6 +106,7 @@ class Greedy2 : public BaseSolver {
     } else {
       std::cout << "Greedy2:\t" << p.Id() << "\t" << t.GetSeconds()
                 << "\tfailed." << std::endl;
+      s.Clear();
     }
     return s;
   }

@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { Link, useParams } from 'react-router-dom'
 import { useStore } from '@nanostores/react'
 import {
   Box,
@@ -9,15 +10,17 @@ import {
   Stack,
   Text,
   Title,
+  LoadingOverlay,
 } from '@mantine/core'
-import { $problem, $problemId, setProblemId } from '../state/problem'
-import API, { useAPIData } from '../api'
-import TrafficLight from '../components/TrafficLight'
-import Visualizer from '../components/visualizer/Visualizer'
-import ProblemPreview from '../components/ProblemPreview'
+import { $problem, setProblemId } from '../../state/problem'
+import API, { useAPIData } from '../../api'
+import TrafficLight from '../../components/TrafficLight'
+import Visualizer from '../../components/visualizer/Visualizer'
+import ProblemPreview from '../../components/ProblemPreview'
 
-export default function Problems() {
-  const problemId = useStore($problemId)
+export default function ProblemInspector() {
+  const { problemId: problemIdStr } = useParams()
+  const problemId = parseInt(problemIdStr as any)
   const problem = useStore($problem)
   const { data: problemsData } = useAPIData({
     fetch: API.getProblems,
@@ -39,17 +42,19 @@ export default function Problems() {
       >
         {problemsData?.problems &&
           _.map(problemsData.problems, (_problemId) => (
-            <NavLink
-              key={_problemId}
-              onClick={() => setProblemId(_problemId)}
-              active={_problemId === problemId}
-              label={
-                <Group>
-                  <ProblemPreview size="2rem" problemId={_problemId} />
-                  Problem {_problemId}
-                </Group>
-              }
-            />
+            <Link to={`/problems/${_problemId}`}>
+              <NavLink
+                key={_problemId}
+                onClick={() => setProblemId(_problemId)}
+                active={_problemId === problemId}
+                label={
+                  <Group>
+                    <ProblemPreview size="2rem" problemId={_problemId} />
+                    Problem {_problemId}
+                  </Group>
+                }
+              />
+            </Link>
           ))}
       </Stack>
       <Box sx={{ flex: 1 }}>
@@ -65,7 +70,8 @@ export default function Problems() {
           <Stack align="center" spacing={0}>
             <Title order={2}>Problem {problemId}</Title>
             <Space h="xl" />
-            <Center w={'70vmin'} h={'70vmin'}>
+            <Center w={'70vmin'} h={'70vmin'} pos="relative">
+              <LoadingOverlay visible={isLoading} overlayBlur={2} />
               <Box sx={{ flexGrow: 0, flexShrink: 0 }}>
                 {problem && (
                   <Visualizer size="70vmin" mah="100%" problem={problem} />

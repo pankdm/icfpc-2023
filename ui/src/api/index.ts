@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Problem, Problems, Scoreboard, Userboard } from './types'
+import {
+  Problem,
+  Problems,
+  ProblemsStats,
+  Scoreboard,
+  Userboard,
+} from './types'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
@@ -20,6 +26,8 @@ const API = {
   getScoreboard: async () => fetchAPI(`/scoreboard`) as Promise<Scoreboard>,
   getUserboard: async () => fetchAPI(`/userboard`) as Promise<Userboard>,
   getProblems: async () => fetchAPI(`/problems`) as Promise<Problems>,
+  getProblemsStats: async () =>
+    fetchAPI(`/problems/stats`) as Promise<ProblemsStats>,
   getProblem: async (problemId: number | string) =>
     fetchAPI(`/problems/${problemId}`) as Promise<Problem>,
 }

@@ -98,9 +98,13 @@ def get_problem_ids():
 def get_problems():
     return { 'problems': get_problem_ids() }
 
+@cached(ttl=60)
+def get_cached_problem_stats():
+    return get_problem_stats()
+
 @app.get("/problems/stats")
-def get_problems_stats():
-    return { 'problems': get_problem_stats() }
+def handle_get_problems_stats():
+    return { 'problems': get_cached_problem_stats() }
 
 @app.get("/problems/<id>")
 def get_problem(id):

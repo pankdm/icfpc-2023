@@ -18,6 +18,18 @@ export type Problems = {
   problems: number[]
 }
 
+export type ProblemsStats = {
+  problems: {
+    [id: string]: {
+      attendees: number
+      instruments: number
+      musicians: number
+      stage_height: number
+      stage_width: number
+    }
+  }
+}
+
 type InstrumentId = number
 type InstrumentPreference = number
 type Attendee = {

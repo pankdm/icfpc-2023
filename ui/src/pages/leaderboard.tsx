@@ -2,6 +2,7 @@ import { Box, Container } from '@mantine/core'
 import { MantineReactTable as Table } from 'mantine-react-table'
 import API, { useAPIData } from '../api'
 import { Scoreboard } from '../api/types'
+import { formatNumber } from '../utils/numbers'
 
 export default function Leaderboard() {
   const { data, isLoading } = useAPIData<Scoreboard>({
@@ -9,7 +10,7 @@ export default function Leaderboard() {
   })
   return (
     <Box w="100%" h="100%" sx={{ overflow: 'auto' }}>
-      <Container maw={1200} p={0} h='100%'>
+      <Container maw={1200} p={0} h="100%">
         <Table
           enableRowNumbers
           mantinePaperProps={{
@@ -24,9 +25,10 @@ export default function Leaderboard() {
             {
               accessorKey: 'score',
               header: 'Score',
+              accessorFn: (row) => formatNumber(row.score),
             },
             {
-              accessorFn: (row) => row.score && row.score.toExponential(3),
+              accessorFn: (row) => row.score?.toExponential(3),
               id: 'approx-score',
               header: 'Approx Score',
             },

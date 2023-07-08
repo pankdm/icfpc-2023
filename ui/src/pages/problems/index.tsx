@@ -4,14 +4,7 @@ import { Container } from '@mantine/core'
 import { MantineReactTable as Table, MRT_ColumnDef } from 'mantine-react-table'
 import API, { useAPIData } from '../../api'
 import { ProblemStats } from '../../api/types'
-
-type ProblemStatsTableColumns =
-  | 'id'
-  | 'stageSize'
-  | 'instruments'
-  | 'musicians'
-  | 'attendees'
-  | 'score'
+import { formatNumber, formatNumberExp } from '../../utils/numbers'
 
 const columns = {
   id: {
@@ -19,32 +12,43 @@ const columns = {
     accessorFn: (row) =>
       row.id && <Link to={`/problems/${row.id}`}># {row.id}</Link>,
     header: 'Problem',
+    size: 150,
   },
   ...Object.fromEntries(
     [
       ['instruments', 'Instruments'],
       ['musicians', 'Musicians'],
       ['attendees', 'Attendees'],
-      ['score', 'Score'],
     ].map(([accessorKey, header]) => [
       accessorKey,
       {
         accessorKey,
         header,
+        size: 90,
       },
     ]) as any
   ),
+  score: {
+    id: 'score',
+    header: 'Score',
+    size: 120,
+    accessorFn: (originalRow) => formatNumber(originalRow.score),
+  },
+  scoreExp: {
+    id: 'scoreExp',
+    header: 'Score Exp',
+    size: 120,
+    accessorFn: (originalRow) => formatNumberExp(originalRow.score),
+  },
   stageSize: {
     id: 'stageSize',
     header: 'Stage Size',
+    size: 90,
     accessorFn: (originalRow) =>
       originalRow.stage_width &&
       `${originalRow.stage_width} x ${originalRow.stage_height}`,
   },
-} as Record<
-  ProblemStatsTableColumns,
-  MRT_ColumnDef<{ id: string } & ProblemStats>
->
+} as Record<string, MRT_ColumnDef<{ id: string } & ProblemStats>>
 
 export default function Problems() {
   const { isLoading, data: stats } = useAPIData({
@@ -69,6 +73,7 @@ export default function Problems() {
           columns.attendees,
           columns.stageSize,
           columns.score,
+          columns.scoreExp,
         ]}
         enableStickyHeader
         enablePagination={false}

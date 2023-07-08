@@ -162,3 +162,4 @@ cython_debug/
 solvers/cpp/*.solver
 node_modules
 .python-version
+temp/

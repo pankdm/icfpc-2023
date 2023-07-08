@@ -1,3 +1,4 @@
+import { MeshProps } from '@react-three/fiber'
 import { Color } from 'three'
 
 export type RectProps = {
@@ -7,7 +8,7 @@ export type RectProps = {
   width: number
   height: number
   color?: string | Color
-}
+} & MeshProps
 export const Rect = ({
   x = 0,
   y = 0,
@@ -15,10 +16,11 @@ export const Rect = ({
   width = 1,
   height = 1,
   color = 'white',
+  ...props
 }: RectProps) => {
   return (
     <group position={[x, y, z]} scale={[width, height, 1]}>
-      <mesh position={[0.5, 0.5, 0]}>
+      <mesh {...props} position={[0.5, 0.5, 0]}>
         <boxGeometry args={[1, 1, 1]} />
         <meshStandardMaterial color={color} />
       </mesh>

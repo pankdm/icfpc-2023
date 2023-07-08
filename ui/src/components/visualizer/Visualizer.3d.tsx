@@ -3,6 +3,7 @@ import { Problem } from '../../api/types'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Rect } from './primitives.3d'
 import { Attendee } from './elements.3d'
+import { useState } from 'react'
 
 const CameraPositioner = ({
   roomWidth,
@@ -11,8 +12,8 @@ const CameraPositioner = ({
   roomWidth: number
   roomHeight: number
 }) => {
-  const camera = useThree(({ camera }) => camera)
-  const viewport = useThree(({ viewport }) => viewport)
+  const { camera, viewport } = useThree()
+  const rmax = Math.max(roomWidth, roomHeight)
   useFrame(() => {
     const canvas = document.querySelector('#visualizer')
     camera.position.x = roomWidth / 2
@@ -20,19 +21,18 @@ const CameraPositioner = ({
     if (canvas) {
       const correctZoom =
         viewport.aspect >= 1
-          ? canvas.clientWidth / roomWidth
-          : canvas.clientHeight / roomHeight
-      console.log(viewport.aspect, camera.zoom, correctZoom)
+          ? canvas.clientWidth / rmax
+          : canvas.clientHeight / rmax
       if (correctZoom !== camera.zoom) {
         camera.zoom = correctZoom
-        camera.updateMatrix()
+        camera.updateProjectionMatrix()
       }
     }
   })
   return null
 }
 
-export default function Visualizer({
+export default function Visualizer3D({
   size,
   problem,
   ...props
@@ -44,16 +44,13 @@ export default function Visualizer({
     stage_height,
     stage_bottom_left: [stage_x, stage_y],
   } = problem
-  const roomAspect = room_width / room_height
   const rmin = Math.min(room_width, room_height)
-  let [width, height] =
-    roomAspect >= 1
-      ? [size, `calc(${size} / ${roomAspect})`]
-      : [`calc(${size} * ${roomAspect})`, size]
+  const [stageHovered, setStageHovered] = useState(false)
+  const [stageHeld, setStageHeld] = useState(false)
   return (
     <Paper
-      w={width}
-      h={height}
+      w={size}
+      h={size}
       shadow="md"
       withBorder
       pos="relative"
@@ -63,16 +60,13 @@ export default function Visualizer({
     >
       <Canvas
         id="visualizer"
-        onResize={(...args) => {
-          console.log(...args)
-        }}
         orthographic
         camera={{
           position: [0, 0, 100],
-          left: -room_width / 2,
-          right: room_width / 2,
-          top: room_height / 2,
-          bottom: -room_height / 2,
+          left: -50,
+          right: 50,
+          top: 50,
+          bottom: -50,
           near: 1,
           far: 100000,
         }}
@@ -90,12 +84,18 @@ export default function Visualizer({
         />
         {/* stage */}
         <Rect
+          onPointerEnter={() => setStageHovered(true)}
+          onPointerLeave={() => setStageHovered(false)}
+          onPointerDown={() => setStageHeld(true)}
+          onPointerUp={() => setStageHeld(false)}
           x={stage_x}
           y={stage_y}
           z={1}
           width={stage_width}
           height={stage_height}
-          color="rgb(49, 99, 170)"
+          color={
+            (stageHeld && '#274672') || (stageHovered && '#284c7e') || '#3163aa'
+          }
         />
 
         {/* attendees */}

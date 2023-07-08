@@ -75,14 +75,12 @@ export default function ProblemInspector() {
           <Stack align="center" spacing={0}>
             <Title order={2}>Problem {problemId}</Title>
             <Space h="xl" />
-            <Center w={'70vmin'} h={'70vmin'} pos="relative">
+            <Box w={'70vmin'} h={'70vmin'} pos="relative">
               <LoadingOverlay visible={isLoading} overlayBlur={2} />
-              <Box sx={{ flexGrow: 0, flexShrink: 0 }}>
-                {problem && (
-                  <Visualizer3D size="70vmin" mah="100%" problem={problem} />
-                )}
-              </Box>
-            </Center>
+              {problem && (
+                <Visualizer3D size="70vmin" mah="100%" problem={problem} />
+              )}
+            </Box>
             <Space h="xl" />
             <Text size="sm">
               Room: {problem?.room_width} x {problem?.room_height}

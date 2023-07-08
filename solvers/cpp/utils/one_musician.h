@@ -44,6 +44,7 @@ class OneMusucian {
         auto v0ls = v0.LengthSquared();
         v += v0 * (score_mult * a.tastes[instrument] / (v0ls * v0ls));
       }
+      // Project if on border
       if ((pos.x == p.stage.p1.x) && (v.dx < 0)) v.dx = 0.0;
       if ((pos.x == p.stage.p2.x) && (v.dx > 0)) v.dx = 0.0;
       if ((pos.y == p.stage.p1.y) && (v.dy < 0)) v.dy = 0.0;
@@ -130,5 +131,87 @@ class OneMusucian {
       }
     }
     return v;
+  }
+
+  static bool FindBestLocationEarlyStop2_IB(
+      const Problem& p, unsigned instrument, const D2Point& start_point,
+      const std::vector<OneMusucian>& selected, const OneMusucian& current_best,
+      OneMusucian& output, bool print_log = false, unsigned iteration = 0) {
+    if (print_log) {
+      std::cout << "Initial point for iteration " << iteration
+                << " is: " << start_point.x << "\t" << start_point.y
+                << std::endl;
+    }
+    double dlock = musician_collision_radius * musician_collision_radius;
+    auto pos = start_point;
+    for (auto& m : selected) {
+      if (SquaredDistanceL2(pos, m.pos) < dlock) return false;
+    }
+    auto score = Evaluator::DScoreIgnoreBlockedMusician(p, instrument, pos);
+    for (;;) {
+      // Check if too close to current best
+      if ((SquaredDistanceL2(pos, current_best.pos) < dlock) &&
+          (score < current_best.score))
+        return false;
+      // Find direction
+      D2Vector v;
+      for (auto& a : p.attendees) {
+        D2Vector v0 = a.position - pos;
+        auto v0ls = v0.LengthSquared();
+        v += v0 * (score_mult * a.tastes[instrument] / (v0ls * v0ls));
+      }
+      // Project if on border
+      if ((pos.x == p.stage.p1.x) && (v.dx < 0)) v.dx = 0.0;
+      if ((pos.x == p.stage.p2.x) && (v.dx > 0)) v.dx = 0.0;
+      if ((pos.y == p.stage.p1.y) && (v.dy < 0)) v.dy = 0.0;
+      if ((pos.y == p.stage.p2.y) && (v.dy > 0)) v.dy = 0.0;
+      if (v.LengthSquared() < 1e-12) {
+        output.pos = pos;
+        output.score = score;
+        if (print_log) {
+          std::cout << "Iteration " << iteration
+                    << " stopped because of zero gradient. Final point:\n\t"
+                    << score << "\t" << pos.x << "\t" << pos.y << std::endl;
+        }
+        return true;
+      }
+      double max_m = 1e6;
+      if (v.dx > 0) max_m = std::min(max_m, (p.stage.p2.x - pos.x) / v.dx);
+      if (v.dx < 0) max_m = std::min(max_m, (p.stage.p1.x - pos.x) / v.dx);
+      if (v.dy > 0) max_m = std::min(max_m, (p.stage.p2.y - pos.y) / v.dy);
+      if (v.dy < 0) max_m = std::min(max_m, (p.stage.p1.y - pos.y) / v.dy);
+      // for ()
+      if (max_m * v.Length() < 1e-6) {
+        output.pos = pos;
+        output.score = score;
+        if (print_log) {
+          std::cout << "Iteration " << iteration
+                    << " stopped because of blocked gradient. Final point:\n\t"
+                    << score << "\t" << pos.x << "\t" << pos.y << std::endl;
+        }
+        return true;
+      }
+      auto f = [&](double x) {
+        return -Evaluator::DScoreIgnoreBlockedMusician(p, instrument,
+                                                       pos + v * x);
+      };
+      auto x0 = opt::Minimum(f, 0, max_m, 1e-6);
+      pos += v * x0;
+      auto new_score =
+          Evaluator::DScoreIgnoreBlockedMusician(p, instrument, pos);
+      // if (print_log)
+      //   std::cout << "\t" << score << " -> " << new_score << std::endl;
+      if (new_score <= score + 1e-6) {
+        output.pos = pos;
+        output.score = new_score;
+        if (print_log) {
+          std::cout << "Iteration " << iteration
+                    << " stopped because of no improvement. Final point:\n\t"
+                    << new_score << "\t" << pos.x << "\t" << pos.y << std::endl;
+        }
+        return true;
+      }
+      score = new_score;
+    }
   }
 };

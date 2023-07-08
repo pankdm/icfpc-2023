@@ -175,7 +175,6 @@ def get_all_solutions(nickname=None, problem_id=None):
     for path, files in solutions_folders_with_files:
         for file in files:
             solutions.append(path+'/'+file if path else file)
-    print('>>>>>', nickname, problem_id)
     return [
         s for s in sorted(solutions)
         if (nickname in s if nickname else True)

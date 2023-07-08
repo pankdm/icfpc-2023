@@ -9,6 +9,7 @@ import {
   Solutions,
   Userboard,
 } from './types'
+import useRandomKey from '../hooks/useRandomKey'
 
 export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
@@ -65,6 +66,7 @@ export function useAPIData<T extends Record<string, any>>({
   const clearData = useCallback(() => {
     setData(null)
   }, [])
+  const [fetchKey, refreshFetchKey] = useRandomKey()
   useEffect(() => {
     if ((skip as any)?.call ? (skip as () => boolean)() : skip) {
       setData(null)
@@ -84,8 +86,8 @@ export function useAPIData<T extends Record<string, any>>({
       .finally(() => {
         setIsLoading(false)
       })
-  }, [...deps])
-  return { isLoading, error, data, clearData }
+  }, [fetchKey, ...deps])
+  return { isLoading, error, data, clearData, refetch: refreshFetchKey }
 }
 
 export default API

@@ -42,7 +42,7 @@ export default function ProblemInspector() {
     fetch: () => API.getProblemStats(problemId),
     deps: [problemId],
   })
-  const { data: solutionsResp } = useAPIData({
+  const { data: solutionsResp, refetch: refetchSolutions } = useAPIData({
     fetch: () => API.getProblemSolutions(problemId),
     deps: [problemId],
   })
@@ -113,6 +113,7 @@ export default function ProblemInspector() {
                 data={solutionsSelectOpts}
                 value={solutionId}
                 onChange={setSolutionId}
+                onFocus={refetchSolutions}
               />
             </Group>
             <Space h="xl" />

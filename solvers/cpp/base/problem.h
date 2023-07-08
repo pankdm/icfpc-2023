@@ -18,6 +18,8 @@ class Problem : public solvers::Problem {
   D2ARectangle stage;  // Already adjusted by musician_collision_radius
   unsigned total_instruments;
   std::vector<unsigned> instruments;
+  std::vector<std::vector<unsigned>>
+      musicians;  // map instrument -> musicians with it
   std::vector<Attendee> attendees;
   std::vector<D2Circle> pillars;
 
@@ -51,6 +53,9 @@ class Problem : public solvers::Problem {
       instruments[i] = json_musicians.GetInteger(i);
       total_instruments = std::max(total_instruments, instruments[i] + 1);
     }
+    musicians.resize(total_instruments);
+    for (unsigned i = 0; i < instruments.size(); ++i)
+      musicians[instruments[i]].push_back(i);
     auto& json_attendees = json.GetValue("attendees");
     attendees.resize(json_attendees.Size());
     for (unsigned i = 0; i < attendees.size(); ++i) {

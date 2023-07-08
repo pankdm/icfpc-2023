@@ -41,9 +41,6 @@ class Greedy1 : public BaseSolver {
     Solution s;
     s.SetId(p.Id());
     s.positions.resize(p.instruments.size(), D2Point{0., 0.});
-    std::vector<std::vector<unsigned>> imap(p.total_instruments);
-    for (unsigned i = 0; i < p.instruments.size(); ++i)
-      imap[p.instruments[i]].push_back(i);
     std::vector<unsigned> vic(p.total_instruments, 0);
     std::vector<OneMusucian> vm;
     double expected_dscore_ib = 0.;
@@ -52,7 +49,7 @@ class Greedy1 : public BaseSolver {
       double best = -1e16;
       unsigned best_i = p.total_instruments;
       for (unsigned i = 0; i < p.total_instruments; ++i) {
-        if ((vic[i] == imap[i].size()) || vvc[i].empty()) continue;
+        if ((vic[i] == p.musicians[i].size()) || vvc[i].empty()) continue;
         for (; !vvc[i].empty() && (vvc[i].back().score > best);) {
           auto& mi = vvc[i].back();
           bool ok = true;
@@ -79,7 +76,7 @@ class Greedy1 : public BaseSolver {
       }
       auto m = vvc[best_i].back();
       vm.push_back(m);
-      s.positions[imap[best_i][vic[best_i]++]] = m.pos;
+      s.positions[p.musicians[best_i][vic[best_i]++]] = m.pos;
       expected_dscore_ib += best;
       vvc[best_i].pop_back();
     }

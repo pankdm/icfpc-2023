@@ -55,3 +55,14 @@ export type Problem = {
   attendees: Attendee[]
   pillars: Pillar[]
 }
+
+export type Solutions = {
+  solutions: string[]
+}
+
+export type Solution = {
+  placements?: {
+    x: number
+    y: number
+  }[]
+}

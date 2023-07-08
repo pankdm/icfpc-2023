@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useStore } from '@nanostores/react'
 import {
@@ -11,6 +12,7 @@ import {
   Text,
   Title,
   LoadingOverlay,
+  Select,
 } from '@mantine/core'
 import { $problem, setProblemId } from '../../state/problem'
 import API, { useAPIData } from '../../api'
@@ -21,6 +23,10 @@ import ProblemPreview from '../../components/ProblemPreview'
 export default function ProblemInspector() {
   const { problemId: problemIdStr } = useParams()
   const problemId = parseInt(problemIdStr as any)
+  const [solutionId, setSolutionId] = useState<string | null>(null)
+  useEffect(() => {
+    setSolutionId(null)
+  }, [problemId])
   const problem = useStore($problem)
   const { data: problemsData } = useAPIData({
     fetch: API.getProblems,
@@ -35,6 +41,18 @@ export default function ProblemInspector() {
     fetch: () => API.getProblemStats(problemId),
     deps: [problemId],
   })
+  const { data: solutionsResp } = useAPIData({
+    fetch: () => API.getProblemSolutions(problemId),
+    deps: [problemId],
+  })
+  const { data: solution } = useAPIData({
+    fetch: () => API.getSolution(solutionId as string),
+    skip: !solutionId,
+    deps: [solutionId],
+  })
+  const solutionsSelectOpts = solutionsResp?.solutions?.length
+    ? solutionsResp.solutions
+    : [{ value: 'none', label: 'No solutions', disabled: true }]
   return (
     <Group h="100%" pos="relative">
       <Stack
@@ -79,6 +97,15 @@ export default function ProblemInspector() {
         <Center>
           <Stack align="center" spacing={0}>
             <Title order={2}>Problem {problemId}</Title>
+            <Group>
+              <Text>Solutions:</Text>
+              <Select
+                placeholder="None selected"
+                data={solutionsSelectOpts}
+                value={solutionId}
+                onChange={setSolutionId}
+              />
+            </Group>
             <Space h="xl" />
             <Box w={'70vmin'} h={'70vmin'} pos="relative">
               <LoadingOverlay visible={isLoading} overlayBlur={2} />
@@ -88,6 +115,7 @@ export default function ProblemInspector() {
                   size="70vmin"
                   problemId={problemId}
                   problem={problem}
+                  solution={solution}
                 />
               )}
             </Box>

@@ -5,6 +5,8 @@ import {
   Problems,
   ProblemsStats,
   Scoreboard,
+  Solution,
+  Solutions,
   Userboard,
 } from './types'
 
@@ -33,14 +35,16 @@ const API = {
     fetchAPI(`/problems/${problemId}/stats`) as Promise<ProblemStats>,
   getProblem: async (problemId: number | string) =>
     fetchAPI(`/problems/${problemId}`) as Promise<Problem>,
+  getProblemSolutions: async (problemId: number | string) =>
+    fetchAPI(`/problems/${problemId}/solutions`) as Promise<Solutions>,
+  getSolution: async (solutionId: string) =>
+    fetchAPI(`/solutions/${solutionId}`) as Promise<Solution>,
   uploadPreview: async (problemId: number | string, imageBlob: Blob) =>
     fetchAPI(`/problems/${problemId}/preview`, {
       method: 'POST',
       body: imageBlob,
     }) as Promise<Problem>,
 }
-
-window.API = API
 
 export function useAPIData<T extends Record<string, any>>({
   fetch,
@@ -60,6 +64,7 @@ export function useAPIData<T extends Record<string, any>>({
   const [data, setData] = useState<T | null>(null)
   useEffect(() => {
     if ((skip as any)?.call ? (skip as () => boolean)() : skip) {
+      setData(null)
       return
     }
     setIsLoading(true)

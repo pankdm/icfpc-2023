@@ -6,7 +6,6 @@ from concurrent.futures import ThreadPoolExecutor
 from dotenv import load_dotenv
 from flask_cors import CORS
 from flask import Flask, request, send_from_directory
-import urllib
 
 from scripts.problem_stats import get_problem_stats
 from solvers.python import hello_json
@@ -166,7 +165,7 @@ def get_download_problem(id):
         file.write(json.dumps(problem, indent=2))
     return problem
 
-def get_all_solutions(nickname=None):
+def get_all_solutions(nickname=None, problem_id=None):
     solutions_dir = os.path.dirname(__file__)+'/../solutions'
     solutions_folders_with_files = []
     for path, folders, files in os.walk(solutions_dir):
@@ -176,9 +175,12 @@ def get_all_solutions(nickname=None):
     for path, files in solutions_folders_with_files:
         for file in files:
             solutions.append(path+'/'+file if path else file)
-    if nickname:
-        return [s for s in sorted(solutions) if nickname in s]
-    return sorted(solutions)
+    print('>>>>>', nickname, problem_id)
+    return [
+        s for s in sorted(solutions)
+        if (nickname in s if nickname else True)
+        and (f'/{problem_id}.json' in s if problem_id else True)
+    ]
 
 @app.get("/solutions")
 @app.get("/solutions/")
@@ -196,12 +198,20 @@ def get_userboard():
 @app.get("/solutions/<nickname>")
 @app.get("/solutions/<nickname>/")
 def get_user_solutions(nickname):
-    return {'solutions': sorted(get_all_solutions(nickname))}
+    return {'solutions': sorted(get_all_solutions(nickname=nickname))}
 
 @app.get("/solutions/<path:path>")
 def get_solution(path):
     print(path)
     return send_from_directory('../solutions', path)
+
+@app.get("/problems/<problem_id>/solutions")
+def handle_get_problem_solutions(problem_id):
+    return { "solutions": get_all_solutions(problem_id=problem_id) }
+
+@app.get("/problems/<problem_id>/solutions/<nickname>")
+def handle_get_problem_solutions_by_user(nickname, problem_id):
+    return { "solutions": get_all_solutions(nickname=nickname, problem_id=problem_id) }
 
 @app.post("/solutions/<username>/<problem_id>")
 def post_solution(username, problem_id):

@@ -5,3 +5,9 @@ export const Attendee = ({
   color = 'white',
   ...props
 }: CircleProps) => <Circle radius={radius} color={color} {...props} />
+
+export const Musician = ({
+  radius = 5,
+  color = 'gold',
+  ...props
+}: CircleProps) => <Circle radius={radius} color={color} {...props} />

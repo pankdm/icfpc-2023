@@ -1,9 +1,9 @@
 import { RefObject, useRef, useState } from 'react'
 import { MantineSize, Paper, PaperProps } from '@mantine/core'
-import { Problem } from '../../api/types'
+import { Problem, Solution } from '../../api/types'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Rect } from './primitives.3d'
-import { Attendee } from './elements.3d'
+import { Attendee, Musician } from './elements.3d'
 import API from '../../api'
 
 const CameraPositioner = ({
@@ -61,8 +61,14 @@ export default function Visualizer3D({
   size,
   problemId,
   problem,
+  solution,
   ...props
-}: { problemId: number; size: MantineSize; problem: Problem } & PaperProps) {
+}: {
+  problemId: number
+  size: MantineSize
+  problem: Problem
+  solution?: Solution | null
+} & PaperProps) {
   const {
     room_width,
     room_height,
@@ -135,6 +141,11 @@ export default function Visualizer3D({
             radius={rmin * 0.0025}
             z={2}
           />
+        ))}
+
+        {/* musicians */}
+        {solution?.placements?.map(({ x, y }, idx) => (
+          <Musician key={idx} x={x} y={y} radius={5} z={2} />
         ))}
       </Canvas>
     </Paper>

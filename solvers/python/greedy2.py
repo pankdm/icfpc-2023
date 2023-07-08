@@ -237,7 +237,7 @@ def solve(i):
 
 if __name__ == "__main__":
     if sys.argv[1] == "range":        
-        for i in range(29, 56):
+        for i in range(52, 56):
             try:
                 solve(i)
             except Exception as err:

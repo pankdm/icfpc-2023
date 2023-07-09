@@ -2,6 +2,7 @@
 #include "adjusters/swaps.h"
 #include "base/constants.h"
 #include "solvers/base.h"
+#include "solvers/border.h"
 #include "solvers/greedy1.h"
 #include "solvers/greedy2.h"
 #include "solvers/greedy3.h"
@@ -39,6 +40,8 @@ BaseSolver::PSolver CreateSolver(const files::CommandLine& cmd,
     return std::make_shared<Greedy3>(timelimit, cmd.GetInt("extra"));
   } else if (solver_name == "shaker") {
     return std::make_shared<Shaker>(timelimit);
+  } else if (solver_name == "border") {
+    return std::make_shared<BorderSolver>(timelimit);
   } else {
     std::cerr << "Unknown solver type: " << solver_name << std::endl;
     exit(-1);

@@ -5,6 +5,7 @@
 #include "solvers/greedy1.h"
 #include "solvers/greedy2.h"
 #include "solvers/shaker.h"
+#include "utils/check_silent_location.h"
 #include "utils/check_with_adjuster.h"
 #include "utils/estimate_max_score.h"
 #include "utils/evaluate_solution.h"
@@ -72,6 +73,19 @@ int main(int argc, char** argv) {
     else
       solvers::ext::RunNMT<BaseSolver>(*s, cmd.GetInt("first_problem"),
                                        cmd.GetInt("last_problem"), nthreads);
+  } else if (mode == "test") {
+    // Code for temporary testing
+    for (unsigned i = 1; i <= last_problem; ++i) {
+      Problem p;
+      p.Load(std::to_string(i));
+      unsigned silent = 0;
+      for (auto& a : p.attendees) {
+        if (CheckSilentLocation::Check(p.stage, p.pillars, a.position))
+          ++silent;
+      }
+      std::cout << i << "\t" << silent << "\t" << p.attendees.size() << "\t"
+                << p.pillars.size() << std::endl;
+    }
   } else {
     std::cerr << "Unknown mode " << mode << std::endl;
   }

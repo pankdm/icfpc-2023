@@ -1,4 +1,5 @@
 #include "adjusters/assignment.h"
+#include "adjusters/default.h"
 #include "adjusters/max_volume.h"
 #include "adjusters/swaps.h"
 #include "base/constants.h"
@@ -22,7 +23,7 @@ void InitCommaneLine(files::CommandLine& cmd) {
   cmd.AddArg("mode", "eval");
   cmd.AddArg("solution", "best");
   cmd.AddArg("solver", "greedy1");
-  cmd.AddArg("adjuster", "assignment");
+  cmd.AddArg("adjuster", "default");
   cmd.AddArg("timelimit", 125);
   cmd.AddArg("extra", 0);
   cmd.AddArg("nthreads", 4);
@@ -61,6 +62,8 @@ int main(int argc, char** argv) {
     auto name = cmd.GetString("adjuster");
     if (name == "assignment") {
       CheckWithAdjuster<AdjusterAssignment>(cmd.GetString("solution"));
+    } else if (name == "default") {
+      CheckWithAdjuster<AdjusterDefault>(cmd.GetString("solution"));
     } else if (name == "max_volume") {
       CheckWithAdjuster<AdjusterMaxVolume>(cmd.GetString("solution"));
     } else if (name == "swaps") {

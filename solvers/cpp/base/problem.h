@@ -10,6 +10,7 @@
 #include "common/solvers/problem.h"
 
 #include <algorithm>
+#include <string>
 #include <vector>
 
 class Problem : public solvers::Problem {
@@ -24,6 +25,8 @@ class Problem : public solvers::Problem {
   std::vector<D2Circle> pillars;
 
  public:
+  bool Lighting() const { return std::stoi(id) <= last_problem_lighting; }
+
   bool Load(const std::string& _id) {
     return Load(_id, "../../problems/" + _id + ".json");
   }

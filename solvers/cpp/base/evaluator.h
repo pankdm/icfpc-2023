@@ -109,7 +109,7 @@ class Evaluator : public solvers::Evaluator {
   static std::vector<double> ScoreBoost(const Problem& p, const Solution& s) {
     if (p.instruments.size() != s.positions.size()) return {};
     std::vector<double> v(s.positions.size(), 1.0);
-    if (stoi(p.Id()) <= last_problem_lighting) return v;
+    if (p.Lighting()) return v;
     for (unsigned i = 0; i < v.size(); ++i) {
       for (auto j : p.musicians[p.instruments[i]]) {
         if (j == i) continue;

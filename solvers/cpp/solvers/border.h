@@ -32,7 +32,7 @@ class BorderSolver : public BaseSolver {
   std::string Name() const override { return "dm_border2"; }
 
   bool SkipSolutionRead() const override { return true; }
-  bool SkipBest() const override { return true; }
+  // bool SkipBest() const override { return true; }
 
   std::vector<D2Point> FindBorderCandidates(const TProblem& p,
                                             const TSolution& s, double step) {
@@ -162,8 +162,8 @@ class BorderSolver : public BaseSolver {
       // ":\t"
       //           << start_score << " -> " << score_new << std::endl;
 
-      std::cout << "New solution from adjuster for problem " << p.Id() << ":\t"
-                << score_new << std::endl;
+      std::cout << "  New solution from adjuster for problem " << p.Id()
+                << ":\t" << score_new << std::endl;
 
       s = snew;
 
@@ -183,6 +183,7 @@ class BorderSolver : public BaseSolver {
         musician_collision_radius;
     if (p.instruments.size() < border_count) {
       std::cout << "Skipping problem " << p.Id() << std::endl;
+      TSolution s;
       return s;
     }
 
@@ -195,12 +196,19 @@ class BorderSolver : public BaseSolver {
       exit(1);
     }
 
+    auto start_score = Evaluator::Apply(p, best_s).score;
+    auto current_score = start_score;
+    std::cout << "Loaded, current score = "
+              << "\t" << start_score << ", time = " << t.GetMilliseconds()
+              << "ms" << std::endl;
+
     TSolution s;
+    double step = 10.;
     SolveWithStep(p, s, step);
 
     // double score = SolveWithStep(p, 10.0);
-    // s.Save(Name());
-    // std::cout << "  ..saving solution to " << Name() << std::endl;
+    s.Save(Name());
+    std::cout << "  ..saving solution to " << Name() << std::endl;
 
     return s;
   }

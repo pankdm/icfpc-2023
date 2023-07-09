@@ -9,7 +9,7 @@ import { ProblemStats } from '../../api/types'
 import { formatNumber, formatNumberExp } from '../../utils/numbers'
 import ProblemPreview from '../../components/ProblemPreview'
 import config from '../../config'
-import { $userboardDisplayMode } from '../../state/userboardDisplayMode'
+import { $userboardDisplayMode, $userboardZoomMode } from '../../state/userboardDisplayMode'
 
 const columns = {
   id: {
@@ -37,6 +37,7 @@ const columns = {
               <ProblemPreview
                 problemId={row.id}
                 size={isShowBigPreviews ? '50vmin' : '8rem'}
+                zoomMode={$userboardZoomMode.get()}
               />
             </Group>
           </Link>
@@ -111,6 +112,7 @@ const columns = {
 
 export default function Problems() {
   const displayMode = useStore($userboardDisplayMode)
+  const zoomMode = useStore($userboardZoomMode)
   const { isLoading, data: stats } = useAPIData({
     fetch: () => API.getProblemsStats(),
     deps: [],
@@ -134,6 +136,12 @@ export default function Problems() {
               data={['Table', 'Previews']}
               value={displayMode}
               onChange={$userboardDisplayMode.set}
+            />
+            <SegmentedControl
+              size="sm"
+              data={['Zoom', 'Full']}
+              value={zoomMode}
+              onChange={$userboardZoomMode.set}
             />
           </Group>
         )}

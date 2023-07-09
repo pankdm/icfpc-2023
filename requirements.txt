@@ -36,3 +36,4 @@ urllib3==2.0.3
 vectormath==0.2.2
 Werkzeug==2.3.6
 yarl==1.9.2
+terminaltables==3.1.10

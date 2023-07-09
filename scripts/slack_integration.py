@@ -1,15 +1,13 @@
 import sys
 from dotenv import load_dotenv
-
-if not os.environ.get("SLACK_API_TOKEN"):
-    load_dotenv()
+import os
 
 def post_to_slack(s):
     try:
-        import os
         import slack
-
+        load_dotenv()
         print("Sending to slack")
+        # print(os.environ)
         # If lost, retrieve the token from here: https://api.slack.com/apps/AKT5B5SJG/oauth
         client = slack.WebClient(token=os.environ["SLACK_API_TOKEN"])
         response = client.chat_postMessage(channel="#bot-logs", text=s)
@@ -19,6 +17,8 @@ def post_to_slack(s):
 
 
 if __name__ == "__main__":
+    load_dotenv()
+
     response = post_to_slack("Hello hackers!")
     print(response)
     assert response["ok"]

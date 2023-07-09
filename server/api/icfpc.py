@@ -71,8 +71,8 @@ def submit_solution(problem: str, solution: str):
     return response.text
 
 def get_scoreboard():
-    ensure_auth()
-    response = icfpc_client.session.get(API_ROOT+f'/scoreboard')
+    # ensure_auth()
+    response = common_session.get(API_ROOT+f'/scoreboard')
     response.raise_for_status()
     return response.json()
 

@@ -41,6 +41,7 @@ class Greedy1 : public BaseSolver {
     Solution s;
     s.SetId(p.Id());
     s.positions.resize(p.instruments.size(), D2Point{0., 0.});
+    s.SetMaxVolume();
     std::vector<unsigned> vic(p.total_instruments, 0);
     std::vector<OneMusucian> vm;
     double expected_dscore_ib = 0.;

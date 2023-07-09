@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/base.h"
 #include "common/files/json.h"
 #include "common/geometry/d2/point.h"
 #include "common/solvers/solution.h"
@@ -20,6 +21,12 @@ class Solution : public solvers::Solution {
   }
 
   double Volume(unsigned i) const { return volume.empty() ? 1.0 : volume[i]; }
+
+  void SetMaxVolume() {
+    assert(!Empty());
+    volume.clear();
+    volume.resize(positions.size(), max_volume);
+  }
 
   static std::string FileName(const std::string& id,
                               const std::string& solver_name) {

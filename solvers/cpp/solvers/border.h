@@ -94,6 +94,7 @@ class BorderSolver : public BaseSolver {
 
     s.SetId(p.Id());
     s.positions.resize(p.instruments.size());
+    s.SetMaxVolume();
     const auto candidates = FindBorderCandidates(p, s);
     int candidate_idx = 0;
     int m_idx = 0;

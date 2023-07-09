@@ -9,10 +9,17 @@
 class Solution : public solvers::Solution {
  public:
   std::vector<D2Point> positions;
+  std::vector<double> volume;
 
+ public:
   bool Empty() const { return positions.empty(); }
 
-  void Clear() { positions.clear(); }
+  void Clear() {
+    positions.clear();
+    volume.clear();
+  }
+
+  double Volume(unsigned i) const { return volume.empty() ? 1.0 : volume[i]; }
 
   static std::string FileName(const std::string& id,
                               const std::string& solver_name) {
@@ -31,6 +38,12 @@ class Solution : public solvers::Solution {
       positions[i].x = json_pi.GetFloating("x");
       positions[i].y = json_pi.GetFloating("y");
     }
+    if (json.HasKey("volumes")) {
+      auto& json_volume = json.GetValue("volumes");
+      volume.resize(json_volume.Size());
+      for (unsigned i = 0; i < volume.size(); ++i)
+        volume[i] = json_volume.GetFloating(i);
+    }
     return true;
   }
 
@@ -48,6 +61,12 @@ class Solution : public solvers::Solution {
     files::JSON json;
     json.SetDictionary();
     json.Add("placements", json_placements);
+    if (!volume.empty()) {
+      files::JSON json_volume;
+      json_volume.SetArray();
+      for (auto d : volume) json_volume.Add(files::JSON(d));
+      json.Add("volumes", json_volume);
+    }
     json.Save(filename);
   }
 };

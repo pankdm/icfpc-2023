@@ -58,6 +58,7 @@ class AdjusterAssignment {
       //           << std::endl;
       if (new_iscore2 > old_iscore2) {
         s.positions.swap(snew.positions);
+        s.volume.swap(snew.volume);
         return true;
       }
     }

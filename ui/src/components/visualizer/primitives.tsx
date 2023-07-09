@@ -44,22 +44,35 @@ export type CircleProps = {
   y?: number
   radius?: number
   color?: MantineColor
+  dimmed?: boolean
+  dimmedColor?: MantineColor
+  strokeWidth?: number
+  strokeColor?: MantineColor
 } & PaperProps
 export const Circle = ({
   x,
   y,
   radius,
+  strokeWidth = 0,
   color = 'white',
+  dimmed = false,
+  dimmedColor = '',
+  strokeColor = 'black',
   ...props
 }: CircleProps) => {
   const theme = useMantineTheme()
+  const _color = (_.get(theme.colors, color) || color) as any
+  const _dimmedColor = (_.get(theme.colors, dimmedColor) || dimmedColor) as any
   return (
     <MantineBox
       component="circle"
       cx={x}
       cy={y}
       r={radius}
-      fill={(_.get(theme.colors, color) || color) as any}
+      fill={(dimmed && _dimmedColor) || _color}
+      opacity={dimmed ? 0.25 : 1}
+      stroke={strokeColor}
+      strokeWidth={strokeWidth}
       {...props}
     />
   )

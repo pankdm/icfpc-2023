@@ -5,7 +5,7 @@ import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from dotenv import load_dotenv
 from flask_cors import CORS
-from flask import Flask, request, send_from_directory
+from flask import Flask, Response, request, send_from_directory
 
 from scripts.problem_stats import get_estimated_scores, get_problem_stats
 from solvers.python import hello_json
@@ -22,24 +22,21 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-os.path.basename(__file__)
-
-IMG_CACHE = {}
-
 def root_folder_path(path):
     return os.path.dirname(__file__)+'/../' + path
 
-def open_image_as_np(n):
-    global IMG_CACHE
+# IMG_CACHE = {}
+# def open_image_as_np(n):
+#     global IMG_CACHE
 
-    if n in IMG_CACHE:
-        return IMG_CACHE[n]
+#     if n in IMG_CACHE:
+#         return IMG_CACHE[n]
 
-    img = Image.open(f"./problems/{n}.png")
-    a = np.asarray(img)
-    result = a[::-1, :].swapaxes(0, 1)
-    IMG_CACHE[n] = result
-    return result
+#     img = Image.open(f"./problems/{n}.png")
+#     a = np.asarray(img)
+#     result = a[::-1, :].swapaxes(0, 1)
+#     IMG_CACHE[n] = result
+#     return result
 
 
 @app.route("/")
@@ -125,9 +122,15 @@ def handle_get_problem_id_stats(id):
     stats = get_cached_problem_stats()
     return stats[int(id)]
 
-# @app.get("/problems/<id>/instruments/<instrument_id>/lut")
-# def handle_get_problem_instrument_lut(id, instrument_id):
-#     request.query_string
+@app.get("/problems/<id>/instruments/<instrument_id>/lut/<mode>")
+def get_problem_instrument_lut(id, instrument_id, mode):
+    log10_mode = mode == 'log'
+    folder = f'perception_luts/{id}'
+    file_name = f'{instrument_id}{".log10" if log10_mode else ""}.png'
+    full_path = os.path.join(folder, file_name)
+    if os.path.exists(full_path):
+        return send_from_directory(root_folder_path(folder), file_name)
+    return Response(status=404)
 
 @app.post("/update-server")
 def post_update_server():

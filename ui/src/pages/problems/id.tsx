@@ -15,15 +15,20 @@ import {
   LoadingOverlay,
   SegmentedControl,
   NativeSelect,
-  // RangeSlider,
-  // Slider,
+  Slider,
+  Switch,
 } from '@mantine/core'
 import { $problem, setProblemId } from '../../state/problem'
 import API, { useAPIData } from '../../api'
 import TrafficLight from '../../components/TrafficLight'
 import Visualizer from '../../components/visualizer/Visualizer'
 import ProblemPreview from '../../components/ProblemPreview'
-import { $zoomMode } from '../../state/renderMode'
+import {
+  $previewInstruments,
+  $previewInstrumentsMode,
+  $zoomMode,
+  togglePreviewInstruments,
+} from '../../state/renderMode'
 import config from '../../config'
 import { $userboardZoomMode } from '../../state/userboardDisplayMode'
 import { useHotkeys } from '@mantine/hooks'
@@ -38,6 +43,15 @@ export default function ProblemInspector() {
   const [solutionId, setSolutionId] = useState<string | null>(null)
   const problem = useStore($problem)
   const zoomMode = useStore($zoomMode)
+  const previewInstruments = useStore($previewInstruments)
+  const previewInstrumentsMode = useStore($previewInstrumentsMode)
+  const [selectedInstrumentId, setSelectedInstrumentId] = useState(0)
+  const safeSetSelectedInstrumentId = (v: number) => {
+    setSelectedInstrumentId(
+      Math.min(Math.max(v, 0), stats ? stats.instruments - 1 : 0)
+    )
+  }
+  const clearSelectedInstrument = () => setSelectedInstrumentId(0)
 
   // Data
   const { data: problemsData } = useAPIData({
@@ -66,11 +80,16 @@ export default function ProblemInspector() {
     skip: !solutionId,
     deps: [solutionId],
   })
+  const totalInstruments = stats?.instruments ?? 1
 
   // Cleanup on page change
-  useEffect(() => {
-    setSolutionId(`loks_best/${problemId}.json`)
+  const onPageChange = (newProblemId: number) => {
     clearSolutionData()
+    clearSelectedInstrument()
+    setSolutionId(`loks_best/${newProblemId}.json`)
+  }
+  useEffect(() => {
+    onPageChange(problemId)
   }, [problemId])
   const solutionsSelectOpts = solutionsResp?.solutions?.length
     ? solutionsResp.solutions
@@ -80,7 +99,28 @@ export default function ProblemInspector() {
   const toggleZoomMode = () => {
     $zoomMode.set(zoomMode === 'Zoom' ? 'Full' : 'Zoom')
   }
-  useHotkeys([['z', () => toggleZoomMode()]])
+  useHotkeys([
+    ['z', () => toggleZoomMode()],
+    ['i', () => togglePreviewInstruments()],
+    [
+      'ArrowLeft',
+      () => {
+        if (previewInstruments) {
+          safeSetSelectedInstrumentId(selectedInstrumentId - 1)
+        }
+      },
+    ],
+    [
+      'ArrowRight',
+      () => {
+        if (previewInstruments) {
+          safeSetSelectedInstrumentId(selectedInstrumentId + 1)
+        }
+      },
+    ],
+    ['n', () => $previewInstrumentsMode.set('linear')],
+    ['l', () => $previewInstrumentsMode.set('log')],
+  ])
 
   return (
     <Group h="100%" pos="relative">
@@ -131,7 +171,6 @@ export default function ProblemInspector() {
           <TrafficLight size="10rem" red={isLoading} green={!isLoading} />
           <SegmentedControl
             color="orange.4"
-            // orientation="vertical"
             data={[
               {
                 value: 'Zoom',
@@ -167,13 +206,56 @@ export default function ProblemInspector() {
                       size="70vmin"
                       problemId={problemId}
                       problem={problem}
+                      previewInstrumentId={
+                        previewInstruments ? selectedInstrumentId : -1
+                      }
                       problemStats={stats}
                       solution={solution}
                       zoomMode={zoomMode}
                     />
                   )}
                 </Box>
-                {/* <Slider min={0} max={stats?.instruments - 1} /> */}
+                <Stack w="100%" spacing={'xs'}>
+                  <Group spacing={'xs'}>
+                    <Switch
+                      color="orange.4"
+                      checked={previewInstruments}
+                      onChange={togglePreviewInstruments}
+                      label={
+                        <Text w="11rem">
+                          Preview (i)nstrument: {selectedInstrumentId}
+                        </Text>
+                      }
+                    />
+                    <Text size="sm">Mode:</Text>
+                    <SegmentedControl
+                      color={previewInstruments ? 'orange.4' : 'gray.0'}
+                      size="xs"
+                      disabled={!previewInstruments}
+                      value={previewInstrumentsMode}
+                      data={[
+                        {
+                          value: 'linear',
+                          label: '(N)ormal',
+                        },
+                        {
+                          value: 'log',
+                          label: '(L)og10',
+                        },
+                      ]}
+                      onChange={$previewInstrumentsMode.set}
+                    />
+                  </Group>
+                  <Slider
+                    disabled={!previewInstruments}
+                    min={0}
+                    max={totalInstruments - 1}
+                    value={selectedInstrumentId}
+                    onChange={setSelectedInstrumentId}
+                    labelTransition="fade"
+                    labelTransitionDuration={150}
+                  />
+                </Stack>
               </Stack>
               <Space h="xl" />
               <Stack spacing={0}>

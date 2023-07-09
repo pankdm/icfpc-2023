@@ -14,6 +14,9 @@ export const Attendee = ({
 
 export const Musician = ({
   radius = 5,
-  color = '#ffd700',
+  color = '#fff3ae',
+  strokeWidth = 0.5,
   ...props
-}: CircleProps) => <Circle radius={radius} color={color} {...props} />
+}: {} & CircleProps) => (
+  <Circle radius={radius} color={color} strokeWidth={strokeWidth} {...props} />
+)

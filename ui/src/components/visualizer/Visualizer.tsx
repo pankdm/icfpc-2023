@@ -3,10 +3,20 @@ import { Problem, ProblemStats, Solution } from '../../api/types'
 import { Rect } from './primitives'
 import { Attendee, Musician, Pillar } from './elements'
 import { getFullViewBox, getZoomedViewBox } from '../../utils/camera'
+import { API_URL } from '../../api'
+import { $previewInstrumentsMode } from '../../state/renderMode'
+import { useStore } from '@nanostores/react'
+
+const getPreviewImageURL = (
+  problemId: string | number,
+  instrumentId: number,
+  mode: 'linear' | 'log'
+) => `${API_URL}/problems/${problemId}/instruments/${instrumentId}/lut/${mode}`
 
 export default function Visualizer({
   size,
   problemId,
+  previewInstrumentId = 0,
   problem,
   solution,
   problemStats,
@@ -16,6 +26,7 @@ export default function Visualizer({
   size: MantineSize
   problemId: string | number
   problem: Problem
+  previewInstrumentId?: number
   problemStats?: ProblemStats | null
   solution?: Solution | null
   zoomMode: String
@@ -32,6 +43,7 @@ export default function Visualizer({
     problemStats && zoomMode === 'Zoom'
       ? getZoomedViewBox(problemStats)
       : getFullViewBox(problem)
+  const previewInstrumentsMode = useStore($previewInstrumentsMode)
   return (
     <Paper
       w={size}
@@ -64,6 +76,19 @@ export default function Visualizer({
           height={stage_height}
           color="blue.9"
         />
+        {previewInstrumentId >= 0 && (
+          <image
+            x={stage_x}
+            y={stage_y}
+            width={stage_width}
+            height={stage_height}
+            href={getPreviewImageURL(
+              problemId,
+              previewInstrumentId,
+              previewInstrumentsMode
+            )}
+          />
+        )}
 
         {/* pillars */}
         {problem.pillars.map((p, idx) => (
@@ -77,7 +102,15 @@ export default function Visualizer({
 
         {/* musicians */}
         {solution?.placements?.map((p, idx) => (
-          <Musician key={idx} x={p.x} y={p.y} />
+          <Musician
+            key={idx}
+            x={p.x}
+            y={p.y}
+            dimmed={
+              previewInstrumentId >= 0 &&
+              problem.musicians[idx] !== previewInstrumentId
+            }
+          />
         ))}
       </Box>
     </Paper>

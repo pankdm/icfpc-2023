@@ -163,4 +163,4 @@ solvers/cpp/*.solver
 node_modules
 .python-version
 temp/
-perception_luts/*/bin
+perception_luts/*/*px/

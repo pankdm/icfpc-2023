@@ -90,8 +90,7 @@ class BorderSolver : public BaseSolver {
     return true;
   }
 
-  double SolveWithStep(const TProblem& p, double step) {
-    TSolution s;
+  double SolveWithStep(const TProblem& p, TSolution& s, double step) {
     Timer t;
     auto start = t.GetMilliseconds();
     // auto start_score = Evaluator::Apply(p, best_s).score;
@@ -177,7 +176,6 @@ class BorderSolver : public BaseSolver {
 
   Solution Solve(const TProblem& p) override {
     Timer t;
-    TSolution s;
 
     // drop if perimeter is too large
     int border_count =
@@ -197,10 +195,8 @@ class BorderSolver : public BaseSolver {
       exit(1);
     }
 
-    for (double step = 10; step < 15; step += 0.5) {
-      double score = SolveWithStep(p, step);
-      std::cout << step << " -> " << score << std::endl;
-    }
+    TSolution s;
+    SolveWithStep(p, s, step);
 
     // double score = SolveWithStep(p, 10.0);
     // s.Save(Name());

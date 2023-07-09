@@ -29,27 +29,53 @@ class BorderSolver : public BaseSolver {
     return std::make_shared<BorderSolver>(*this);
   }
 
-  std::string Name() const override { return "dm_border"; }
+  std::string Name() const override { return "dm_border2"; }
 
   bool SkipSolutionRead() const override { return true; }
-  // bool SkipBest() const override { return true; }
+  bool SkipBest() const override { return true; }
 
   std::vector<D2Point> FindBorderCandidates(const TProblem& p,
-                                            const TSolution& s) {
+                                            const TSolution& s, double step) {
     std::vector<D2Point> output;
-    double STEP = 10.;
-    for (double x = p.stage.p1.x; x <= p.stage.p2.x; x += STEP) {
-      output.push_back(D2Point{x, p.stage.p1.y});
+    output.push_back(D2Point{p.stage.p1.x, p.stage.p1.y});
+    output.push_back(D2Point{p.stage.p1.x, p.stage.p2.y});
+    output.push_back(D2Point{p.stage.p2.x, p.stage.p1.y});
+    output.push_back(D2Point{p.stage.p2.x, p.stage.p2.y});
+
+    double STEP = step;
+    {
+      // double STEP = 11.;
+      for (double x = p.stage.p1.x; x <= p.stage.p2.x; x += STEP) {
+        output.push_back(D2Point{x, p.stage.p1.y});
+      }
+      for (double x = p.stage.p1.x; x <= p.stage.p2.x; x += STEP) {
+        output.push_back(D2Point{x, p.stage.p2.y});
+      }
+      for (double y = p.stage.p1.y; y <= p.stage.p2.y; y += STEP) {
+        output.push_back(D2Point{p.stage.p1.x, y});
+      }
+      for (double y = p.stage.p1.y; y <= p.stage.p2.y; y += STEP) {
+        output.push_back(D2Point{p.stage.p2.x, y});
+      }
     }
-    for (double x = p.stage.p1.x; x <= p.stage.p2.x; x += STEP) {
-      output.push_back(D2Point{x, p.stage.p2.y});
+    {
+      // double STEP = 11.;
+      double HALF_STEP = STEP * 0.5;
+      double OFFSET = sqrt(100 - HALF_STEP * HALF_STEP) + 0.01;
+      for (double x = p.stage.p1.x + HALF_STEP; x <= p.stage.p2.x; x += STEP) {
+        output.push_back(D2Point{x, p.stage.p1.y + OFFSET});
+      }
+      for (double x = p.stage.p1.x + HALF_STEP; x <= p.stage.p2.x; x += STEP) {
+        output.push_back(D2Point{x, p.stage.p2.y - OFFSET});
+      }
+      for (double y = p.stage.p1.y + HALF_STEP; y <= p.stage.p2.y; y += STEP) {
+        output.push_back(D2Point{p.stage.p1.x + OFFSET, y});
+      }
+      for (double y = p.stage.p1.y + HALF_STEP; y <= p.stage.p2.y; y += STEP) {
+        output.push_back(D2Point{p.stage.p2.x - OFFSET, y});
+      }
     }
-    for (double y = p.stage.p1.y; y <= p.stage.p2.y; y += STEP) {
-      output.push_back(D2Point{p.stage.p1.x, y});
-    }
-    for (double y = p.stage.p1.y; y <= p.stage.p2.y; y += STEP) {
-      output.push_back(D2Point{p.stage.p2.x, y});
-    }
+
     return output;
   }
 
@@ -64,38 +90,21 @@ class BorderSolver : public BaseSolver {
     return true;
   }
 
-  Solution Solve(const TProblem& p) override {
-    Timer t;
+  double SolveWithStep(const TProblem& p, double step) {
     TSolution s;
-
-    // drop if perimeter is too large
-    int border_count =
-        (2 * ((p.stage.p2.x - p.stage.p1.x) + (p.stage.p2.y - p.stage.p1.y))) /
-        musician_collision_radius;
-    if (p.instruments.size() < border_count) {
-      std::cout << "Skipping problem " << p.Id() << std::endl;
-      return s;
-    }
-
-    std::cout << "Starting " << Name() << " on problem " << p.Id() << std::endl;
-
-    TSolution best_s;
-    const std::string solver_name = "loks_best";
-    if (!best_s.Load(p.Id(), solver_name)) {
-      std::cerr << "No best solution found! " << solver_name << std::endl;
-      exit(1);
-    }
+    Timer t;
     auto start = t.GetMilliseconds();
-    auto start_score = Evaluator::Apply(p, best_s).score;
+    // auto start_score = Evaluator::Apply(p, best_s).score;
     // auto current_score = start_score;
-    std::cout << "Loaded, current score = " << start_score
-              << ", time = " << t.GetMilliseconds() - start << "ms"
-              << std::endl;
+    // std::cout << "Loaded, current score = " << start_score
+    //           << ", time = " << t.GetMilliseconds() - start << "ms"
+    //           << std::endl;
 
     s.SetId(p.Id());
     s.positions.resize(p.instruments.size());
     s.SetMaxVolume();
-    const auto candidates = FindBorderCandidates(p, s);
+    const auto candidates = FindBorderCandidates(p, s, step);
+
     int candidate_idx = 0;
     int m_idx = 0;
     for (; m_idx < s.positions.size(); ++m_idx) {
@@ -123,7 +132,7 @@ class BorderSolver : public BaseSolver {
     //             << std::endl;
     // }
 
-    std::cout << "filling out remaining" << std::endl;
+    // std::cout << "filling out remaining" << std::endl;
     auto pos = D2Point{p.stage.p1.x + musician_collision_radius,
                        p.stage.p1.y + musician_collision_radius};
     for (; m_idx < s.positions.size(); ++m_idx) {
@@ -145,17 +154,57 @@ class BorderSolver : public BaseSolver {
     }
 
     auto snew = s;
-    std::cout << " Started assignment run for problem " << p.Id() << std::endl;
+    // std::cout << " Started assignment run for problem " << p.Id() <<
+    // std::endl;
     AdjusterAssignment adj;
     if (adj.Check(p, snew)) {
       auto score_new = Evaluator::Apply(p, snew).score;
+      // std::cout << "New solution from adjuster for problem " << p.Id() <<
+      // ":\t"
+      //           << start_score << " -> " << score_new << std::endl;
+
       std::cout << "New solution from adjuster for problem " << p.Id() << ":\t"
-                << start_score << " -> " << score_new << std::endl;
+                << score_new << std::endl;
+
       s = snew;
+
+      s.Save(Name());
+      std::cout << "  ..saving solution to " << Name() << std::endl;
+      return score_new;
+    }
+    return -1;
+  }
+
+  Solution Solve(const TProblem& p) override {
+    Timer t;
+    TSolution s;
+
+    // drop if perimeter is too large
+    int border_count =
+        (2 * ((p.stage.p2.x - p.stage.p1.x) + (p.stage.p2.y - p.stage.p1.y))) /
+        musician_collision_radius;
+    if (p.instruments.size() < border_count) {
+      std::cout << "Skipping problem " << p.Id() << std::endl;
+      return s;
     }
 
-    s.Save(Name());
-    std::cout << "  ..saving solution to " << Name() << std::endl;
+    std::cout << "Starting " << Name() << " on problem " << p.Id() << std::endl;
+
+    TSolution best_s;
+    const std::string solver_name = "loks_best";
+    if (!best_s.Load(p.Id(), solver_name)) {
+      std::cerr << "No best solution found! " << solver_name << std::endl;
+      exit(1);
+    }
+
+    for (double step = 10; step < 15; step += 0.5) {
+      double score = SolveWithStep(p, step);
+      std::cout << step << " -> " << score << std::endl;
+    }
+
+    // double score = SolveWithStep(p, 10.0);
+    // s.Save(Name());
+    // std::cout << "  ..saving solution to " << Name() << std::endl;
 
     return s;
   }

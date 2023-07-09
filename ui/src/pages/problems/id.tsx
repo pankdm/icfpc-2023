@@ -55,7 +55,7 @@ export default function ProblemInspector() {
     deps: [solutionId],
   })
   useEffect(() => {
-    setSolutionId(null)
+    setSolutionId(`loks_best/${problemId}.json`)
     clearSolutionData()
   }, [problemId])
   const solutionsSelectOpts = solutionsResp?.solutions?.length

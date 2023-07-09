@@ -147,8 +147,7 @@ def generate_and_save_perception_map_by_instrument_id(problem, instrument_id, ma
     save_perception_map_preview(f'{luts_folder}/{file_suffix}/{instrument_id}.log10.png', problem_id, instrument_id, lut_log10p)
     print(f' and log10p.')
     with open(f'{luts_folder}/{file_suffix}/{instrument_id}.lut.bin', 'wb') as bin_file:
-        for lut in luts:
-            bin_file.write(lut.tobytes())
+        bin_file.write(lut.tobytes())
     print(f' ...saved bin LUT.')
     return lut
 

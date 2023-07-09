@@ -13,10 +13,10 @@ import {
   Text,
   Title,
   LoadingOverlay,
-  Select,
   SegmentedControl,
-  RangeSlider,
-  Slider,
+  NativeSelect,
+  // RangeSlider,
+  // Slider,
 } from '@mantine/core'
 import { $problem, setProblemId } from '../../state/problem'
 import API, { useAPIData } from '../../api'
@@ -149,11 +149,11 @@ export default function ProblemInspector() {
         <Center>
           <Stack align="center" spacing={0}>
             <Title order={2}>Problem {problemId}</Title>
-            <Select
+            <NativeSelect
               placeholder="Select solution"
               data={solutionsSelectOpts}
-              value={solutionId}
-              onChange={setSolutionId}
+              value={solutionId || ''}
+              onChange={(ev) => setSolutionId(ev.currentTarget.value)}
               onFocus={refetchSolutions}
             />
             <Space h="xl" />

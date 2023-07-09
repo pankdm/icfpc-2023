@@ -46,7 +46,7 @@ export default function Visualizer({
         component="svg"
         w="100%"
         h="100%"
-        viewBox={zoomViewBox}
+        viewBox={zoomViewBox.join(' ')}
         transform="scale(1,-1)"
       >
         {/* stage */}

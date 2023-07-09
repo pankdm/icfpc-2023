@@ -38,6 +38,7 @@ export default function Visualizer({
         w="100%"
         h="100%"
         viewBox={`0 0 ${room_width} ${room_height}`}
+        // viewBox={`${stage_x - stage_width * 0.1} ${stage_y - stage_height * 0.1} ${stage_width * 1.1} ${stage_height * 1.1}`}
         transform="scale(1,-1)"
       >
         {/* stage */}

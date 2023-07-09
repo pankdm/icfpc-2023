@@ -43,6 +43,23 @@ class Shaker : public BaseSolver {
          x > p.stage.p1.x; x -= STEP) {
       output.push_back(D2Point{x, p.stage.p2.y});
     }
+
+    for (double x = p.stage.p1.x + 0.5 * (p.stage.p2.x - p.stage.p1.x);
+         x < p.stage.p2.x; x += STEP) {
+      output.push_back(D2Point{x, p.stage.p1.y});
+    }
+    for (double x = p.stage.p1.x + 0.5 * (p.stage.p2.x - p.stage.p1.x);
+         x > p.stage.p1.x; x -= STEP) {
+      output.push_back(D2Point{x, p.stage.p1.y});
+    }
+
+    for (double y = p.stage.p1.y; y < p.stage.p2.y; y += STEP) {
+      output.push_back(D2Point{p.stage.p1.x, y});
+    }
+    for (double y = p.stage.p1.y; y < p.stage.p2.y; y += STEP) {
+      output.push_back(D2Point{p.stage.p2.x, y});
+    }
+
     return output;
   }
 

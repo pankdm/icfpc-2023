@@ -4,6 +4,7 @@
 #include "solvers/base.h"
 #include "solvers/greedy1.h"
 #include "solvers/greedy2.h"
+#include "solvers/greedy3.h"
 #include "solvers/shaker.h"
 #include "utils/check_silent_location.h"
 #include "utils/check_with_adjuster.h"
@@ -34,6 +35,8 @@ BaseSolver::PSolver CreateSolver(const files::CommandLine& cmd,
     return std::make_shared<Greedy1>(timelimit);
   } else if (solver_name == "greedy2") {
     return std::make_shared<Greedy2>(timelimit, cmd.GetInt("extra"));
+  } else if (solver_name == "greedy3") {
+    return std::make_shared<Greedy3>(timelimit, cmd.GetInt("extra"));
   } else if (solver_name == "shaker") {
     return std::make_shared<Shaker>(timelimit);
   } else {

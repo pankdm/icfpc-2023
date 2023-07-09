@@ -96,6 +96,14 @@ class Evaluator : public solvers::Evaluator {
            BlockedByPillars(segment, normal, p.pillars);
   }
 
+  static bool Blocked(const D2OpenSegment& segment, const D2Vector& normal,
+                      const Problem& p,
+                      const std::vector<D2Point>& musicians_to_check) {
+    return BlockedByMusucians(segment, normal, musicians_to_check.size(),
+                              musicians_to_check) ||
+           BlockedByPillars(segment, normal, p.pillars);
+  }
+
   static bool Blocked(const Attendee& a, unsigned musician, const Problem& p,
                       const Solution& s) {
     auto &pa = a.position, &pm = s.positions[musician];
@@ -103,6 +111,16 @@ class Evaluator : public solvers::Evaluator {
     auto vn = (pm - pa).RotateHalfPi();
     vn.Normalize();
     return Blocked(sam, vn, p, musician, s);
+  }
+
+  static bool Blocked(const Attendee& a, const D2Point& musician,
+                      const Problem& p,
+                      const std::vector<D2Point>& musicians_to_check) {
+    auto &pa = a.position, &pm = musician;
+    D2OpenSegment sam(pa, pm);
+    auto vn = (pm - pa).RotateHalfPi();
+    vn.Normalize();
+    return Blocked(sam, vn, p, musicians_to_check);
   }
 
   // Score boost
@@ -255,6 +273,17 @@ class Evaluator : public solvers::Evaluator {
   static double DScoreMusician(const Problem& p, unsigned musician,
                                const Solution& s, double boost) {
     return boost * DScoreMusician(p, musician, s);
+  }
+
+  static double DScoreMusician(const Problem& p, unsigned instrument,
+                               const D2Point& musician,
+                               const std::vector<D2Point>& musicians_to_check) {
+    double dscore = 0.;
+    for (auto& a : p.attendees) {
+      if (Blocked(a, musician, p, musicians_to_check)) continue;
+      dscore += DScoreRaw(a, instrument, musician);
+    }
+    return dscore;
   }
 
   // IScore for musician

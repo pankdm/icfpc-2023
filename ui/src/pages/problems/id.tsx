@@ -64,13 +64,13 @@ export default function ProblemInspector() {
   const { data: problemsData } = useAPIData({
     fetch: API.getProblems,
   })
-  const { isLoading } = useAPIData({
+  const { isLoading: isProblemLoading } = useAPIData({
     skip: !problemId,
     fetch: () => API.getProblem(problemId as any),
     onSuccess: (_problem) => $problem.set(_problem),
     deps: [problemId],
   })
-  const { data: allProblemsStats } = useAPIData({
+  const { data: allProblemsStats, isLoading: isStatsLoading } = useAPIData({
     fetch: () => API.getProblemsStats(),
     deps: [problemId],
   })
@@ -179,7 +179,11 @@ export default function ProblemInspector() {
           right={0}
           align="center"
         >
-          <TrafficLight size="10rem" red={isLoading} green={!isLoading} />
+          <TrafficLight
+            size="10rem"
+            red={isProblemLoading || isStatsLoading}
+            green={!isProblemLoading && !isStatsLoading}
+          />
           <SegmentedControl
             color="orange.4"
             data={[
@@ -210,7 +214,10 @@ export default function ProblemInspector() {
             <Group position="center">
               <Stack>
                 <Box w={'70vmin'} h={'70vmin'} pos="relative">
-                  <LoadingOverlay visible={isLoading} overlayBlur={2} />
+                  <LoadingOverlay
+                    visible={isProblemLoading || isStatsLoading}
+                    overlayBlur={2}
+                  />
                   {problem && (
                     <Visualizer
                       bg="black"

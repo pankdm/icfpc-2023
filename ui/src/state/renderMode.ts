@@ -20,7 +20,6 @@ export const $previewInstruments = computed(
 export const togglePreviewInstruments = () =>
   $_previewInstruments.set($previewInstruments.get() ? 'false' : 'true')
 
-export const $previewInstrumentsMode = persistentAtom<'linear' | 'log'>(
-  'icfpc-2023:preview_instruments:mode',
-  'linear'
-)
+export const $previewInstrumentsMode = persistentAtom<
+  'musicians_only' | 'linear' | 'log'
+>('icfpc-2023:preview_instruments:mode', 'linear')

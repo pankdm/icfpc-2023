@@ -118,8 +118,12 @@ export default function ProblemInspector() {
         }
       },
     ],
-    ['n', () => $previewInstrumentsMode.set('linear')],
-    ['l', () => $previewInstrumentsMode.set('log')],
+    [
+      'j',
+      () => previewInstruments && $previewInstrumentsMode.set('musicians_only'),
+    ],
+    ['k', () => previewInstruments && $previewInstrumentsMode.set('linear')],
+    ['l', () => previewInstruments && $previewInstrumentsMode.set('log')],
   ])
 
   return (
@@ -227,7 +231,7 @@ export default function ProblemInspector() {
                         </Text>
                       }
                     />
-                    <Text size="sm">Mode:</Text>
+                    <Text size="sm">LUT Mode:</Text>
                     <SegmentedControl
                       color={previewInstruments ? 'orange.4' : 'gray.0'}
                       size="xs"
@@ -235,12 +239,16 @@ export default function ProblemInspector() {
                       value={previewInstrumentsMode}
                       data={[
                         {
+                          value: 'musicians_only',
+                          label: 'None (J)',
+                        },
+                        {
                           value: 'linear',
-                          label: '(N)ormal',
+                          label: 'Normal (K)',
                         },
                         {
                           value: 'log',
-                          label: '(L)og10',
+                          label: 'Log10 (L)',
                         },
                       ]}
                       onChange={$previewInstrumentsMode.set}

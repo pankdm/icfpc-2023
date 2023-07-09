@@ -76,19 +76,20 @@ export default function Visualizer({
           height={stage_height}
           color="blue.9"
         />
-        {previewInstrumentId >= 0 && (
-          <image
-            x={stage_x}
-            y={stage_y}
-            width={stage_width}
-            height={stage_height}
-            href={getPreviewImageURL(
-              problemId,
-              previewInstrumentId,
-              previewInstrumentsMode
-            )}
-          />
-        )}
+        {previewInstrumentId >= 0 &&
+          previewInstrumentsMode !== 'musicians_only' && (
+            <image
+              x={stage_x}
+              y={stage_y}
+              width={stage_width}
+              height={stage_height}
+              href={getPreviewImageURL(
+                problemId,
+                previewInstrumentId,
+                previewInstrumentsMode
+              )}
+            />
+          )}
 
         {/* pillars */}
         {problem.pillars.map((p, idx) => (

@@ -22,20 +22,23 @@ import { $problem, setProblemId } from '../../state/problem'
 import API, { useAPIData } from '../../api'
 import TrafficLight from '../../components/TrafficLight'
 import Visualizer from '../../components/visualizer/Visualizer'
-import Visualizer3D from '../../components/visualizer/Visualizer.3d'
 import ProblemPreview from '../../components/ProblemPreview'
-import { $renderMode, $zoomMode } from '../../state/renderMode'
+import { $zoomMode } from '../../state/renderMode'
 import config from '../../config'
 import { $userboardZoomMode } from '../../state/userboardDisplayMode'
+import { useHotkeys } from '@mantine/hooks'
 
 export default function ProblemInspector() {
   const { problemId: problemIdStr } = useParams()
-  const renderMode = useStore($renderMode)
-  const zoomMode = useStore($zoomMode)
+
+  // State
   const previewsZoomMode = useStore($userboardZoomMode)
   const problemId = parseInt(problemIdStr as any)
   const [solutionId, setSolutionId] = useState<string | null>(null)
   const problem = useStore($problem)
+  const zoomMode = useStore($zoomMode)
+
+  // Data
   const { data: problemsData } = useAPIData({
     fetch: API.getProblems,
   })
@@ -62,6 +65,8 @@ export default function ProblemInspector() {
     skip: !solutionId,
     deps: [solutionId],
   })
+
+  // Cleanup on page change
   useEffect(() => {
     setSolutionId(`loks_best/${problemId}.json`)
     clearSolutionData()
@@ -69,7 +74,13 @@ export default function ProblemInspector() {
   const solutionsSelectOpts = solutionsResp?.solutions?.length
     ? solutionsResp.solutions
     : [{ value: 'none', label: 'No solutions', disabled: true }]
-  const VisualizerComponent = renderMode === '3d' ? Visualizer3D : Visualizer
+
+  // Controls
+  const toggleZoomMode = () => {
+    $zoomMode.set(zoomMode === 'Zoom' ? 'Full' : 'Zoom')
+  }
+  useHotkeys([['z', () => toggleZoomMode()]])
+
   return (
     <Group h="100%" pos="relative">
       <Helmet>
@@ -118,14 +129,20 @@ export default function ProblemInspector() {
         >
           <TrafficLight size="10rem" red={isLoading} green={!isLoading} />
           <SegmentedControl
-            data={['3d', 'svg']}
-            value={renderMode}
-            onChange={(v) => $renderMode.set(v as any)}
-          />
-          <SegmentedControl
-            data={['Zoom', 'Full']}
+            color="orange.4"
+            // orientation="vertical"
+            data={[
+              {
+                value: 'Zoom',
+                label: '(Z)oom',
+              },
+              {
+                value: 'Full',
+                label: 'Full',
+              },
+            ]}
             value={zoomMode}
-            onChange={(v) => $zoomMode.set(v as any)}
+            onChange={(v) => $zoomMode.set(v)}
           />
         </Stack>
         <Center>
@@ -146,7 +163,7 @@ export default function ProblemInspector() {
                 <Box w={'70vmin'} h={'70vmin'} pos="relative">
                   <LoadingOverlay visible={isLoading} overlayBlur={2} />
                   {problem && (
-                    <VisualizerComponent
+                    <Visualizer
                       bg="black"
                       size="70vmin"
                       problemId={problemId}

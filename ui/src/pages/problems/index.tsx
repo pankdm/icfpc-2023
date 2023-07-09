@@ -13,11 +13,15 @@ import {
   $userboardDisplayMode,
   $userboardZoomMode,
 } from '../../state/userboardDisplayMode'
+import { useHotkeys } from '@mantine/hooks'
 
 export default function Problems() {
+  // State
   const zoomMode = useStore($userboardZoomMode)
   const displayMode = useStore($userboardDisplayMode)
   const isShowBigPreviews = displayMode === 'Previews'
+
+  // Data
   const { isLoading, data: stats } = useAPIData({
     fetch: () => API.getProblemsStats(),
     deps: [],
@@ -29,6 +33,13 @@ export default function Problems() {
     stageSize: `${data.stage_width} x ${data.stage_height}`,
   }))
 
+  // Controls
+  const toggleZoomMode = () => {
+    $userboardZoomMode.set(zoomMode === 'Zoom' ? 'Full' : 'Zoom')
+  }
+  useHotkeys([['z', () => toggleZoomMode()]])
+
+  // Table setup
   const columns = {
     id: {
       id: 'id',
@@ -138,14 +149,18 @@ export default function Problems() {
         renderTopToolbarCustomActions={() => (
           <Group p={0}>
             <SegmentedControl
+              color="orange.5"
               size="sm"
-              data={['Table', 'Previews']}
-              value={displayMode}
-              onChange={$userboardDisplayMode.set}
-            />
-            <SegmentedControl
-              size="sm"
-              data={['Zoom', 'Full']}
+              data={[
+                {
+                  label: '(Z)oom',
+                  value: 'Zoom',
+                },
+                {
+                  value: 'Full',
+                  label: 'Full',
+                },
+              ]}
               value={zoomMode}
               onChange={$userboardZoomMode.set}
             />

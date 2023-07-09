@@ -84,7 +84,7 @@ def send_message_to_slack(old_score, new_score, data):
     table = AsciiTable(table_data)
 
     msg = "\n".join([
-        f'Score change detected: `{int(old_score):,}` -> {int(new_score):,}`, delta = `{int(new_score-old_score):,}`',
+        f'Score change detected: `{int(old_score):,}` -> `{int(new_score):,}`, delta = `{int(new_score-old_score):,}`',
         '```',
         table.table,
         '```'

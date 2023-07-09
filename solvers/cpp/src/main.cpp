@@ -75,13 +75,22 @@ int main(int argc, char** argv) {
                                        cmd.GetInt("last_problem"), nthreads);
   } else if (mode == "test") {
     // Code for temporary testing
-    for (unsigned i = 1; i <= last_problem; ++i) {
+    for (unsigned i = 56; i <= 90; ++i) {
       Problem p;
       p.Load(std::to_string(i));
+      Solution s;
+      s.Load(std::to_string(i), "loks_best");
       unsigned silent = 0;
       for (auto& a : p.attendees) {
-        if (CheckSilentLocation::Check(p.stage, p.pillars, a.position))
+        if (CheckSilentLocation::Check(p.stage, p.pillars, a.position, false)) {
           ++silent;
+          auto d = Evaluator::DScoreAttendee(a, p, s);
+          if (d != 0.) {
+            std::cout << "\t" << a.position.x << "\t" << a.position.y << "\t"
+                      << d << std::endl;
+            CheckSilentLocation::Check(p.stage, p.pillars, a.position, true);
+          }
+        }
       }
       std::cout << i << "\t" << silent << "\t" << p.attendees.size() << "\t"
                 << p.pillars.size() << std::endl;

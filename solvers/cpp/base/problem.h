@@ -2,6 +2,7 @@
 
 #include "base/attendee.h"
 #include "base/constants.h"
+#include "utils/check_silent_location.h"
 
 #include "common/files/json.h"
 #include "common/geometry/d2/axis/rectangle.h"
@@ -80,6 +81,13 @@ class Problem : public solvers::Problem {
       pi.c.x = json_xy.GetFloating(0);
       pi.c.y = json_xy.GetFloating(1);
       pi.r = json_pi.GetFloating("radius");
+    }
+    // Unsafe
+    for (unsigned i = 0; i < attendees.size(); ++i) {
+      if (CheckSilentLocation::Check(stage, pillars, attendees[i].position)) {
+        attendees[i--] = attendees.back();
+        attendees.pop_back();
+      }
     }
     return true;
   }

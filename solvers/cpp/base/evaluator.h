@@ -145,8 +145,9 @@ class Evaluator : public solvers::Evaluator {
   }
 
   static double DScoreRaw(const Attendee& a, unsigned instrument,
-                          const D2Point& musician, double boost) {
-    return boost * DScoreRaw(a, instrument, musician);
+                          const D2Point& musician, double volume,
+                          double boost) {
+    return volume * boost * DScoreRaw(a, instrument, musician);
   }
 
   static int64_t IScoreRaw(const Attendee& a, unsigned instrument,
@@ -155,8 +156,9 @@ class Evaluator : public solvers::Evaluator {
   }
 
   static int64_t IScoreRaw(const Attendee& a, unsigned instrument,
-                           const D2Point& musician, double boost) {
-    return ceil(boost * IScoreRaw(a, instrument, musician));
+                           const D2Point& musician, double volume,
+                           double boost) {
+    return ceil(volume * boost * IScoreRaw(a, instrument, musician));
   }
 
   // DScore for attendee
@@ -173,7 +175,8 @@ class Evaluator : public solvers::Evaluator {
                                             const std::vector<double>& vboost) {
     double dscore = 0.;
     for (unsigned i = 0; i < s.positions.size(); ++i)
-      dscore += DScoreRaw(a, p.instruments[i], s.positions[i], vboost[i]);
+      dscore += DScoreRaw(a, p.instruments[i], s.positions[i], s.Volume(i),
+                          vboost[i]);
     return dscore;
   }
 
@@ -189,8 +192,9 @@ class Evaluator : public solvers::Evaluator {
   static double DScoreIgnoreBlockedMusician(const Problem& p,
                                             unsigned instrument,
                                             const D2Point& musician,
-                                            double boost) {
-    return boost * DScoreIgnoreBlockedMusician(p, instrument, musician);
+                                            double volume, double boost) {
+    return volume * boost *
+           DScoreIgnoreBlockedMusician(p, instrument, musician);
   }
 
   static double DScoreIgnoreBlockedMusician(const Problem& p, unsigned musician,
@@ -201,7 +205,8 @@ class Evaluator : public solvers::Evaluator {
 
   static double DScoreIgnoreBlockedMusician(const Problem& p, unsigned musician,
                                             const Solution& s, double boost) {
-    return boost * DScoreIgnoreBlockedMusician(p, musician, s);
+    return s.Volume(musician) * boost *
+           DScoreIgnoreBlockedMusician(p, musician, s);
   }
 
   // Full DScore ignore blocked
@@ -242,7 +247,8 @@ class Evaluator : public solvers::Evaluator {
     double dscore = 0.;
     for (unsigned i = 0; i < s.positions.size(); ++i) {
       if (Blocked(a, i, p, s)) continue;
-      dscore += DScoreRaw(a, p.instruments[i], s.positions[i], vboost[i]);
+      dscore += DScoreRaw(a, p.instruments[i], s.positions[i], s.Volume(i),
+                          vboost[i]);
     }
     return dscore;
   }
@@ -254,7 +260,8 @@ class Evaluator : public solvers::Evaluator {
     int64_t iscore = 0.;
     for (unsigned i = 0; i < s.positions.size(); ++i) {
       if (Blocked(a, i, p, s)) continue;
-      iscore += IScoreRaw(a, p.instruments[i], s.positions[i], vboost[i]);
+      iscore += IScoreRaw(a, p.instruments[i], s.positions[i], s.Volume(i),
+                          vboost[i]);
     }
     return iscore;
   }
@@ -272,7 +279,7 @@ class Evaluator : public solvers::Evaluator {
 
   static double DScoreMusician(const Problem& p, unsigned musician,
                                const Solution& s, double boost) {
-    return boost * DScoreMusician(p, musician, s);
+    return s.Volume(musician) * boost * DScoreMusician(p, musician, s);
   }
 
   static double DScoreMusician(const Problem& p, unsigned instrument,
@@ -292,8 +299,8 @@ class Evaluator : public solvers::Evaluator {
     int64_t iscore = 0.;
     for (auto& a : p.attendees) {
       if (Blocked(a, musician, p, s)) continue;
-      iscore +=
-          IScoreRaw(a, p.instruments[musician], s.positions[musician], boost);
+      iscore += IScoreRaw(a, p.instruments[musician], s.positions[musician],
+                          s.Volume(musician), boost);
     }
     return iscore;
   }

@@ -13,7 +13,7 @@
 
 class AdjusterSwaps {
  public:
-  bool Check(const Problem& p, Solution& s) {
+  static bool Check(const Problem& p, Solution& s) {
     if (p.Lighting() || (p.instruments.size() == p.total_instruments)) {
       // AdjusterAssignment output optimal solution under the same constraints.
       return false;

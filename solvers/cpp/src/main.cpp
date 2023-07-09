@@ -1,4 +1,5 @@
 #include "adjusters/assignment.h"
+#include "adjusters/max_volume.h"
 #include "adjusters/swaps.h"
 #include "base/constants.h"
 #include "solvers/base.h"
@@ -60,6 +61,8 @@ int main(int argc, char** argv) {
     auto name = cmd.GetString("adjuster");
     if (name == "assignment") {
       CheckWithAdjuster<AdjusterAssignment>(cmd.GetString("solution"));
+    } else if (name == "max_volume") {
+      CheckWithAdjuster<AdjusterMaxVolume>(cmd.GetString("solution"));
     } else if (name == "swaps") {
       CheckWithAdjuster<AdjusterSwaps>(cmd.GetString("solution"));
     } else {

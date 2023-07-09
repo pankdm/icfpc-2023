@@ -1,13 +1,14 @@
-import React from 'react'
 import _ from 'lodash'
 import {
+  BoxProps,
   Box as MantineBox,
   MantineColor,
   MantineSize,
   PaperProps,
+  SystemProp,
   useMantineTheme,
 } from '@mantine/core'
-import { animated } from '@react-spring/web'
+import React from 'react'
 
 export type RectProps = {
   x: number
@@ -29,7 +30,7 @@ export const Rect = ({
   const theme = useMantineTheme()
   return (
     <MantineBox
-      component={animated.rect}
+      component="rect"
       x={x}
       y={y}
       width={width}
@@ -68,7 +69,7 @@ export const Circle = ({
   const _dimmedColor = (_.get(theme.colors, dimmedColor) || dimmedColor) as any
   return (
     <MantineBox
-      component={animated.circle}
+      component="circle"
       cx={x}
       cy={y}
       r={radius}

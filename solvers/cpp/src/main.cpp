@@ -4,6 +4,7 @@
 #include "solvers/greedy1.h"
 #include "solvers/greedy2.h"
 #include "solvers/packer.h"
+#include "solvers/shaker.h"
 #include "utils/check_with_adjuster.h"
 #include "utils/estimate_max_score.h"
 #include "utils/evaluate_solution.h"
@@ -33,6 +34,8 @@ BaseSolver::PSolver CreateSolver(const files::CommandLine& cmd,
     return std::make_shared<Greedy2>(timelimit, cmd.GetInt("extra"));
   } else if (solver_name == "packer") {
     return std::make_shared<Packer>(timelimit);
+  } else if (solver_name == "shaker") {
+    return std::make_shared<Shaker>(timelimit);
   } else {
     std::cerr << "Unknown solver type: " << solver_name << std::endl;
     exit(-1);

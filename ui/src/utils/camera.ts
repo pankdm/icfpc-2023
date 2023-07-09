@@ -43,12 +43,6 @@ export function getZoomedScaleOffset(problem: ProblemStats) {
   const room_max = Math.max(problem.room_width, problem.room_height)
   const zoom_max = Math.max(zoom_x1 - zoom_x0, zoom_y1 - zoom_y0)
   const scale = room_max / zoom_max
-  if (problem.instruments == 25) {
-    console.log(getFullViewBox(problem), getZoomedRect(problem), [
-      toPct(zoom_cdx / room_max),
-      toPct(zoom_cdy / room_max),
-    ])
-  }
   return {
     scale,
     offset: {

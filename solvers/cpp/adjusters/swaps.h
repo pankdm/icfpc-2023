@@ -30,13 +30,15 @@ class AdjusterSwaps {
           double d = score_mult / SquaredDistanceL2(a.position, s.positions[k]);
           for (unsigned i = 0; i < p.total_instruments; ++i)
             vs[k][i] += a.tastes[i] * d;
-          old_dscore += a.tastes[p.instruments[k]] * d * vb[k] * s.Volume(k);
+          // old_dscore += a.tastes[p.instruments[k]] * d * vb[k] * s.Volume(k);
         }
       }
     }
     for (unsigned k = 0; k < vs.size(); ++k) {
       for (unsigned i = 0; i < vs[k].size(); ++i)
         vs[k][i] = std::max(max_volume * vs[k][i], 0.);
+      old_dscore += vs[k][p.instruments[k]];  // not really old score but this
+                                              // impovement should be discarded
     }
     double new_dscore = old_dscore;
     Solution snew = s;

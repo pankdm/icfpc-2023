@@ -12,6 +12,7 @@
 #include "common/geometry/d2/utils/intersect_segment.h"
 #include "common/solvers/evaluator.h"
 
+#include <string>
 #include <vector>
 
 class Evaluator : public solvers::Evaluator {
@@ -22,6 +23,7 @@ class Evaluator : public solvers::Evaluator {
     return l.correct ? r.correct ? l.score > r.score : true : false;
   }
 
+  // Check if solution valid
   static bool Valid(const Problem& p, const Solution& s) {
     if (p.instruments.size() != s.positions.size()) return false;
     for (unsigned i = 0; i < s.positions.size(); ++i) {
@@ -36,6 +38,7 @@ class Evaluator : public solvers::Evaluator {
     return true;
   }
 
+  // Different functions to check blocks
   static bool BlockedByCircle(const D2OpenSegment& segment,
                               const D2Vector& normal, const D2Point& center,
                               double radius) {
@@ -102,24 +105,52 @@ class Evaluator : public solvers::Evaluator {
     return Blocked(sam, vn, p, musician, s);
   }
 
+  // Score boost
+  static std::vector<double> ScoreBoost(const Problem& p, const Solution& s) {
+    if (p.instruments.size() != s.positions.size()) return {};
+    std::vector<double> v(s.positions.size(), 1.0);
+    if (stoi(p.Id()) <= last_problem_lighting) return v;
+    for (unsigned i = 0; i < v.size(); ++i) {
+      for (auto j : p.musicians[p.instruments[i]]) {
+        if (j == i) continue;
+        v[i] += 1.0 / DistanceL2(s.positions[i], s.positions[j]);
+      }
+    }
+    return v;
+  }
+
   // DScore for unblocked pair
-  static double DScore1(const Attendee& a, unsigned instrument,
-                        const D2Point& musician) {
+  static double DScoreRaw(const Attendee& a, unsigned instrument,
+                          const D2Point& musician) {
     return score_mult * a.tastes[instrument] /
            SquaredDistanceL2(a.position, musician);
   }
 
-  static int64_t IScore1(const Attendee& a, unsigned instrument,
-                         const D2Point& musician) {
-    return ceil(DScore1(a, instrument, musician));
+  static double DScoreRaw(const Attendee& a, unsigned instrument,
+                          const D2Point& musician, double boost) {
+    return boost * DScoreRaw(a, instrument, musician);
   }
 
-  // DScore for Attendee
+  static int64_t IScoreRaw(const Attendee& a, unsigned instrument,
+                           const D2Point& musician, double boost) {
+    return ceil(DScoreRaw(a, instrument, musician, boost));
+  }
+
+  // DScore for attendee
   static double DScoreIgnoreBlockedAttendee(const Attendee& a, const Problem& p,
                                             const Solution& s) {
     double dscore = 0.;
     for (unsigned i = 0; i < s.positions.size(); ++i)
-      dscore += DScore1(a, p.instruments[i], s.positions[i]);
+      dscore += DScoreRaw(a, p.instruments[i], s.positions[i]);
+    return dscore;
+  }
+
+  static double DScoreIgnoreBlockedAttendee(const Attendee& a, const Problem& p,
+                                            const Solution& s,
+                                            const std::vector<double>& vboost) {
+    double dscore = 0.;
+    for (unsigned i = 0; i < s.positions.size(); ++i)
+      dscore += DScoreRaw(a, p.instruments[i], s.positions[i], vboost[i]);
     return dscore;
   }
 
@@ -128,21 +159,47 @@ class Evaluator : public solvers::Evaluator {
                                             unsigned instrument,
                                             const D2Point& musician) {
     double dscore = 0.;
-    for (auto& a : p.attendees) dscore += DScore1(a, instrument, musician);
+    for (auto& a : p.attendees) dscore += DScoreRaw(a, instrument, musician);
     return dscore;
   }
 
-  // DScore for musician
+  static double DScoreIgnoreBlockedMusician(const Problem& p,
+                                            unsigned instrument,
+                                            const D2Point& musician,
+                                            double boost) {
+    return boost * DScoreIgnoreBlockedMusician(p, instrument, musician);
+  }
+
   static double DScoreIgnoreBlockedMusician(const Problem& p, unsigned musician,
                                             const Solution& s) {
     return DScoreIgnoreBlockedMusician(p, p.instruments[musician],
                                        s.positions[musician]);
   }
 
-  static double DScoreIgnoreBlocked(const Problem& p, const Solution& s) {
+  static double DScoreIgnoreBlockedMusician(const Problem& p, unsigned musician,
+                                            const Solution& s, double boost) {
+    return boost * DScoreIgnoreBlockedMusician(p, musician, s);
+  }
+
+  // Full DScore ignore blocked
+  static double DScoreIgnoreBlockedNoBoost(const Problem& p,
+                                           const Solution& s) {
     double dscore = 0.;
-    for (auto& a : p.attendees) dscore += DScoreIgnoreBlockedAttendee(a, p, s);
+    for (unsigned k = 0; k < s.positions.size(); ++k)
+      dscore += DScoreIgnoreBlockedMusician(p, k, s);
     return dscore;
+  }
+
+  static double DScoreIgnoreBlocked(const Problem& p, const Solution& s,
+                                    const std::vector<double>& vboost) {
+    double dscore = 0.;
+    for (unsigned k = 0; k < s.positions.size(); ++k)
+      dscore += DScoreIgnoreBlockedMusician(p, k, s, vboost[k]);
+    return dscore;
+  }
+
+  static double DScoreIgnoreBlocked(const Problem& p, const Solution& s) {
+    return DScoreIgnoreBlocked(p, s, ScoreBoost(p, s));
   }
 
   // DScore for Attendee
@@ -151,32 +208,93 @@ class Evaluator : public solvers::Evaluator {
     double dscore = 0.;
     for (unsigned i = 0; i < s.positions.size(); ++i) {
       if (Blocked(a, i, p, s)) continue;
-      dscore += DScore1(a, p.instruments[i], s.positions[i]);
+      dscore += DScoreRaw(a, p.instruments[i], s.positions[i]);
+    }
+    return dscore;
+  }
+
+  static double DScoreAttendee(const Attendee& a, const Problem& p,
+                               const Solution& s,
+                               const std::vector<double>& vboost) {
+    double dscore = 0.;
+    for (unsigned i = 0; i < s.positions.size(); ++i) {
+      if (Blocked(a, i, p, s)) continue;
+      dscore += DScoreRaw(a, p.instruments[i], s.positions[i], vboost[i]);
     }
     return dscore;
   }
 
   // IScore for Attendee
   static int64_t IScoreAttendee(const Attendee& a, const Problem& p,
-                                const Solution& s) {
+                                const Solution& s,
+                                const std::vector<double>& vboost) {
     int64_t iscore = 0.;
     for (unsigned i = 0; i < s.positions.size(); ++i) {
       if (Blocked(a, i, p, s)) continue;
-      iscore += IScore1(a, p.instruments[i], s.positions[i]);
+      iscore += IScoreRaw(a, p.instruments[i], s.positions[i], vboost[i]);
     }
     return iscore;
   }
 
-  static double DScore(const Problem& p, const Solution& s) {
+  // DScore for musician
+  static double DScoreMusician(const Problem& p, unsigned musician,
+                               const Solution& s) {
     double dscore = 0.;
-    for (auto& a : p.attendees) dscore += DScoreAttendee(a, p, s);
+    for (auto& a : p.attendees) {
+      if (Blocked(a, musician, p, s)) continue;
+      dscore += DScoreRaw(a, p.instruments[musician], s.positions[musician]);
+    }
     return dscore;
   }
 
-  static int64_t IScore(const Problem& p, const Solution& s) {
+  static double DScoreMusician(const Problem& p, unsigned musician,
+                               const Solution& s, double boost) {
+    return boost * DScoreMusician(p, musician, s);
+  }
+
+  // IScore for musician
+  static int64_t IScoreMusician(const Problem& p, unsigned musician,
+                                const Solution& s, double boost) {
     int64_t iscore = 0.;
-    for (auto& a : p.attendees) iscore += IScoreAttendee(a, p, s);
+    for (auto& a : p.attendees) {
+      if (Blocked(a, musician, p, s)) continue;
+      iscore +=
+          IScoreRaw(a, p.instruments[musician], s.positions[musician], boost);
+    }
     return iscore;
+  }
+
+  // Full DScore
+  static double DScoreNoBoost(const Problem& p, const Solution& s) {
+    double dscore = 0.;
+    for (unsigned k = 0; k < s.positions.size(); ++k)
+      dscore += DScoreMusician(p, k, s);
+    return dscore;
+  }
+
+  static double DScore(const Problem& p, const Solution& s,
+                       const std::vector<double>& vboost) {
+    double dscore = 0.;
+    for (unsigned k = 0; k < s.positions.size(); ++k)
+      dscore += DScoreMusician(p, k, s, vboost[k]);
+    return dscore;
+  }
+
+  static double DScore(const Problem& p, const Solution& s) {
+    return DScore(p, s, ScoreBoost(p, s));
+  }
+
+  // Full IScore
+  static int64_t IScore(const Problem& p, const Solution& s,
+                        const std::vector<double>& vboost) {
+    int64_t iscore = 0.;
+    for (unsigned k = 0; k < s.positions.size(); ++k)
+      iscore += IScoreMusician(p, k, s, vboost[k]);
+    return iscore;
+  }
+
+  static int64_t IScore(const Problem& p, const Solution& s) {
+    return IScore(p, s, ScoreBoost(p, s));
   }
 
   static Result Apply(const Problem& p, const Solution& s) {

@@ -78,8 +78,14 @@ def generate_problem_perception_map(problem, instrument_id):
     perception_map = get_perception_map((int(room_width), int(room_height)), (stage_x0, stage_y0, stage_x1, stage_y1), instrument_id, attendees)
     return perception_map
 
-def perception_map_to_png(data):
-    plt.imshow(data.swapaxes(0, 1), interpolation="nearest", origin="upper")
+def show_perception_map(lut):
+    plt.figure('Linear')
+    plt.imshow(lut.swapaxes(0, 1), interpolation="nearest", origin="upper")
+    plt.colorbar()
+    plt.gca().invert_yaxis()
+    lut_log10p = get_perception_log10p_map(lut)
+    plt.figure('Log 10')
+    plt.imshow(lut_log10p.swapaxes(0, 1), interpolation="nearest", origin="upper")
     plt.colorbar()
     plt.gca().invert_yaxis()
     plt.show()
@@ -94,6 +100,18 @@ def save_perception_map_preview(save_path, problem_id, instrument_id, data):
     plt.axis('off')
     plt.savefig(save_path, bbox_inches='tight', pad_inches=0)
     plt.close()
+
+def generate_and_save_perception_map_for_instrument(problem, instrument_id):
+    compute_radius = get_compute_radius((problem['room_width'], problem['room_height']))
+    previews_folder = f'perception_luts/{problem_id}/previews'
+    lut = generate_problem_perception_map(problem, instrument_id)
+    print(f'  ok.', end='')
+    save_perception_map_preview(f'{previews_folder}/{instrument_id}.png', problem_id, instrument_id, lut)
+    print(f' saved preview linear', end='')
+    lut_log10p = get_perception_log10p_map(lut)
+    save_perception_map_preview(f'{previews_folder}/{instrument_id}_log10.png', problem_id, instrument_id, lut_log10p)
+    print(f' and log10p.')
+    return lut
 
 def generate_and_save_perception_maps(problem_id):
     print(f'generating perceptions for problem {problem_id}')
@@ -116,15 +134,7 @@ def generate_and_save_perception_maps(problem_id):
     luts = []
     for instrument_id in range(instruments):
         print(f'   ...instrument {instrument_id}...', end='')
-        previews_folder = f'perception_luts/{problem_id}/previews'
-        lut = generate_problem_perception_map(problem, instrument_id)
-        print(f'  ok.', end='')
-        luts.append(lut)
-        save_perception_map_preview(f'{output_folder}/previews/{instrument_id}.png', problem_id, instrument_id, lut)
-        print(f' saved preview linear', end='')
-        lut_log10p = get_perception_log10p_map(lut)
-        save_perception_map_preview(f'{output_folder}/previews/{instrument_id}_log10.png', problem_id, instrument_id, lut_log10p)
-        print(f' and log10p.')
+        lut = generate_and_save_perception_map_for_instrument(problem, instrument_id)
     print(f' ...saved previews.')
     with open(f'{output_folder}/bin', 'wb') as bin_file:
         for lut in luts:
@@ -138,8 +148,9 @@ if __name__ == "__main__":
         instrument_id = int(sys.argv[2])
         with open(f'problems/{problem_id}.json', 'r') as file:
             problem = json.loads(file.read())
-        data = generate_problem_perception_map(problem, instrument_id)
-        perception_map_to_png(data)
+        print(f'Generating perception maps for instrument {instrument_id}...')
+        lut = generate_and_save_perception_map_for_instrument(problem, instrument_id)
+        show_perception_map(lut)
     elif len(sys.argv) == 2:
         problem_id = sys.argv[1]
         generate_and_save_perception_maps(problem_id)

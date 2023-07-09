@@ -72,7 +72,7 @@ export function useAPIData<T extends Record<string, any>>({
   const [fetchKey, refreshFetchKey] = useRandomKey()
   useEffect(() => {
     if ((skip as any)?.call ? (skip as () => boolean)() : skip) {
-      setData(null)
+      data && setData(null)
       return
     }
     setIsLoading(true)

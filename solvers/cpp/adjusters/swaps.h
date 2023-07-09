@@ -93,16 +93,18 @@ class AdjusterSwaps {
     }
 
     if (new_dscore > old_dscore) {
-      std::cout << "\tExpected: " << old_dscore << " -> " << new_dscore << "\t"
-                << Evaluator::DScore(p, snew) << std::endl;
       snew.volume.resize(snew.positions.size());
       for (unsigned i = 0; i < snew.positions.size(); ++i) {
         snew.volume[i] = (vs[i][p.instruments[i]] == 0) ? 0. : max_volume;
       }
+      // std::cout << "\tExpected: " << old_dscore << " -> " << new_dscore
+      //           << std::endl;
+      // std::cout << "\tEval    : " << Evaluator::DScore(p, s) << " -> "
+      //           << Evaluator::DScore(p, snew) << std::endl;
       auto old_iscore2 = Evaluator::IScore(p, s),
            new_iscore2 = Evaluator::IScore(p, snew);
-      std::cout << "\tFinal   : " << old_iscore2 << " -> " << new_iscore2
-                << std::endl;
+      // std::cout << "\tFinal   : " << old_iscore2 << " -> " << new_iscore2
+      //           << std::endl;
       if (new_iscore2 > old_iscore2) {
         s.positions.swap(snew.positions);
         s.volume.swap(snew.volume);

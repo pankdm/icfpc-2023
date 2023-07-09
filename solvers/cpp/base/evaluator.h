@@ -132,8 +132,13 @@ class Evaluator : public solvers::Evaluator {
   }
 
   static int64_t IScoreRaw(const Attendee& a, unsigned instrument,
+                           const D2Point& musician) {
+    return ceil(DScoreRaw(a, instrument, musician));
+  }
+
+  static int64_t IScoreRaw(const Attendee& a, unsigned instrument,
                            const D2Point& musician, double boost) {
-    return ceil(DScoreRaw(a, instrument, musician, boost));
+    return ceil(boost * IScoreRaw(a, instrument, musician));
   }
 
   // DScore for attendee

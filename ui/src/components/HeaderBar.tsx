@@ -9,7 +9,7 @@ export default function HeaderBar({ children, ...props }: GroupProps) {
   const triggerServerUpdate = () => {
     setIsUpdatingServer(true)
     API.updateServer()
-      .then((res) => {
+      .then(() => {
         //...
       })
       .finally(() => {

@@ -29,9 +29,8 @@ const fetchAPI = async (
 
 const API = {
   updateServer: async () =>
-    fetchAPI(`/update-server`, { method: 'POST' }) as Promise<Scoreboard>,
-  getScoreboard: async () =>
-    fetchAPI(`/scoreboard`) as Promise<SubprocessResult>,
+    fetchAPI(`/update-server`, { method: 'POST' }) as Promise<SubprocessResult>,
+  getScoreboard: async () => fetchAPI(`/scoreboard`) as Promise<Scoreboard>,
   getUserboard: async () => fetchAPI(`/userboard`) as Promise<Userboard>,
   getProblems: async () => fetchAPI(`/problems`) as Promise<Problems>,
   getProblemsStats: async () =>

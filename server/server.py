@@ -213,7 +213,7 @@ def get_solutions():
 
 @app.get("/scoreboard")
 def get_scoreboard():
-    return ICFPC.get_cached_scoreboard()
+    return ICFPC.get_scoreboard()
 
 @app.get("/userboard")
 def get_userboard():

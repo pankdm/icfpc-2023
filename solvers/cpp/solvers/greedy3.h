@@ -42,7 +42,6 @@ class Greedy3 : public BaseSolver {
     Timer t;
     const double dx = (sqrt(5.0) - 1.0) / 2.0;
     const double dy = sqrt(2.0) - 1.0;
-    const double d2 = musician_collision_radius * musician_collision_radius;
     unsigned iteration = 0;
     OneMusucian md{{}, -1e16};
     std::vector<OneMusucian> cur_best(p.total_instruments, md);
@@ -93,9 +92,8 @@ class Greedy3 : public BaseSolver {
       auto m = cur_best[best_i];
       vm.push_back(m.pos);
       s.positions[p.musicians[best_i][vic[best_i]++]] = m.pos;
-      for (unsigned i = 0; i < p.total_instruments; ++i) {
-        if (SquaredDistanceL2(cur_best[i].pos, m.pos) < d2) cur_best[i] = md;
-      }
+      // Invalidate all cur_best
+      std::fill(cur_best.begin(), cur_best.end(), md);
     }
     if (all_found) {
       std::cout << "Greedy3:\t" << p.Id() << "\t" << t.GetSeconds() << "\t"

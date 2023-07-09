@@ -34,7 +34,7 @@ class RGreedy1 : public BaseSolver {
 
   PSolver Clone() const override { return std::make_shared<RGreedy1>(*this); }
 
-  std::string Name() const override { return "loks_greedy1"; }
+  std::string Name() const override { return "loks_rgreedy1"; }
 
   bool SkipSolutionRead() const override { return true; }
   // bool SkipBest() const override { return true; }
@@ -191,8 +191,9 @@ class RGreedy1 : public BaseSolver {
         if (m.score_without_boost <= 0.) s.volume[m.sindex] = 0.;
       }
       std::cout << "RGreedy1:\t" << p.Id() << "\t" << t.GetSeconds() << "\t"
-                << expected_score << "\t" << Evaluator::DScore(p, s) << "\t"
-                << Evaluator::IScore(p, s) << std::endl;
+                << max_volume * expected_score << "\t"
+                << Evaluator::DScore(p, s) << "\t" << Evaluator::IScore(p, s)
+                << std::endl;
     } else {
       std::cout << "RGreedy1:\t" << p.Id() << "\t" << t.GetSeconds()
                 << "\tfailed." << std::endl;

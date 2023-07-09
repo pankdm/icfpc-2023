@@ -62,7 +62,7 @@ inline double EstimateProblem(const Problem& p) {
       int instrument_score = 0;
       for (const auto a_idx : visible_idx[b_idx]) {
         const auto& a = p.attendees[a_idx];
-        instrument_score += ceil(score_mult * a.tastes[ins_id] /
+        instrument_score += ceil(10 * score_mult * a.tastes[ins_id] /
                                  SquaredDistanceL2(a.position, position));
       }
       possible_scores.push_back(instrument_score);

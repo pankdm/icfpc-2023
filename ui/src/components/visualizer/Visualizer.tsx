@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { Box, MantineSize, Paper, PaperProps } from '@mantine/core'
 import { Problem, ProblemStats, Solution } from '../../api/types'
 import { Rect } from './primitives'
@@ -12,6 +13,19 @@ const getPreviewImageURL = (
   instrumentId: number,
   mode: 'linear' | 'log'
 ) => `${API_URL}/problems/${problemId}/instruments/${instrumentId}/lut/${mode}`
+
+// using `memo` to optimize React re-rendering
+const Attendees = memo(function Attendees({ problem }: { problem: Problem }) {
+  const { room_width, room_height } = problem
+  const rmin = Math.min(room_width, room_height)
+  return (
+    <>
+      {problem.attendees.map((att, idx) => (
+        <Attendee key={idx} x={att.x} y={att.y} radius={rmin * 0.0025} />
+      ))}
+    </>
+  )
+})
 
 export default function Visualizer({
   size,
@@ -38,7 +52,6 @@ export default function Visualizer({
     stage_height,
     stage_bottom_left: [stage_x, stage_y],
   } = problem
-  const rmin = Math.min(room_width, room_height)
   const zoomViewBox =
     problemStats && zoomMode === 'Zoom'
       ? getZoomedViewBox(problemStats)
@@ -100,9 +113,7 @@ export default function Visualizer({
         ))}
 
         {/* attendees */}
-        {problem.attendees.map((att, idx) => (
-          <Attendee key={idx} x={att.x} y={att.y} radius={rmin * 0.0025} />
-        ))}
+        <Attendees problem={problem} />
 
         {/* musicians */}
         {solution?.placements?.map((p, idx) => (

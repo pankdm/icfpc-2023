@@ -20,12 +20,12 @@ inline void EvaluateSolution(const std::string& solver_name) {
   std::cout << "Total = " << total << std::endl;
 }
 
-// inline void UpdateBest(const std::string& solver_name) {
-//   for (unsigned i = 1; i <= last_problem; ++i) {
-//     auto b = solvers::ext::UpdateBest<Evaluator, Problem, Solution>(
-//         std::to_string(i), solver_name, "best");
-//     if (b) {
-//       std::cout << "Best was updated for problem: " << i << std::endl;
-//     }
-//   }
-// }
+inline void UpdateBest(const std::string& solver_name) {
+  for (unsigned i = 1; i <= last_problem; ++i) {
+    auto b = solvers::ext::UpdateBest<Evaluator, Problem, Solution>(
+        std::to_string(i), solver_name, "loks_best");
+    if (b) {
+      std::cout << "Best was updated for problem: " << i << std::endl;
+    }
+  }
+}

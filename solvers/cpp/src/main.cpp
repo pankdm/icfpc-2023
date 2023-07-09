@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
       std::cerr << "Unknown adjuster name " << name << std::endl;
     }
   } else if (mode == "update") {
-    // UpdateBest(cmd.GetString("solution"));
+    UpdateBest(cmd.GetString("solution"));
   } else if (mode == "estimate") {
     EstimateAllProblems();
   } else if (mode == "run") {

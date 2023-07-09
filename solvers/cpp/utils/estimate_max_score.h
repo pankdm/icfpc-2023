@@ -33,15 +33,35 @@ inline double EstimateProblem(const Problem& p) {
     border.push_back(D2Point{p.stage.p2.x, y});
   }
 
+  std::vector<std::vector<int>> visible_idx(border.size());
+  for (int b_idx = 0; b_idx < border.size(); ++b_idx) {
+    const auto& position = border[b_idx];
+    for (int i = 0; i < p.attendees.size(); ++i) {
+      bool any_blocked = false;
+      const auto& a = p.attendees[i];
+      for (const auto& pillar : p.pillars) {
+        if (Evaluator::BlockedByPillar(a, pillar, position)) {
+          any_blocked = true;
+          break;
+        }
+      }
+      if (!any_blocked) {
+        visible_idx[b_idx].push_back(i);
+      }
+    }
+  }
+
   double total_score = 0;
   for (int ins_id = 0; ins_id < p.total_instruments; ++ins_id) {
     if (ins_id % 100 == 0) {
       std::cout << "instrument = " << ins_id << std::endl;
     }
     std::vector<double> possible_scores;
-    for (const auto position : border) {
+    for (int b_idx = 0; b_idx < border.size(); ++b_idx) {
+      const auto& position = border[b_idx];
       int instrument_score = 0;
-      for (auto& a : p.attendees) {
+      for (const auto a_idx : visible_idx[b_idx]) {
+        const auto& a = p.attendees[a_idx];
         instrument_score += ceil(score_mult * a.tastes[ins_id] /
                                  SquaredDistanceL2(a.position, position));
       }
@@ -69,6 +89,7 @@ inline void EstimateAllProblems() {
   }
 
   for (int i = 1; i <= last_problem; ++i) {
+    // for (int i = 88; i <= 88; ++i) {
     Problem p;
     const std::string pid = std::to_string(i);
     if (!p.Load(pid)) continue;

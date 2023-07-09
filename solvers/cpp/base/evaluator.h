@@ -73,6 +73,20 @@ class Evaluator : public solvers::Evaluator {
     return false;
   }
 
+  static bool BlockedByPillar(const Attendee& a, const D2Circle& pillar,
+                              const D2Point& position) {
+    const auto& pa = a.position;
+    const auto& pk = position;
+    D2LinePV l(pa, pk);
+    l.Normalize();
+    auto ln = l.Normal() * pillar.r;
+    D2ClosedSegment sak(pa, pk);
+    auto& pi = pillar.c;
+    D2OpenSegment st(pi - ln, pi + ln);
+    if (Intersect(sak, st)) return true;
+    return false;
+  }
+
   static bool Blocked(const D2OpenSegment& segment, const D2Vector& normal,
                       const Problem& p, unsigned exclude, const Solution& s) {
     return BlockedByMusucians(segment, normal, exclude, s.positions) ||

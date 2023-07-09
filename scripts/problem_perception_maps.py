@@ -102,7 +102,6 @@ def generate_and_save_perception_maps(problem_id):
     with open(f'problems/{problem_id}.json', 'r') as file:
         problem = json.loads(file.read())
     instruments = len(problem['attendees'][0]['tastes'])
-    luts = []
     print(f' ...saving meta')
     with open(f'{output_folder}/meta.json', 'w') as meta_file:
         meta = {
@@ -114,19 +113,22 @@ def generate_and_save_perception_maps(problem_id):
         meta_file.write(json.dumps(meta, indent=2))
     compute_radius = get_compute_radius((problem['room_width'], problem['room_height']))
     print(f' ...generating LUTs with compute radius {compute_radius}')
+    luts = []
+    for instrument_id in range(instruments):
+        print(f'   ...instrument {instrument_id}...', end='')
+        previews_folder = f'perception_luts/{problem_id}/previews'
+        lut = generate_problem_perception_map(problem, instrument_id)
+        print(f'  ok.', end='')
+        luts.append(lut)
+        save_perception_map_preview(f'{output_folder}/previews/{instrument_id}.png', problem_id, instrument_id, lut)
+        print(f' saved preview linear', end='')
+        lut_log10p = get_perception_log10p_map(lut)
+        save_perception_map_preview(f'{output_folder}/previews/{instrument_id}_log10.png', problem_id, instrument_id, lut_log10p)
+        print(f' and log10p.')
+    print(f' ...saved previews.')
     with open(f'{output_folder}/bin', 'wb') as bin_file:
-        for instrument_id in range(instruments):
-            print(f'   ...instrument {instrument_id}...', end='')
-            previews_folder = f'perception_luts/{problem_id}/previews'
-            lut = generate_problem_perception_map(problem, instrument_id)
-            print(f'  ok.', end='')
-            luts.append(lut)
+        for lut in luts:
             bin_file.write(lut.tobytes())
-            print(f'  added to LUT bin.')
-            save_perception_map_preview(f'{output_folder}/previews/{instrument_id}.png', problem_id, instrument_id, lut)
-            lut_log10p = get_perception_log10p_map(lut)
-            save_perception_map_preview(f'{output_folder}/previews/{instrument_id}_log10.png', problem_id, instrument_id, lut_log10p)
-        print(f' ...saved previews.')
     print(f' ...saved bin LUT.')
     print(f'done for #{problem_id}')
 

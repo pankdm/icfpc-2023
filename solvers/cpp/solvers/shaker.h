@@ -89,8 +89,9 @@ class Shaker : public BaseSolver {
       exit(1);
     }
     auto start = t.GetMilliseconds();
-    auto current_score = Evaluator::Apply(p, s).score;
-    std::cout << "Loaded, current score = " << current_score
+    auto start_score = Evaluator::Apply(p, s).score;
+    auto current_score = start_score;
+    std::cout << "Loaded, current score = " << start_score
               << ", time = " << t.GetMilliseconds() - start << "ms"
               << std::endl;
 
@@ -184,7 +185,8 @@ class Shaker : public BaseSolver {
       auto score_old = Evaluator::Apply(p, s).score;
       auto score_new = Evaluator::Apply(p, snew).score;
       std::cout << "New solution from adjuster for problem " << p.Id() << ":\t"
-                << score_old << " -> " << score_new << std::endl;
+                << start_score << " -> " << score_old << " -> " << score_new
+                << std::endl;
       s = snew;
     }
 

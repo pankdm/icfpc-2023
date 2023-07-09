@@ -140,9 +140,10 @@ class BorderSolver : public BaseSolver {
       s.positions[m_idx] = candidate_position;
     }
 
-    if (m_idx >= candidate_position.size()) {
+    if (m_idx >= candidates.size()) {
       // not enough musicians to fill 2 rows
       // need to run fake assignment
+      return -1;
     } else {
       // both rows filled
       // auto res = Evaluator::Apply(p, s);

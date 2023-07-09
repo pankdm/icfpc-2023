@@ -8,6 +8,7 @@
 #include "solvers/greedy1.h"
 #include "solvers/greedy2.h"
 #include "solvers/greedy3.h"
+#include "solvers/rgreedy1.h"
 #include "solvers/shaker.h"
 #include "utils/check_silent_location.h"
 #include "utils/check_with_adjuster.h"
@@ -34,16 +35,18 @@ void InitCommaneLine(files::CommandLine& cmd) {
 BaseSolver::PSolver CreateSolver(const files::CommandLine& cmd,
                                  const std::string& solver_name) {
   auto timelimit = cmd.GetInt("timelimit");
-  if (solver_name == "greedy1") {
+  if (solver_name == "border") {
+    return std::make_shared<BorderSolver>(timelimit);
+  } else if (solver_name == "greedy1") {
     return std::make_shared<Greedy1>(timelimit);
   } else if (solver_name == "greedy2") {
     return std::make_shared<Greedy2>(timelimit, cmd.GetInt("extra"));
   } else if (solver_name == "greedy3") {
     return std::make_shared<Greedy3>(timelimit, cmd.GetInt("extra"));
+  } else if (solver_name == "rgreedy1") {
+    return std::make_shared<RGreedy1>(timelimit, cmd.GetInt("extra"));
   } else if (solver_name == "shaker") {
     return std::make_shared<Shaker>(timelimit);
-  } else if (solver_name == "border") {
-    return std::make_shared<BorderSolver>(timelimit);
   } else {
     std::cerr << "Unknown solver type: " << solver_name << std::endl;
     exit(-1);

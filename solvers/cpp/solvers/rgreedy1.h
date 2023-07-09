@@ -140,20 +140,21 @@ class RGreedy1 : public BaseSolver {
       }
       expected_score += best;
       assert(vic[best_i] < p.musicians[best_i].size());
-      s.positions[p.musicians[best_i][vic[best_i]++]] = best_p;
+      unsigned sindex = p.musicians[best_i][vic[best_i]++];
+      s.positions[sindex] = best_p;
       if (vic[best_i] == p.musicians[best_i].size())
         us_instruments.Remove(best_i);
       // Init new musician
       OneMusician2 mnew;
       mnew.pos = best_p;
       mnew.instrument = best_i;
+      mnew.sindex = sindex;
       mnew.audience = OneMusician2::FindAudience(mnew.pos, p, vm);
       mnew.score_without_boost = 0.;
       for (auto i : mnew.audience) {
         auto& a = p.attendees[i];
         mnew.score_without_boost += a.tastes[mnew.instrument] * score_mult /
                                     SquaredDistanceL2(a.position, mnew.pos);
-        for (auto j : usl) vscore_without_boost[j] += a.tastes[j] * d;
       }
       mnew.boost_mult = 1.0;
       // Adjust audience for old ones
@@ -186,6 +187,9 @@ class RGreedy1 : public BaseSolver {
       vm.push_back(mnew);
     }
     if (all_found) {
+      for (auto& m : vm) {
+        if (m.score_without_boost <= 0.) s.volume[m.sindex] = 0.;
+      }
       std::cout << "RGreedy1:\t" << p.Id() << "\t" << t.GetSeconds() << "\t"
                 << expected_score << "\t" << Evaluator::DScore(p, s) << "\t"
                 << Evaluator::IScore(p, s) << std::endl;

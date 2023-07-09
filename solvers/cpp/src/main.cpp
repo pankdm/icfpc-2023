@@ -5,9 +5,8 @@
 #include "solvers/greedy2.h"
 #include "solvers/packer.h"
 #include "utils/check_with_adjuster.h"
-#include "utils/evaluate_solution.h"
 #include "utils/estimate_max_score.h"
-
+#include "utils/evaluate_solution.h"
 
 #include "common/files/command_line.h"
 #include "common/solvers/ext/run_n.h"
@@ -19,6 +18,7 @@ void InitCommaneLine(files::CommandLine& cmd) {
   cmd.AddArg("solution", "best");
   cmd.AddArg("solver", "greedy1");
   cmd.AddArg("timelimit", 125);
+  cmd.AddArg("extra", 0);
   cmd.AddArg("nthreads", 4);
   cmd.AddArg("first_problem", 1);
   cmd.AddArg("last_problem", last_problem);
@@ -30,7 +30,7 @@ BaseSolver::PSolver CreateSolver(const files::CommandLine& cmd,
   if (solver_name == "greedy1") {
     return std::make_shared<Greedy1>(timelimit);
   } else if (solver_name == "greedy2") {
-    return std::make_shared<Greedy2>(timelimit);
+    return std::make_shared<Greedy2>(timelimit, cmd.GetInt("extra"));
   } else if (solver_name == "packer") {
     return std::make_shared<Packer>(timelimit);
   } else {

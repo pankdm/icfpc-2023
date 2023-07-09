@@ -20,9 +20,16 @@ class Greedy2 : public BaseSolver {
   using TBase = BaseSolver;
   using PSolver = TBase::PSolver;
 
+ protected:
+  unsigned samples_per_search = 100;
+
  public:
   Greedy2() : BaseSolver() {}
-  explicit Greedy2(unsigned _max_time) : BaseSolver(_max_time) {}
+
+  explicit Greedy2(unsigned _max_time, unsigned extra)
+      : BaseSolver(_max_time), samples_per_search(extra) {
+    if (samples_per_search == 0) samples_per_search = 100;
+  }
 
   PSolver Clone() const override { return std::make_shared<Greedy2>(*this); }
 
@@ -58,7 +65,7 @@ class Greedy2 : public BaseSolver {
         if (t.GetSeconds() > max_time_in_seconds) break;
         if (vic[i] == p.musicians[i].size()) continue;
         if (cur_best[i].score == md.score) {
-          for (unsigned j = 0; j < 100; ++j) {
+          for (unsigned j = 0; j < samples_per_search; ++j) {
             auto xi = dx * iteration, yi = dy * iteration;
             xi -= floor(xi);
             yi -= floor(yi);
@@ -97,7 +104,7 @@ class Greedy2 : public BaseSolver {
     if (all_found) {
       std::cout << "Greedy2:\t" << p.Id() << "\t" << t.GetSeconds() << "\t"
                 << expected_dscore_ib << "\t"
-                << Evaluator::DScoreIgnoreBlocked(p, s) << "\t"
+                << Evaluator::DScoreIgnoreBlockedNoBoost(p, s) << "\t"
                 << Evaluator::DScore(p, s) << "\t" << Evaluator::IScore(p, s)
                 << std::endl;
     } else {

@@ -140,54 +140,60 @@ class BorderSolver : public BaseSolver {
       s.positions[m_idx] = candidate_position;
     }
 
-    // auto res = Evaluator::Apply(p, s);
-    // if (res.correct) {
-    //   std::cout << "Finished iteration, current score = " << res.score
-    //             << ", time = " << t.GetMilliseconds() - start << "ms"
-    //             << std::endl;
-    // }
+    if (m_idx >= candidate_position.size()) {
+      // not enough musicians to fill 2 rows
+      // need to run fake assignment
+    } else {
+      // both rows filled
+      // auto res = Evaluator::Apply(p, s);
+      // if (res.correct) {
+      //   std::cout << "Finished iteration, current score = " << res.score
+      //             << ", time = " << t.GetMilliseconds() - start << "ms"
+      //             << std::endl;
+      // }
 
-    // std::cout << "filling out remaining" << std::endl;
-    auto pos = D2Point{p.stage.p1.x + musician_collision_radius,
-                       p.stage.p1.y + musician_collision_radius};
-    for (; m_idx < s.positions.size(); ++m_idx) {
-      for (;;) {
-        if (CheckNonOverlapping(pos, p, s)) {
-          s.positions[m_idx] = pos;
-          break;
-        }
-        pos.x += musician_collision_radius;
-        if (pos.x > p.stage.p2.x) {
-          pos.x = p.stage.p1.x;
-          pos.y += musician_collision_radius;
-          if (pos.y > p.stage.p2.y) {
-            std::cout << "Error filling musicians" << std::endl;
+      // std::cout << "filling out remaining" << std::endl;
+      auto pos = D2Point{p.stage.p1.x + musician_collision_radius,
+                         p.stage.p1.y + musician_collision_radius};
+      for (; m_idx < s.positions.size(); ++m_idx) {
+        for (;;) {
+          if (CheckNonOverlapping(pos, p, s)) {
+            s.positions[m_idx] = pos;
             break;
+          }
+          pos.x += musician_collision_radius;
+          if (pos.x > p.stage.p2.x) {
+            pos.x = p.stage.p1.x;
+            pos.y += musician_collision_radius;
+            if (pos.y > p.stage.p2.y) {
+              std::cout << "Error filling musicians" << std::endl;
+              break;
+            }
           }
         }
       }
+
+      auto snew = s;
+      // std::cout << " Started assignment run for problem " << p.Id() <<
+      // std::endl;
+      AdjusterAssignment adj;
+      if (adj.Check(p, snew)) {
+        auto score_new = Evaluator::Apply(p, snew).score;
+        // std::cout << "New solution from adjuster for problem " << p.Id() <<
+        // ":\t"
+        //           << start_score << " -> " << score_new << std::endl;
+
+        std::cout << "  New solution from adjuster for problem " << p.Id()
+                  << ":\t" << score_new << std::endl;
+
+        s = snew;
+
+        s.Save(Name());
+        std::cout << "  ..saving solution to " << Name() << std::endl;
+        return score_new;
+      }
+      return -1;
     }
-
-    auto snew = s;
-    // std::cout << " Started assignment run for problem " << p.Id() <<
-    // std::endl;
-    AdjusterAssignment adj;
-    if (adj.Check(p, snew)) {
-      auto score_new = Evaluator::Apply(p, snew).score;
-      // std::cout << "New solution from adjuster for problem " << p.Id() <<
-      // ":\t"
-      //           << start_score << " -> " << score_new << std::endl;
-
-      std::cout << "  New solution from adjuster for problem " << p.Id()
-                << ":\t" << score_new << std::endl;
-
-      s = snew;
-
-      s.Save(Name());
-      std::cout << "  ..saving solution to " << Name() << std::endl;
-      return score_new;
-    }
-    return -1;
   }
 
   Solution Solve(const TProblem& p) override {

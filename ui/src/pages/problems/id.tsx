@@ -113,7 +113,7 @@ export default function ProblemInspector() {
             onChange={(v) => $renderMode.set(v as any)}
           />
           <SegmentedControl
-            data={["full", "zoom"]}
+            data={["zoom", "full"]}
             value={zoomMode}
             onChange={(v) => $zoomMode.set(v as any)}
           />

@@ -143,14 +143,15 @@ def generate_and_save_perception_maps(problem_id):
     print(f'done for #{problem_id}')
 
 if __name__ == "__main__":
-    if len(sys.argv) == 3:
+    if len(sys.argv) >= 3:
         problem_id = sys.argv[1]
         instrument_id = int(sys.argv[2])
         with open(f'problems/{problem_id}.json', 'r') as file:
             problem = json.loads(file.read())
         print(f'Generating perception maps for instrument {instrument_id}...')
         lut = generate_and_save_perception_map_for_instrument(problem, instrument_id)
-        show_perception_map(lut)
+        if len(sys.argv) == 4 and sys.argv[3] == 'inspect':
+            show_perception_map(lut)
     elif len(sys.argv) == 2:
         problem_id = sys.argv[1]
         generate_and_save_perception_maps(problem_id)

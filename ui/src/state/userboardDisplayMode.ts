@@ -8,5 +8,5 @@ export const $userboardDisplayMode = persistentAtom<string>(
 
 export const $userboardZoomMode = persistentAtom<string>(
   'icfpc-2023:userboard_zoom_mode',
-  'Table'
+  'Zoom'
 )

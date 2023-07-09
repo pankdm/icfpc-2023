@@ -20,7 +20,7 @@ class AdjusterAssignment {
         s.positions.size(), std::vector<double>(p.total_instruments, 0.));
     for (unsigned k = 0; k < s.positions.size(); ++k) {
       for (auto& a : p.attendees) {
-        if (!Evaluator::Blocked(a, s, k)) {
+        if (!Evaluator::Blocked(a, k, p, s)) {
           double d = score_mult / SquaredDistanceL2(a.position, s.positions[k]);
           for (unsigned i = 0; i < p.total_instruments; ++i)
             vs[k][i] += a.tastes[i] * d;

@@ -5,11 +5,14 @@
 #include "base/problem.h"
 #include "base/solution.h"
 
+#include "common/geometry/d2/base.h"
+#include "common/geometry/d2/circle.h"
 #include "common/geometry/d2/distance/distance_l2.h"
-#include "common/geometry/d2/line_pv.h"
 #include "common/geometry/d2/segment.h"
 #include "common/geometry/d2/utils/intersect_segment.h"
 #include "common/solvers/evaluator.h"
+
+#include <vector>
 
 class Evaluator : public solvers::Evaluator {
  public:
@@ -33,47 +36,93 @@ class Evaluator : public solvers::Evaluator {
     return true;
   }
 
-  static bool Blocked(const Attendee& a, const Solution& s, unsigned k) {
-    auto &pa = a.position, &pk = s.positions[k];
-    D2LinePV l(pa, pk);
-    l.Normalize();
-    auto ln = l.Normal() * musician_block_radius;
-    D2ClosedSegment sak(pa, pk);
-    for (unsigned i = 0; i < s.positions.size(); ++i) {
-      if (i == k) continue;
-      auto& pi = s.positions[i];
-      D2OpenSegment st(pi - ln, pi + ln);
-      if (Intersect(sak, st)) return true;
+  static bool BlockedByCircle(const D2OpenSegment& segment,
+                              const D2Vector& normal, const D2Point& center,
+                              double radius) {
+    D2OpenSegment s2(center - normal * radius, center + normal * radius);
+    return Intersect(segment, s2);
+  }
+
+  static bool BlockedByMusucian(const D2OpenSegment& segment,
+                                const D2Vector& normal,
+                                const D2Point& position) {
+    return BlockedByCircle(segment, normal, position, musician_block_radius);
+  }
+
+  static bool BlockedByMusucians(const D2OpenSegment& segment,
+                                 const D2Vector& normal, unsigned exclude,
+                                 const std::vector<D2Point>& positions) {
+    for (unsigned i = 0; i < positions.size(); ++i) {
+      if (i == exclude) continue;
+      if (BlockedByMusucian(segment, normal, positions[i])) return true;
     }
     return false;
+  }
+
+  static bool BlockedByPillar(const D2OpenSegment& segment,
+                              const D2Vector& normal, const D2Circle& pillar) {
+    return BlockedByCircle(segment, normal, pillar.c, pillar.r);
+  }
+
+  static bool BlockedByPillars(const D2OpenSegment& segment,
+                               const D2Vector& normal,
+                               const std::vector<D2Circle>& pillars) {
+    for (auto& p : pillars) {
+      if (BlockedByPillar(segment, normal, p)) return true;
+    }
+    return false;
+  }
+
+  static bool Blocked(const D2OpenSegment& segment, const D2Vector& normal,
+                      const Problem& p, unsigned exclude, const Solution& s) {
+    return BlockedByMusucians(segment, normal, exclude, s.positions) ||
+           BlockedByPillars(segment, normal, p.pillars);
+  }
+
+  static bool Blocked(const Attendee& a, unsigned musician, const Problem& p,
+                      const Solution& s) {
+    auto &pa = a.position, &pm = s.positions[musician];
+    D2OpenSegment sam(pa, pm);
+    auto vn = (pm - pa).RotateHalfPi();
+    vn.Normalize();
+    return Blocked(sam, vn, p, musician, s);
+  }
+
+  // DScore for unblocked pair
+  static double DScore1(const Attendee& a, unsigned instrument,
+                        const D2Point& musician) {
+    return score_mult * a.tastes[instrument] /
+           SquaredDistanceL2(a.position, musician);
+  }
+
+  static int64_t IScore1(const Attendee& a, unsigned instrument,
+                         const D2Point& musician) {
+    return ceil(DScore1(a, instrument, musician));
   }
 
   // DScore for Attendee
   static double DScoreIgnoreBlockedAttendee(const Attendee& a, const Problem& p,
                                             const Solution& s) {
     double dscore = 0.;
-    for (unsigned i = 0; i < s.positions.size(); ++i) {
-      dscore += score_mult * a.tastes[p.instruments[i]] /
-                SquaredDistanceL2(a.position, s.positions[i]);
-    }
+    for (unsigned i = 0; i < s.positions.size(); ++i)
+      dscore += DScore1(a, p.instruments[i], s.positions[i]);
     return dscore;
   }
 
   // DScore for musician
   static double DScoreIgnoreBlockedMusician(const Problem& p,
                                             unsigned instrument,
-                                            const D2Point& pos) {
+                                            const D2Point& musician) {
     double dscore = 0.;
-    for (auto& a : p.attendees)
-      dscore += score_mult * a.tastes[instrument] /
-                SquaredDistanceL2(a.position, pos);
+    for (auto& a : p.attendees) dscore += DScore1(a, instrument, musician);
     return dscore;
   }
 
   // DScore for musician
-  static double DScoreIgnoreBlockedMusician(const Problem& p, const Solution& s,
-                                            unsigned k) {
-    return DScoreIgnoreBlockedMusician(p, p.instruments[k], s.positions[k]);
+  static double DScoreIgnoreBlockedMusician(const Problem& p, unsigned musician,
+                                            const Solution& s) {
+    return DScoreIgnoreBlockedMusician(p, p.instruments[musician],
+                                       s.positions[musician]);
   }
 
   static double DScoreIgnoreBlocked(const Problem& p, const Solution& s) {
@@ -87,9 +136,8 @@ class Evaluator : public solvers::Evaluator {
                                const Solution& s) {
     double dscore = 0.;
     for (unsigned i = 0; i < s.positions.size(); ++i) {
-      if (Blocked(a, s, i)) continue;
-      dscore += score_mult * a.tastes[p.instruments[i]] /
-                SquaredDistanceL2(a.position, s.positions[i]);
+      if (Blocked(a, i, p, s)) continue;
+      dscore += DScore1(a, p.instruments[i], s.positions[i]);
     }
     return dscore;
   }
@@ -99,15 +147,8 @@ class Evaluator : public solvers::Evaluator {
                                 const Solution& s) {
     int64_t iscore = 0.;
     for (unsigned i = 0; i < s.positions.size(); ++i) {
-      // if (Blocked(a, s, i)) {
-      //   std::cout << "Blocked score = "
-      //             << ceil(score_mult * a.tastes[p.instruments[i]] /
-      //                     SquaredDistanceL2(a.position, s.positions[i]))
-      //             << std::endl;
-      // }
-      if (Blocked(a, s, i)) continue;
-      iscore += ceil(score_mult * a.tastes[p.instruments[i]] /
-                     SquaredDistanceL2(a.position, s.positions[i]));
+      if (Blocked(a, i, p, s)) continue;
+      iscore += IScore1(a, p.instruments[i], s.positions[i]);
     }
     return iscore;
   }

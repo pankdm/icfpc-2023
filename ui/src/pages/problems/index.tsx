@@ -146,6 +146,13 @@ export default function Problems() {
             <SegmentedControl
               color="orange.5"
               size="sm"
+              data={['Table', 'Previews']}
+              value={displayMode}
+              onChange={$userboardDisplayMode.set}
+            />
+            <SegmentedControl
+              color="orange.5"
+              size="sm"
               data={[
                 {
                   label: '(Z)oom',

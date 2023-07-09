@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import _ from 'lodash'
 import { Box, MantineSize, Paper, PaperProps } from '@mantine/core'
 import { Problem, ProblemStats, Solution } from '../../api/types'
 import { Rect } from './primitives'
@@ -7,6 +8,7 @@ import { getFullViewBox, getZoomedViewBox } from '../../utils/camera'
 import { API_URL } from '../../api'
 import { $previewInstrumentsMode } from '../../state/renderMode'
 import { useStore } from '@nanostores/react'
+import { animated, to, useSpring } from '@react-spring/web'
 
 const getPreviewImageURL = (
   problemId: string | number,
@@ -63,6 +65,11 @@ export default function Visualizer({
       ? getZoomedViewBox(problemStats)
       : getFullViewBox(problem)
   const previewInstrumentsMode = useStore($previewInstrumentsMode)
+  const anim = useSpring({
+    to: { box: zoomViewBox },
+  })
+
+  console.log(anim)
   return (
     <Paper
       w={size}
@@ -74,10 +81,10 @@ export default function Visualizer({
       {...props}
     >
       <Box
-        component="svg"
+        component={animated.svg}
         w="100%"
         h="100%"
-        viewBox={zoomViewBox.join(' ')}
+        viewBox={to(zoomViewBox, (..._box) => _box.join(' '))}
         transform="scale(1,-1)"
       >
         {/* stage */}

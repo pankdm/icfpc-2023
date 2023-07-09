@@ -15,6 +15,8 @@ import {
   LoadingOverlay,
   Select,
   SegmentedControl,
+  RangeSlider,
+  Slider,
 } from '@mantine/core'
 import { $problem, setProblemId } from '../../state/problem'
 import API, { useAPIData } from '../../api'
@@ -24,11 +26,13 @@ import Visualizer3D from '../../components/visualizer/Visualizer.3d'
 import ProblemPreview from '../../components/ProblemPreview'
 import { $renderMode, $zoomMode } from '../../state/renderMode'
 import config from '../../config'
+import { $userboardZoomMode } from '../../state/userboardDisplayMode'
 
 export default function ProblemInspector() {
   const { problemId: problemIdStr } = useParams()
   const renderMode = useStore($renderMode)
   const zoomMode = useStore($zoomMode)
+  const previewsZoomMode = useStore($userboardZoomMode)
   const problemId = parseInt(problemIdStr as any)
   const [solutionId, setSolutionId] = useState<string | null>(null)
   const problem = useStore($problem)
@@ -39,6 +43,10 @@ export default function ProblemInspector() {
     skip: !problemId,
     fetch: () => API.getProblem(problemId as any),
     onSuccess: (_problem) => $problem.set(_problem),
+    deps: [problemId],
+  })
+  const { data: allProblemsStats } = useAPIData({
+    fetch: () => API.getProblemsStats(),
     deps: [problemId],
   })
   const { data: stats } = useAPIData({
@@ -90,6 +98,8 @@ export default function ProblemInspector() {
                       size="4rem"
                       problemId={_problemId}
                       radius={0}
+                      problemStats={allProblemsStats?.problems[_problemId]}
+                      zoomMode={previewsZoomMode}
                     />
                     # {_problemId}
                   </Group>
@@ -113,7 +123,7 @@ export default function ProblemInspector() {
             onChange={(v) => $renderMode.set(v as any)}
           />
           <SegmentedControl
-            data={["zoom", "full"]}
+            data={['Zoom', 'Full']}
             value={zoomMode}
             onChange={(v) => $zoomMode.set(v as any)}
           />
@@ -132,19 +142,23 @@ export default function ProblemInspector() {
             </Group>
             <Space h="xl" />
             <Group position="center">
-              <Box w={'70vmin'} h={'70vmin'} pos="relative">
-                <LoadingOverlay visible={isLoading} overlayBlur={2} />
-                {problem && (
-                  <VisualizerComponent
-                    bg="black"
-                    size="70vmin"
-                    problemId={problemId}
-                    problem={problem}
-                    solution={solution}
-                    zoomMode={zoomMode}
-                  />
-                )}
-              </Box>
+              <Stack>
+                <Box w={'70vmin'} h={'70vmin'} pos="relative">
+                  <LoadingOverlay visible={isLoading} overlayBlur={2} />
+                  {problem && (
+                    <VisualizerComponent
+                      bg="black"
+                      size="70vmin"
+                      problemId={problemId}
+                      problem={problem}
+                      problemStats={stats}
+                      solution={solution}
+                      zoomMode={zoomMode}
+                    />
+                  )}
+                </Box>
+                {/* <Slider min={0} max={stats?.instruments - 1} /> */}
+              </Stack>
               <Space h="xl" />
               <Stack spacing={0}>
                 <Text size="sm">

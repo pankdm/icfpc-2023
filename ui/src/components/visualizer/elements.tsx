@@ -8,12 +8,12 @@ export const Pillar = ({
 
 export const Attendee = ({
   radius = 5,
-  color = 'white',
+  color = '#fff',
   ...props
 }: CircleProps) => <Circle radius={radius} color={color} {...props} />
 
 export const Musician = ({
   radius = 5,
-  color = 'gold',
+  color = '#ffd700',
   ...props
 }: CircleProps) => <Circle radius={radius} color={color} {...props} />

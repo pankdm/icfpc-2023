@@ -28,8 +28,11 @@ export type ProblemStats = {
   attendees: number
   instruments: number
   musicians: number
+  room_height: number
+  room_width: number
   stage_height: number
   stage_width: number
+  stage_bottom_left: [number, number]
   score: number | null
   estimated_max: number | null
 }

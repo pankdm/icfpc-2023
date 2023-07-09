@@ -6,7 +6,4 @@ export const $renderMode = persistentAtom<string>(
   'svg'
 )
 
-export const $zoomMode = persistentAtom<string>(
-  'icfpc-2023:zoom_mode',
-  'full'
-)
+export const $zoomMode = persistentAtom<string>('icfpc-2023:zoom_mode', 'full')

@@ -125,6 +125,10 @@ def handle_get_problem_id_stats(id):
     stats = get_cached_problem_stats()
     return stats[int(id)]
 
+# @app.get("/problems/<id>/instruments/<instrument_id>/lut")
+# def handle_get_problem_instrument_lut(id, instrument_id):
+#     request.query_string
+
 @app.post("/update-server")
 def post_update_server():
     try:

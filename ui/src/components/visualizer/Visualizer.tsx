@@ -1,20 +1,24 @@
 import { Box, MantineSize, Paper, PaperProps } from '@mantine/core'
-import { Problem, Solution } from '../../api/types'
+import { Problem, ProblemStats, Solution } from '../../api/types'
 import { Rect } from './primitives'
 import { Attendee, Musician, Pillar } from './elements'
+import { getFullViewBox, getZoomedViewBox } from '../../utils/camera'
 
 export default function Visualizer({
   size,
   problemId,
   problem,
   solution,
+  problemStats,
+  zoomMode,
   ...props
 }: {
   size: MantineSize
   problemId: string | number
   problem: Problem
+  problemStats?: ProblemStats | null
   solution?: Solution | null
-  zoomMode: String 
+  zoomMode: String
 } & PaperProps) {
   const {
     room_width,
@@ -24,8 +28,10 @@ export default function Visualizer({
     stage_bottom_left: [stage_x, stage_y],
   } = problem
   const rmin = Math.min(room_width, room_height)
-  const regularViewBox = `0 0 ${room_width} ${room_height}`;
-  const zoomedViewBox = `${stage_x - stage_width * 0.1} ${stage_y - stage_height * 0.1} ${stage_width * 1.2} ${stage_height * 1.2}`
+  const zoomViewBox =
+    problemStats && zoomMode === 'Zoom'
+      ? getZoomedViewBox(problemStats)
+      : getFullViewBox(problem)
   return (
     <Paper
       w={size}
@@ -40,7 +46,7 @@ export default function Visualizer({
         component="svg"
         w="100%"
         h="100%"
-        viewBox={ props.zoomMode === "zoom" ? zoomedViewBox : regularViewBox }
+        viewBox={zoomViewBox}
         transform="scale(1,-1)"
       >
         {/* stage */}

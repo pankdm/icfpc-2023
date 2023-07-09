@@ -31,8 +31,11 @@ def get_problem_stats():
                 "musicians": len(js.musicians),
                 "attendees": len(js.attendees),
                 "instruments": tastes_musicians,
+                "room_width": int(js.room_width),
+                "room_height": int(js.room_height),
                 "stage_width": int(js.stage_width),
                 "stage_height": int(js.stage_height),
+                "stage_bottom_left": js.stage_bottom_left,
                 "pillars": len(js.pillars),
             }
     return all_problem_stats

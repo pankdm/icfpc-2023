@@ -68,6 +68,7 @@ export default function Visualizer3D({
   size: MantineSize
   problem: Problem
   solution?: Solution | null
+  zoomMode: String
 } & PaperProps) {
   const {
     room_width,

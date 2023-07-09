@@ -14,6 +14,7 @@ export default function Visualizer({
   problemId: string | number
   problem: Problem
   solution?: Solution | null
+  zoomMode: String 
 } & PaperProps) {
   const {
     room_width,
@@ -23,6 +24,8 @@ export default function Visualizer({
     stage_bottom_left: [stage_x, stage_y],
   } = problem
   const rmin = Math.min(room_width, room_height)
+  const regularViewBox = `0 0 ${room_width} ${room_height}`;
+  const zoomedViewBox = `${stage_x - stage_width * 0.1} ${stage_y - stage_height * 0.1} ${stage_width * 1.2} ${stage_height * 1.2}`
   return (
     <Paper
       w={size}
@@ -37,8 +40,7 @@ export default function Visualizer({
         component="svg"
         w="100%"
         h="100%"
-        viewBox={`0 0 ${room_width} ${room_height}`}
-        // viewBox={`${stage_x - stage_width * 0.1} ${stage_y - stage_height * 0.1} ${stage_width * 1.1} ${stage_height * 1.1}`}
+        viewBox={ props.zoomMode === "zoom" ? zoomedViewBox : regularViewBox }
         transform="scale(1,-1)"
       >
         {/* stage */}

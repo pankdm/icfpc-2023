@@ -22,12 +22,13 @@ import TrafficLight from '../../components/TrafficLight'
 import Visualizer from '../../components/visualizer/Visualizer'
 import Visualizer3D from '../../components/visualizer/Visualizer.3d'
 import ProblemPreview from '../../components/ProblemPreview'
-import { $renderMode } from '../../state/renderMode'
+import { $renderMode, $zoomMode } from '../../state/renderMode'
 import config from '../../config'
 
 export default function ProblemInspector() {
   const { problemId: problemIdStr } = useParams()
   const renderMode = useStore($renderMode)
+  const zoomMode = useStore($zoomMode)
   const problemId = parseInt(problemIdStr as any)
   const [solutionId, setSolutionId] = useState<string | null>(null)
   const problem = useStore($problem)
@@ -111,6 +112,11 @@ export default function ProblemInspector() {
             value={renderMode}
             onChange={(v) => $renderMode.set(v as any)}
           />
+          <SegmentedControl
+            data={["full", "zoom"]}
+            value={zoomMode}
+            onChange={(v) => $zoomMode.set(v as any)}
+          />
         </Stack>
         <Center>
           <Stack align="center" spacing={0}>
@@ -135,6 +141,7 @@ export default function ProblemInspector() {
                     problemId={problemId}
                     problem={problem}
                     solution={solution}
+                    zoomMode={zoomMode}
                   />
                 )}
               </Box>

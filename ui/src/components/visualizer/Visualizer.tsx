@@ -83,6 +83,7 @@ export default function Visualizer({
               y={stage_y}
               width={stage_width}
               height={stage_height}
+              transform={`scale(1,-1) translate(0,${-stage_height})`}
               href={getPreviewImageURL(
                 problemId,
                 previewInstrumentId,

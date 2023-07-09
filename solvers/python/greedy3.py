@@ -2,6 +2,7 @@
 import math
 import sys
 from src.utils import *
+import vectormath as vm
 
 pi_2 = 2 * math.pi
 
@@ -13,9 +14,20 @@ class GreedySolver3:
         print(f'Assigning {self.spec.size} musicians')
 
     def drop_deaf(self):
-        print(f'before {len(self.spec.attendees)}')
         self.spec.attendees = [at for at in self.spec.attendees if self._sees_scene(at)]
-        print(f'after {len(self.spec.attendees)}')
+
+    def dump_clean_spec(self):
+        cleaned = load_problem(self.i)
+        cleaned_attendees = []
+        before = len(cleaned['attendees'])
+        for attendee in cleaned['attendees']:
+            point = vm.Vector2(attendee['x'], attendee['y'])
+            if self._sees_scene((point, [])):
+                cleaned_attendees.append(attendee)
+        cleaned['attendees'] = cleaned_attendees
+        after = len(cleaned['attendees'])
+        print(f'Left {after} from {before} attendees')
+        save_problem(self.i, '_clean', cleaned)
 
     def _sees_scene(self, attendee):
         origin, _ = attendee
@@ -52,7 +64,7 @@ class GreedySolver3:
 
     def solve(self):
         # filter out "deaf" attendees
-        self.drop_deaf()
+        self.dump_clean_spec()
         # Compute initial points for border placement
         # Compute scores per channel
         # Iterate over scores/channels for local optimum(s)

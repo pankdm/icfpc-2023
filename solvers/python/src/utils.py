@@ -15,12 +15,19 @@ BORDER_RADIUS_SQUARE = 100
 BLOCKING_RADIUS = 5
 
 
-def load_problem(i):
-    path = "./problems/{}.json".format(i)
+def load_problem(i, suffix=''):
+    path = f'./problems{suffix}/{i}.json'
     with open(path, "r") as f:
         data = f.read()
         js_data = json.loads(data)
         return js_data
+
+
+def save_problem(i, suffix, content):
+    path = f'../../problems{suffix}/{i}.json'
+    with open(path, "w") as f:
+        f.write(json.dumps(content, indent=2))
+
 
 class Problem:
     def __init__(self, id):
@@ -64,9 +71,8 @@ class ProblemX:
         self.pillars = [(vm.Vector2(p.center), p.radius) for p in spec.pillars]
 
 
-
-def load(problem_id):
-    path = f'./problems/{problem_id}.json'
+def load(problem_id, suffix=''):
+    path = f'./problems{suffix}/{problem_id}.json'
     with open(path, "r") as f:
         return json.load(f, object_hook=lambda d: SimpleNamespace(**d))
 

@@ -95,8 +95,7 @@ class BorderSolver : public BaseSolver {
     return output;
   }
 
-  bool CheckNonOverlapping(const D2Point& pi, const TProblem& p,
-                           const TSolution& s) {
+  bool CheckNonOverlapping(const D2Point& pi, const TSolution& s) {
     for (unsigned j = 0; j < s.positions.size(); ++j) {
       if (SquaredDistanceL2(pi, s.positions[j]) <
           musician_collision_radius * musician_collision_radius) {
@@ -106,7 +105,8 @@ class BorderSolver : public BaseSolver {
     return true;
   }
 
-  double SolveWithStep(const TProblem& p, TSolution& s, double step) {
+  double SolveWithStep(const TProblem& p0, TSolution& s, double step) {
+    auto p = p0;
     Timer t;
     auto start = t.GetMilliseconds();
     // auto start_score = Evaluator::Apply(p, best_s).score;
@@ -126,7 +126,7 @@ class BorderSolver : public BaseSolver {
       auto candidate_position = D2Point{-50, -50};
       bool found = false;
       for (; candidate_idx < candidates.size(); ++candidate_idx) {
-        if (CheckNonOverlapping(candidates[candidate_idx], p, s)) {
+        if (CheckNonOverlapping(candidates[candidate_idx], s)) {
           found = true;
           candidate_position = candidates[candidate_idx];
           break;
@@ -140,6 +140,37 @@ class BorderSolver : public BaseSolver {
       s.positions[m_idx] = candidate_position;
     }
 
+    int added = 0;
+    {
+      if (candidate_idx < candidates.size()) {
+        if (m_idx != s.positions.size()) {
+          std::cout << "ERROR!" << std::endl;
+          exit(1);
+        }
+        // Add fake instruments
+        int fake_ins = p.total_instruments;
+        p.total_instruments += 1;
+        for (auto& a : p.attendees) {
+          a.tastes.push_back(0.0);
+        }
+        std::vector<unsigned> fake_mapping;
+
+        for (; candidate_idx < candidates.size(); ++candidate_idx) {
+          if (CheckNonOverlapping(candidates[candidate_idx], s)) {
+            auto candidate_position = candidates[candidate_idx];
+
+            fake_mapping.push_back(s.positions.size());
+            s.positions.push_back(candidate_position);
+            p.instruments.push_back(fake_ins);
+            m_idx += 1;
+            added += 1;
+          }
+        }
+        p.musicians.push_back(fake_mapping);
+      }
+    }
+    std::cout << "Added " << added << " fake musicians" << std::endl;
+
     // auto res = Evaluator::Apply(p, s);
     // if (res.correct) {
     //   std::cout << "Finished iteration, current score = " << res.score
@@ -152,7 +183,7 @@ class BorderSolver : public BaseSolver {
                        p.stage.p1.y + musician_collision_radius};
     for (; m_idx < s.positions.size(); ++m_idx) {
       for (;;) {
-        if (CheckNonOverlapping(pos, p, s)) {
+        if (CheckNonOverlapping(pos, s)) {
           s.positions[m_idx] = pos;
           break;
         }
@@ -182,6 +213,7 @@ class BorderSolver : public BaseSolver {
                 << ":\t" << score_new << std::endl;
 
       s = snew;
+      s.positions.resize(s.positions.size() - added);
 
       s.Save(Name());
       std::cout << "  ..saving solution to " << Name() << std::endl;

@@ -78,18 +78,20 @@ export default function Visualizer({
         />
         {previewInstrumentId >= 0 &&
           previewInstrumentsMode !== 'musicians_only' && (
-            <image
-              x={stage_x}
-              y={stage_y}
-              width={stage_width}
-              height={stage_height}
-              transform={`scale(1,-1) translate(0,${-stage_height})`}
-              href={getPreviewImageURL(
-                problemId,
-                previewInstrumentId,
-                previewInstrumentsMode
-              )}
-            />
+            <g transform={`translate(${stage_x},${stage_y})`}>
+              <image
+                x={0}
+                y={0}
+                width={stage_width}
+                height={stage_height}
+                transform={`scale(1,-1) translate(0,-${stage_height})`}
+                href={getPreviewImageURL(
+                  problemId,
+                  previewInstrumentId,
+                  previewInstrumentsMode
+                )}
+              />
+            </g>
           )}
 
         {/* pillars */}

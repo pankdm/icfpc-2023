@@ -112,7 +112,7 @@ export default function Problems() {
       header: '% of Max',
       size: 90,
       accessorFn: (originalRow) =>
-        (100 * (originalRow.score ?? 0)) / (originalRow.estimated_max || 1),
+        (originalRow.score ?? 0) / (originalRow.estimated_max || 1),
       Cell: ({ cell }) => <span>{toPct(cell.getValue<number>())}</span>,
     },
 

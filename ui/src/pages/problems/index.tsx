@@ -136,7 +136,7 @@ export default function Problems() {
     },
   }
   return (
-    <Container maw={1500} h="100%" p={0}>
+    <Container maw={2500} h="100%" p={0}>
       <Helmet>
         <title>Problems - {config.HTML_TITLE}</title>
       </Helmet>

@@ -1,5 +1,4 @@
 import { Problem, ProblemStats } from '../api/types'
-import { toPct } from './numbers'
 
 export function getFullViewBox(problem: ProblemStats | Problem) {
   return [0, 0, problem.room_width, problem.room_height]

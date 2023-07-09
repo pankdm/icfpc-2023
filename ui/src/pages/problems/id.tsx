@@ -27,6 +27,7 @@ import { $zoomMode } from '../../state/renderMode'
 import config from '../../config'
 import { $userboardZoomMode } from '../../state/userboardDisplayMode'
 import { useHotkeys } from '@mantine/hooks'
+import { formatNumber } from '../../utils/numbers'
 
 export default function ProblemInspector() {
   const { problemId: problemIdStr } = useParams()
@@ -148,15 +149,13 @@ export default function ProblemInspector() {
         <Center>
           <Stack align="center" spacing={0}>
             <Title order={2}>Problem {problemId}</Title>
-            <Group>
-              <Select
-                placeholder="Select solution"
-                data={solutionsSelectOpts}
-                value={solutionId}
-                onChange={setSolutionId}
-                onFocus={refetchSolutions}
-              />
-            </Group>
+            <Select
+              placeholder="Select solution"
+              data={solutionsSelectOpts}
+              value={solutionId}
+              onChange={setSolutionId}
+              onFocus={refetchSolutions}
+            />
             <Space h="xl" />
             <Group position="center">
               <Stack>
@@ -178,6 +177,10 @@ export default function ProblemInspector() {
               </Stack>
               <Space h="xl" />
               <Stack spacing={0}>
+                <Text size="sm">Best score: {formatNumber(stats?.score)}</Text>
+                <Text size="sm">
+                  Estimated max: {formatNumber(stats?.estimated_max)}
+                </Text>
                 <Text size="sm">
                   Room: {problem?.room_width} x {problem?.room_height}
                 </Text>

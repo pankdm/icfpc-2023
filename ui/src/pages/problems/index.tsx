@@ -14,6 +14,7 @@ import {
   $userboardZoomMode,
 } from '../../state/userboardDisplayMode'
 import { useHotkeys } from '@mantine/hooks'
+import { toPct } from '../../utils/numbers'
 
 export default function Problems() {
   // State
@@ -40,18 +41,17 @@ export default function Problems() {
   useHotkeys([['z', () => toggleZoomMode()]])
 
   // Table setup
-  const columns = {
+  const columns: Record<
+    string,
+    MRT_ColumnDef<{ id: string } & ProblemStats>
+  > = {
     id: {
-      id: 'id',
-      accessorFn: (row) => {
-        return (
-          row.id && (
-            <Link to={`/problems/${row.id}`}>
-              <Space w="xs" /># {row.id}
-            </Link>
-          )
-        )
-      },
+      accessorKey: 'id',
+      Cell: ({ cell }) => (
+        <Link to={`/problems/${cell.getValue()}`}>
+          <Space w="xs" /># {cell.getValue<string>()}
+        </Link>
+      ),
       header: 'id',
       size: 20,
     },
@@ -112,24 +112,19 @@ export default function Problems() {
       header: '% of Max',
       size: 90,
       accessorFn: (originalRow) =>
-        `${(
-          (100 * (originalRow.score ?? 0)) /
-          (originalRow.estimated_max || 1)
-        ).toFixed(1)}%`,
+        (100 * (originalRow.score ?? 0)) / (originalRow.estimated_max || 1),
+      Cell: ({ cell }) => <span>{toPct(cell.getValue<number>())}</span>,
     },
+
     deltaWithMax: {
       id: 'deltaWithMax',
       header: 'Delta',
       size: 90,
       accessorFn: (originalRow) =>
-        `${formatNumberExp(
-          (originalRow.estimated_max ?? 0) - (originalRow.score ?? 0)
-        )}`,
-      sortingFn: (rowA, rowB, columnId) =>
-        parseFloat(rowA.getValue<string>(columnId)) <
-        parseFloat(rowB.getValue<string>(columnId))
-          ? -1
-          : 1,
+        (originalRow.estimated_max ?? 0) - (originalRow.score ?? 0),
+      Cell: (row) => (
+        <span>{formatNumberExp(row.cell.getValue<number>())}</span>
+      ),
     },
     stageSize: {
       id: 'stageSize',
@@ -139,7 +134,7 @@ export default function Problems() {
         originalRow.stage_width &&
         `${originalRow.stage_width} x ${originalRow.stage_height}`,
     },
-  } as Record<string, MRT_ColumnDef<{ id: string } & ProblemStats>>
+  }
   return (
     <Container maw={1500} h="100%" p={0}>
       <Helmet>

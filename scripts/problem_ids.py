@@ -2,10 +2,5 @@ import os
 import itertools
 
 def get_problem_ids():
-  problem_ids = []
-  for i in itertools.count(start=1):
-      path = f"./problems/{i}.json"
-      if not os.path.exists(path):
-          break
-      problem_ids.append(i)
+  problem_ids = list(sorted([int(f[::-1].split('.',1)[1][::-1]) for f in os.listdir('problems/')]))
   return problem_ids

@@ -1,44 +1,149 @@
 import json
+import os
 import sys
-import numpya as np
+import numpy as np
 from problem_ids import get_problem_ids
 from PIL import Image, ImageDraw
-from scripts.utils.draw import draw_rect, draw_circle
+from matplotlib import pyplot as plt
 
-def generate_problem_perception_map(id):
-    with open(f'problems/{id}.json', 'r') as file:
-        problem = json.loads(file.read())
+def _sq_intensity_lut(radius:int):
+    diameter = 2*radius+1
+    grid = np.mgrid[-radius:radius+.1:1., -radius:radius+.1:1.].reshape(2,-1).T
+    sq_dists = np.sum(np.square(grid), 1).reshape(diameter,diameter)
+    sq_dists[radius,radius] = 1.
+    sq_intensity_map = 1. / sq_dists
+    return np.array(sq_intensity_map)
+
+cached_intensity_maps = {}
+def sq_intensity_lut(radius:int):
+    if radius in cached_intensity_maps:
+        return cached_intensity_maps[radius]
+    data = _sq_intensity_lut(radius)
+    cached_intensity_maps[radius] = data
+    return data
+
+MAX_COMPUTE_RADIUS = 1300
+def get_compute_radius(room_size):
+    return int(min(max(*room_size), MAX_COMPUTE_RADIUS))
+
+def get_perception_map(room_size, stage_xy, instrument_id, attendees, compute_radius=None):
+    x0, y0, x1, y1 = stage_xy
+    w, h = int(x1-x0), int(y1-y0)
+    compute_radius = get_compute_radius(room_size)
+    intensity_lut = sq_intensity_lut(compute_radius)
+    intensity_map = np.zeros((w, h), dtype='float64')
+    # print('>>>>>', 'intensity map:', intensity_map.shape)
+    # print('>>>>>', 'compute_radius:', compute_radius)
+    for aid, a in enumerate(attendees):
+        x = a['x']
+        y = a['y']
+        taste = a['tastes'][instrument_id]
+        if x - x1 >= compute_radius and \
+            x - x0 <= compute_radius and \
+            y - y1 >= compute_radius and \
+            y - y0 <= compute_radius:
+            print(f'>>> attendee {aid} too far from the stage. skipping intensity compute')
+            continue
+        lut_x0 = compute_radius + int(x0-x)
+        lut_x1 = lut_x0 + w
+        lut_y0 = compute_radius + int(y0-y)
+        lut_y1 = lut_y0 + h
+        attendee_lut = intensity_lut[lut_x0:lut_x1,lut_y0:lut_y1]
+        # print('>>>>>', 'stage:', stage_xy)
+        # print('>>>>>', 'attendee at:', (x, y))
+        # print('>>>>>', compute_radius, int(x0-x), compute_radius + int(x0-x))
+        # print('>>>>>', 'attendee lut:', (lut_x0, lut_x1, lut_y0, lut_y1))
+        # print('>>>>>', 'attendee lut size:', attendee_lut.shape)
+        intensity_map += attendee_lut * taste
+    return intensity_map
+
+def get_perception_log10p_map(perception_map):
+    lovers = np.clip(perception_map, 0.,np.max(perception_map))
+    # print('>>>> lovers', lovers)
+    # print('>>>> log lovers', np.log1p(lovers,))
+    haters = -perception_map
+    haters = np.clip(haters, 0.,np.max(haters))
+    # print('>>>> haters', haters)
+    # print('>>>> log haters', np.log1p(haters))
+    return np.log10(lovers + 1.) - np.log10(haters +1.)
+
+def generate_problem_perception_map(problem, instrument_id):
     room_width = problem['room_width']
     room_height = problem['room_height']
-    rmax = max(room_width, room_height)
-    scale = preview_size / rmax
     stage_width = problem['stage_width']
     stage_height = problem['stage_height']
+    attendees = problem['attendees']
     stage_x0, stage_y0 = problem['stage_bottom_left']
     stage_x1, stage_y1 = stage_x0 + stage_width, stage_y0 + stage_height
-    image = Image.new('RGBA', (preview_size, preview_size))
-    draw = ImageDraw.Draw(image)
-    draw.rectangle(rect(0, 0, room_width, room_height), fill='#444')
-    draw.rectangle(rect(stage_x0, stage_y0, stage_x1, stage_y1), fill=scene_color)
-    pillars = problem['pillars']
-    for p in pillars:
-        draw_circle(*p['center'], p['radius'], color=pillar_color)
-    attendees = problem['attendees']
-    for a in attendees:
-        draw_circle(a['x'], a['y'], attendee_size, color=attendee_color)
-    return image
+    perception_map = get_perception_map((int(room_width), int(room_height)), (stage_x0, stage_y0, stage_x1, stage_y1), instrument_id, attendees)
+    return perception_map
 
+def perception_map_to_png(data):
+    plt.imshow(data.swapaxes(0, 1), interpolation="nearest", origin="upper")
+    plt.colorbar()
+    plt.gca().invert_yaxis()
+    plt.show()
 
+def save_perception_map_preview(save_path, problem_id, instrument_id, data):
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    w, h = data.shape
+    plt.figure(f'{problem_id}_{instrument_id}', frameon=False, figsize=(w*2, h*2), dpi=1)
+    plt.imshow(data.swapaxes(0, 1), interpolation="nearest", origin="upper")
+    plt.gca().invert_yaxis()
+    # plt.colorbar()
+    plt.axis('off')
+    plt.savefig(save_path, bbox_inches='tight', pad_inches=0)
+    plt.close()
+
+def generate_and_save_perception_maps(problem_id):
+    print(f'generating perceptions for problem {problem_id}')
+    output_folder = f'perception_luts/{problem_id}'
+    os.makedirs(output_folder, exist_ok=True)
+    with open(f'problems/{problem_id}.json', 'r') as file:
+        problem = json.loads(file.read())
+    instruments = len(problem['attendees'][0]['tastes'])
+    luts = []
+    print(f' ...saving meta')
+    with open(f'{output_folder}/meta.json', 'w') as meta_file:
+        meta = {
+            'problem_id': problem_id,
+            'width': problem['stage_width'],
+            'height': problem['stage_height'],
+            'instruments': instruments
+        }
+        meta_file.write(json.dumps(meta, indent=2))
+    compute_radius = get_compute_radius((problem['room_width'], problem['room_height']))
+    print(f' ...generating LUTs with compute radius {compute_radius}')
+    with open(f'{output_folder}/bin', 'wb') as bin_file:
+        for instrument_id in range(instruments):
+            print(f'   ...instrument {instrument_id}...', end='')
+            previews_folder = f'perception_luts/{problem_id}/previews'
+            lut = generate_problem_perception_map(problem, instrument_id)
+            print(f'  ok.', end='')
+            luts.append(lut)
+            bin_file.write(lut.tobytes())
+            print(f'  added to LUT bin.')
+            save_perception_map_preview(f'{output_folder}/previews/{instrument_id}.png', problem_id, instrument_id, lut)
+            lut_log10p = get_perception_log10p_map(lut)
+            save_perception_map_preview(f'{output_folder}/previews/{instrument_id}_log10.png', problem_id, instrument_id, lut_log10p)
+        print(f' ...saved previews.')
+    print(f' ...saved bin LUT.')
+    print(f'done for #{problem_id}')
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        image = generate_problem_perception_map(sys.argv[1])
-        image.show()
+    if len(sys.argv) == 3:
+        problem_id = sys.argv[1]
+        instrument_id = int(sys.argv[2])
+        with open(f'problems/{problem_id}.json', 'r') as file:
+            problem = json.loads(file.read())
+        data = generate_problem_perception_map(problem, instrument_id)
+        perception_map_to_png(data)
+    elif len(sys.argv) == 2:
+        problem_id = sys.argv[1]
+        generate_and_save_perception_maps(problem_id)
     else:
         problem_ids = get_problem_ids()
-        print(f'generating {len(problem_ids)} previews...')
-        for i in problem_ids:
-            image = generate_problem_perception_map(i)
-            image.save(f'previews/{i}.png', quality=100)
-            print(f'#{i}')
+        print(f'generating {len(problem_ids)} perception maps...')
+        for problem_id in problem_ids:
+            generate_and_save_perception_maps(problem_id)
         print('all done.')

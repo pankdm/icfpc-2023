@@ -13,10 +13,11 @@
 #include "common/timer.h"
 
 #include <algorithm>
+#include <utility>
 #include <vector>
 
 inline double EstimateProblem(const Problem& p) {
-  const double STEP = 10;
+  const double STEP = 5;
   std::vector<int> instrument_count(p.total_instruments);
   for (int i = 0; i < p.instruments.size(); ++i) {
     instrument_count[p.instruments[i]] += 1;
@@ -37,18 +38,23 @@ inline double EstimateProblem(const Problem& p) {
     if (ins_id % 100 == 0) {
       std::cout << "instrument = " << ins_id << std::endl;
     }
-    double best_instrument_score = 0;
+    std::vector<double> possible_scores;
     for (const auto position : border) {
       int instrument_score = 0;
       for (auto& a : p.attendees) {
         instrument_score += ceil(score_mult * a.tastes[ins_id] /
                                  SquaredDistanceL2(a.position, position));
       }
-      if (instrument_score >= best_instrument_score) {
-        best_instrument_score = instrument_score;
-      }
+      possible_scores.push_back(instrument_score);
     }
-    total_score += best_instrument_score * instrument_count[ins_id];
+    sort(std::begin(possible_scores), std::end(possible_scores));
+    reverse(std::begin(possible_scores), std::end(possible_scores));
+    for (int i = 0; i < instrument_count[ins_id]; ++i) {
+      if (i >= possible_scores.size()) {
+        break;
+      }
+      total_score += std::max(possible_scores[i], 0.0);
+    }
   }
   return total_score;
 }

@@ -1,4 +1,5 @@
 #include "adjusters/assignment.h"
+#include "adjusters/swaps.h"
 #include "base/constants.h"
 #include "solvers/base.h"
 #include "solvers/greedy1.h"
@@ -17,6 +18,7 @@ void InitCommaneLine(files::CommandLine& cmd) {
   cmd.AddArg("mode", "eval");
   cmd.AddArg("solution", "best");
   cmd.AddArg("solver", "greedy1");
+  cmd.AddArg("adjuster", "assignment");
   cmd.AddArg("timelimit", 125);
   cmd.AddArg("extra", 0);
   cmd.AddArg("nthreads", 4);
@@ -48,7 +50,14 @@ int main(int argc, char** argv) {
   if (mode == "eval") {
     EvaluateSolution(cmd.GetString("solution"));
   } else if (mode == "adjust") {
-    CheckWithAdjuster<AdjusterAssignment>(cmd.GetString("solution"));
+    auto name = cmd.GetString("adjuster");
+    if (name == "assignment") {
+      CheckWithAdjuster<AdjusterAssignment>(cmd.GetString("solution"));
+    } else if (name == "swaps") {
+      CheckWithAdjuster<AdjusterSwaps>(cmd.GetString("solution"));
+    } else {
+      std::cerr << "Unknown adjuster name " << name << std::endl;
+    }
   } else if (mode == "update") {
     // UpdateBest(cmd.GetString("solution"));
   } else if (mode == "estimate") {

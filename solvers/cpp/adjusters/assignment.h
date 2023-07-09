@@ -35,7 +35,7 @@ class AdjusterAssignment {
     }
     alg::assignment::Hungarian h;
     auto new_score = -h.Solve(m, (1ll << 20) * (1ll << 20));
-    std::cout << "\t" << old_score << " -> " << new_score << std::endl;
+    // std::cout << "\t" << old_score << " -> " << new_score << std::endl;
     if (new_score > old_score) {
       Solution snew;
       snew.positions.resize(s.positions.size());

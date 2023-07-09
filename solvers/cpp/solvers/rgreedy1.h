@@ -117,8 +117,17 @@ class RGreedy1 : public BaseSolver {
         for (auto j : usl) {
           double score = score_common;
           if (boost_enabled) {
-            // ...
-            assert(false);
+            double boost = 1.0;
+            for (auto& m : vm) {
+              if (m.instrument == j) {
+                double db = 1.0 / DistanceL2(m.pos, ptest);
+                boost += db;
+                score += db * std::max(m.score_without_boost +
+                                           m.delta_score_without_boost,
+                                       0.);
+              }
+            }
+            score += boost * std::max(vscore_without_boost[j], 0.);
           } else {
             score += std::max(vscore_without_boost[j], 0.);
           }

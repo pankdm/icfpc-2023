@@ -30,20 +30,26 @@ const Attendees = memo(function Attendees({ problem }: { problem: Problem }) {
 export default function Visualizer({
   size,
   problemId,
-  previewInstrumentId = 0,
+  hoveredInstrumentId = -1,
+  previewInstrumentId = -1,
   problem,
   solution,
   problemStats,
   zoomMode,
+  onHoverMusician,
+  onBlurMusician,
   ...props
 }: {
   size: MantineSize
   problemId: string | number
   problem: Problem
+  hoveredInstrumentId?: number
   previewInstrumentId?: number
   problemStats?: ProblemStats | null
   solution?: Solution | null
   zoomMode: String
+  onHoverMusician?: (instrumentId: number) => void
+  onBlurMusician?: (instrumentId: number) => void
 } & PaperProps) {
   const {
     room_width,
@@ -116,17 +122,26 @@ export default function Visualizer({
         <Attendees problem={problem} />
 
         {/* musicians */}
-        {solution?.placements?.map((p, idx) => (
-          <Musician
-            key={idx}
-            x={p.x}
-            y={p.y}
-            dimmed={
-              previewInstrumentId >= 0 &&
-              problem.musicians[idx] !== previewInstrumentId
-            }
-          />
-        ))}
+        {solution?.placements?.map((p, idx) => {
+          const instrumentId = problem.musicians[idx]
+          return (
+            <Musician
+              key={idx}
+              x={p.x}
+              y={p.y}
+              onMouseEnter={() => onHoverMusician?.(instrumentId)}
+              onMouseLeave={() => onBlurMusician?.(instrumentId)}
+              color={
+                hoveredInstrumentId >= 0 && instrumentId === hoveredInstrumentId
+                  ? '#f00'
+                  : undefined
+              }
+              dimmed={
+                previewInstrumentId >= 0 && instrumentId !== previewInstrumentId
+              }
+            />
+          )
+        })}
       </Box>
     </Paper>
   )

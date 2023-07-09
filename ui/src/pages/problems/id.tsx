@@ -52,6 +52,13 @@ export default function ProblemInspector() {
     )
   }
   const clearSelectedInstrument = () => setSelectedInstrumentId(0)
+  const [hoveredInstrumentId, setHoveredInstrumentId] = useState(-1)
+  const handleHoverMusician = (instrumentId: number) =>
+    setHoveredInstrumentId(instrumentId)
+  const handleBlurMusician = () => setHoveredInstrumentId(-1)
+  const previewInstrumentId = [hoveredInstrumentId, selectedInstrumentId].find(
+    (v) => Number.isFinite(v) && v >= 0
+  )
 
   // Data
   const { data: problemsData } = useAPIData({
@@ -210,9 +217,12 @@ export default function ProblemInspector() {
                       size="70vmin"
                       problemId={problemId}
                       problem={problem}
+                      hoveredInstrumentId={hoveredInstrumentId}
                       previewInstrumentId={
-                        previewInstruments ? selectedInstrumentId : -1
+                        previewInstruments ? previewInstrumentId : -1
                       }
+                      onHoverMusician={handleHoverMusician}
+                      onBlurMusician={handleBlurMusician}
                       problemStats={stats}
                       solution={solution}
                       zoomMode={zoomMode}
@@ -227,7 +237,7 @@ export default function ProblemInspector() {
                       onChange={togglePreviewInstruments}
                       label={
                         <Text w="11rem">
-                          Preview (i)nstrument: {selectedInstrumentId}
+                          Preview (i)nstrument: {previewInstrumentId}
                         </Text>
                       }
                     />

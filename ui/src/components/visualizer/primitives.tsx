@@ -1,11 +1,14 @@
 import _ from 'lodash'
 import {
+  BoxProps,
   Box as MantineBox,
   MantineColor,
   MantineSize,
   PaperProps,
+  SystemProp,
   useMantineTheme,
 } from '@mantine/core'
+import React from 'react'
 
 export type RectProps = {
   x: number
@@ -48,7 +51,8 @@ export type CircleProps = {
   dimmedColor?: MantineColor
   strokeWidth?: number
   strokeColor?: MantineColor
-} & PaperProps
+} & PaperProps &
+  React.DOMAttributes<SVGCircleElement>
 export const Circle = ({
   x,
   y,

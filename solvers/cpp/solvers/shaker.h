@@ -90,7 +90,7 @@ class Shaker : public BaseSolver {
     }
     auto start = t.GetMilliseconds();
     auto start_score = Evaluator::Apply(p, s).score;
-    auto current_score = start_score;
+    // auto current_score = start_score;
     std::cout << "Loaded, current score = " << start_score
               << ", time = " << t.GetMilliseconds() - start << "ms"
               << std::endl;
@@ -125,7 +125,7 @@ class Shaker : public BaseSolver {
       }
 
       int best_index = -1;
-      double best_score = -1;
+      // double best_score = -1;
       for (const auto& pr : musician_scores) {
         if (pr.first > 0) {
           break;
@@ -143,7 +143,7 @@ class Shaker : public BaseSolver {
         double score = 0;
         if (best_index == -1) {
           best_index = m_idx;
-          best_score = score;
+          // best_score = score;
           std::cout << "  " << pr.second << " -> " << pr.first
                     << " score = " << score << std::endl;
           break;

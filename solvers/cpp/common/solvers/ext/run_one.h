@@ -1,5 +1,7 @@
 #pragma once
 
+#include "adjusters/default.h"
+
 #include "common/base.h"
 
 #include <string>
@@ -24,6 +26,7 @@ inline void RunOne(TSolver& solver, const std::string& problem_id) {
   bool new_solution = false;
   if (s.Empty()) {
     s = solver.Solve(p);
+    if (!s.Empty()) AdjusterDefault::Check(p, s);
     new_solution = true;
   }
   auto r = TEvaluator::Apply(p, s);

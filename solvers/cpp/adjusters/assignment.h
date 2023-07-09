@@ -41,8 +41,8 @@ class AdjusterAssignment {
     }
     alg::assignment::Hungarian h;
     auto new_iscore = -h.Solve(m, (1ll << 20) * (1ll << 20)) * int(max_volume);
-    std::cout << "\tExpected: " << old_iscore << " -> " << new_iscore
-              << std::endl;
+    // std::cout << "\tExpected: " << old_iscore << " -> " << new_iscore
+    //           << std::endl;
     if (new_iscore > old_iscore) {
       Solution snew;
       snew.positions.resize(s.positions.size());
@@ -54,8 +54,8 @@ class AdjusterAssignment {
       }
       auto old_iscore2 = Evaluator::IScore(p, s),
            new_iscore2 = Evaluator::IScore(p, snew);
-      std::cout << "\tFinal   : " << old_iscore2 << " -> " << new_iscore2
-                << std::endl;
+      // std::cout << "\tFinal   : " << old_iscore2 << " -> " << new_iscore2
+      //           << std::endl;
       if (new_iscore2 > old_iscore2) {
         s.positions.swap(snew.positions);
         return true;

@@ -15,6 +15,20 @@ const columns = {
   id: {
     id: 'id',
     accessorFn: (row) => {
+      return (
+        row.id && (
+          <Link to={`/problems/${row.id}`}>
+              <Space w="xs" /># {row.id}
+          </Link>
+        )
+      )
+    },
+    header: 'id',
+    size: 20,
+  },
+  preview: {
+    id: 'preview',
+    accessorFn: (row) => {
       const displayMode = useStore($userboardDisplayMode)
       const isShowBigPreviews = displayMode === 'Previews'
       return (
@@ -25,13 +39,12 @@ const columns = {
                 problemId={row.id}
                 size={isShowBigPreviews ? '50vmin' : '8rem'}
               />
-              <Space w="xs" /># {row.id}
             </Group>
           </Link>
         )
       )
     },
-    header: 'Problem',
+    header: 'Preview',
     size: 140,
   },
   ...Object.fromEntries(
@@ -45,27 +58,27 @@ const columns = {
       {
         accessorKey,
         header,
-        size: 90,
+        size: 70,
       },
     ]) as any
   ),
   score: {
     id: 'score',
     header: 'Score',
-    size: 120,
+    size: 90,
     accessorKey: "score",
     Cell: ({ cell }) => (<span> {formatNumber(cell.getValue<number>())} </span>),
   },
   estimatedMax: {
     id: 'estimatedMax',
-    header: 'Estimated Max',
-    size: 120,
+    header: 'Approx Max',
+    size: 90,
     accessorKey: "estimated_max",
     Cell: ({ cell }) => (<span> {formatNumber(cell.getValue<number>())} </span>),
   },
   percentOfMax: {
     id: 'percentOfMax',
-    header: 'Percent of Max',
+    header: '% of Max',
     size: 90,
     accessorFn: (originalRow) => `${(100 * (originalRow.score ?? 0) / (originalRow.estimated_max || 1)).toFixed(1)}%`,
   },
@@ -99,7 +112,7 @@ export default function Problems() {
     stageSize: `${data.stage_width} x ${data.stage_height}`,
   }))
   return (
-    <Container maw={1200} h="100%" p={0}>
+    <Container maw={1500} h="100%" p={0}>
       <Helmet>
         <title>Problems - {config.HTML_TITLE}</title>
       </Helmet>
@@ -120,6 +133,7 @@ export default function Problems() {
         }}
         columns={[
           columns.id,
+          columns.preview,
           columns.instruments,
           columns.musicians,
           columns.attendees,

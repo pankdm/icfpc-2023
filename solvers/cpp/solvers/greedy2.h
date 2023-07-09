@@ -50,7 +50,7 @@ class Greedy2 : public BaseSolver {
     s.SetId(p.Id());
     s.positions.resize(p.instruments.size(), D2Point{0., 0.});
     std::vector<unsigned> vic(p.total_instruments, 0);
-    std::vector<OneMusucian> vm;
+    std::vector<D2Point> vm;
     double expected_dscore_ib = 0.;
     bool all_found = true;
     for (unsigned k = 0; k < p.instruments.size(); ++k) {
@@ -94,7 +94,7 @@ class Greedy2 : public BaseSolver {
         break;
       }
       auto m = cur_best[best_i];
-      vm.push_back(m);
+      vm.push_back(m.pos);
       s.positions[p.musicians[best_i][vic[best_i]++]] = m.pos;
       expected_dscore_ib += best;
       for (unsigned i = 0; i < p.total_instruments; ++i) {

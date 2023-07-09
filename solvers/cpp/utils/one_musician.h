@@ -137,7 +137,7 @@ class OneMusucian {
 
   static bool FindBestLocationEarlyStop2_IB(
       const Problem& p, unsigned instrument, const D2Point& start_point,
-      const std::vector<OneMusucian>& selected, OneMusucian& current_best,
+      const std::vector<D2Point>& selected, OneMusucian& current_best,
       bool print_log = false, unsigned iteration = 0) {
     if (print_log) {
       std::cout << "Initial point for iteration " << iteration
@@ -147,7 +147,7 @@ class OneMusucian {
     double dlock = musician_collision_radius * musician_collision_radius;
     auto pos = start_point;
     for (auto& m : selected) {
-      if (SquaredDistanceL2(pos, m.pos) < dlock) return false;
+      if (SquaredDistanceL2(pos, m) < dlock) return false;
     }
     auto score = Evaluator::DScoreIgnoreBlockedMusician(p, instrument, pos);
 
@@ -197,16 +197,16 @@ class OneMusucian {
       D2ClosedSegment sp(pos, pos + v);
       for (auto& m : selected) {
         bool adj_required = false;
-        if (SquaredDistanceL2(pos + v, m.pos) < dlock) {
+        if (SquaredDistanceL2(pos + v, m) < dlock) {
           adj_required = true;
         } else {
-          D2ClosedSegment sm(m.pos - vn, m.pos + vn);
+          D2ClosedSegment sm(m - vn, m + vn);
           adj_required = Intersect(sp, sm);
         }
         if (adj_required) {
           double a = v.LengthSquared();
-          double b = v.dx * (pos.x - m.pos.x) + v.dy * (pos.y - m.pos.y);
-          double c = SquaredDistanceL2(pos, m.pos) - dlock - 1e-6;
+          double b = v.dx * (pos.x - m.x) + v.dy * (pos.y - m.y);
+          double c = SquaredDistanceL2(pos, m) - dlock - 1e-6;
           double d = b * b - a * c;
           if (d < -1e-6)
             std::cout << "Unexpected low D. Please check me." << std::endl;
@@ -216,7 +216,7 @@ class OneMusucian {
             std::cout << "Unexpected high M. Please check me." << std::endl;
             std::cout << "\tP = " << pos.x << "\t" << pos.y << std::endl;
             std::cout << "\tV = " << v.dx << "\t" << v.dy << std::endl;
-            std::cout << "\tC = " << m.pos.x << "\t" << m.pos.y << std::endl;
+            std::cout << "\tC = " << m.x << "\t" << m.y << std::endl;
             std::cout << "\t" << a << "\t" << b << "\t" << c << "\t" << d
                       << "\t" << ma << std::endl;
           }

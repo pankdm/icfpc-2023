@@ -30,9 +30,13 @@ class AdjusterSwaps {
           double d = score_mult / SquaredDistanceL2(a.position, s.positions[k]);
           for (unsigned i = 0; i < p.total_instruments; ++i)
             vs[k][i] += a.tastes[i] * d;
-          old_dscore += a.tastes[p.instruments[k]] * d * vb[k];
+          old_dscore += a.tastes[p.instruments[k]] * d * vb[k] * s.Volume(k);
         }
       }
+    }
+    for (unsigned k = 0; k < vs.size(); ++k) {
+      for (unsigned i = 0; i < vs[k].size(); ++i)
+        vs[k][i] = std::max(max_volume * vs[k][i], 0.);
     }
     double new_dscore = old_dscore;
     Solution snew = s;
@@ -89,13 +93,19 @@ class AdjusterSwaps {
     }
 
     if (new_dscore > old_dscore) {
-      std::cout << "\t" << old_dscore << " -> " << new_dscore << "\t"
+      std::cout << "\tExpected: " << old_dscore << " -> " << new_dscore << "\t"
                 << Evaluator::DScore(p, snew) << std::endl;
-      auto iscore_old = Evaluator::IScore(p, s),
-           iscore_new = Evaluator::IScore(p, snew);
-      std::cout << "\t\t" << iscore_old << " -> " << iscore_new << std::endl;
-      if (iscore_new > iscore_old) {
+      snew.volume.resize(snew.positions.size());
+      for (unsigned i = 0; i < snew.positions.size(); ++i) {
+        snew.volume[i] = (vs[i][p.instruments[i]] == 0) ? 0. : max_volume;
+      }
+      auto old_iscore2 = Evaluator::IScore(p, s),
+           new_iscore2 = Evaluator::IScore(p, snew);
+      std::cout << "\tFinal   : " << old_iscore2 << " -> " << new_iscore2
+                << std::endl;
+      if (new_iscore2 > old_iscore2) {
         s.positions.swap(snew.positions);
+        s.volume.swap(snew.volume);
         return true;
       }
     }

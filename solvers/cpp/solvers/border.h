@@ -37,7 +37,12 @@ class BorderSolver : public BaseSolver {
   std::vector<D2Point> FindBorderCandidates(const TProblem& p,
                                             const TSolution& s, double step) {
     std::vector<D2Point> output;
-    output.push_back(D2Point{p.stage.p1.x, p.stage.p1.y});
+    auto fill_left = p.stage.p1.x > musician_collision_radius;
+    auto fill_bottom = p.stage.p1.y > musician_collision_radius;
+    std::cout << "stage: " << p.stage.p1.x << " " << p.stage.p1.y << std::endl;
+    if (fill_left && fill_bottom) {
+      output.push_back(D2Point{p.stage.p1.x, p.stage.p1.y});
+    }
     output.push_back(D2Point{p.stage.p1.x, p.stage.p2.y});
     output.push_back(D2Point{p.stage.p2.x, p.stage.p1.y});
     output.push_back(D2Point{p.stage.p2.x, p.stage.p2.y});
@@ -45,14 +50,19 @@ class BorderSolver : public BaseSolver {
     double STEP = step;
     {
       // double STEP = 11.;
-      for (double x = p.stage.p1.x; x <= p.stage.p2.x; x += STEP) {
-        output.push_back(D2Point{x, p.stage.p1.y});
+      if (fill_left) {
+        for (double x = p.stage.p1.x; x <= p.stage.p2.x; x += STEP) {
+          output.push_back(D2Point{x, p.stage.p1.y});
+        }
       }
       for (double x = p.stage.p1.x; x <= p.stage.p2.x; x += STEP) {
         output.push_back(D2Point{x, p.stage.p2.y});
       }
-      for (double y = p.stage.p1.y; y <= p.stage.p2.y; y += STEP) {
-        output.push_back(D2Point{p.stage.p1.x, y});
+
+      if (fill_bottom) {
+        for (double y = p.stage.p1.y; y <= p.stage.p2.y; y += STEP) {
+          output.push_back(D2Point{p.stage.p1.x, y});
+        }
       }
       for (double y = p.stage.p1.y; y <= p.stage.p2.y; y += STEP) {
         output.push_back(D2Point{p.stage.p2.x, y});
@@ -62,14 +72,20 @@ class BorderSolver : public BaseSolver {
       // double STEP = 11.;
       double HALF_STEP = STEP * 0.5;
       double OFFSET = sqrt(100 - HALF_STEP * HALF_STEP) + 0.01;
-      for (double x = p.stage.p1.x + HALF_STEP; x <= p.stage.p2.x; x += STEP) {
-        output.push_back(D2Point{x, p.stage.p1.y + OFFSET});
+      if (fill_left) {
+        for (double x = p.stage.p1.x + HALF_STEP; x <= p.stage.p2.x;
+             x += STEP) {
+          output.push_back(D2Point{x, p.stage.p1.y + OFFSET});
+        }
       }
       for (double x = p.stage.p1.x + HALF_STEP; x <= p.stage.p2.x; x += STEP) {
         output.push_back(D2Point{x, p.stage.p2.y - OFFSET});
       }
-      for (double y = p.stage.p1.y + HALF_STEP; y <= p.stage.p2.y; y += STEP) {
-        output.push_back(D2Point{p.stage.p1.x + OFFSET, y});
+      if (fill_bottom) {
+        for (double y = p.stage.p1.y + HALF_STEP; y <= p.stage.p2.y;
+             y += STEP) {
+          output.push_back(D2Point{p.stage.p1.x + OFFSET, y});
+        }
       }
       for (double y = p.stage.p1.y + HALF_STEP; y <= p.stage.p2.y; y += STEP) {
         output.push_back(D2Point{p.stage.p2.x - OFFSET, y});
@@ -177,15 +193,17 @@ class BorderSolver : public BaseSolver {
   Solution Solve(const TProblem& p) override {
     Timer t;
 
-    // drop if perimeter is too large
-    int border_count =
-        (2 * ((p.stage.p2.x - p.stage.p1.x) + (p.stage.p2.y - p.stage.p1.y))) /
-        musician_collision_radius;
-    if (p.instruments.size() < border_count) {
-      std::cout << "Skipping problem " << p.Id() << std::endl;
-      TSolution s;
-      return s;
-    }
+    // // drop if perimeter is too large
+    // int border_count =
+    //     (2 * ((p.stage.p2.x - p.stage.p1.x) + (p.stage.p2.y - p.stage.p1.y)))
+    //     / musician_collision_radius;
+    // if (p.instruments.size() < border_count) {
+    //   std::cout << "Skipping problem " << p.Id() << " " <<
+    //   p.instruments.size()
+    //             << " vs " << border_count << std::endl;
+    //   TSolution s;
+    //   return s;
+    // }
 
     std::cout << "Starting " << Name() << " on problem " << p.Id() << std::endl;
 

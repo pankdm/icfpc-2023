@@ -53,8 +53,12 @@
 # make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 86  -last_problem 86 -layers 7 &
 # wait
 
-# == Iter 5 == 
-make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 61  -last_problem 61 -layers 12 &
-make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 72  -last_problem 72 -layers 11 &
-make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 86  -last_problem 86 -layers 10 &
-wait
+# # == Iter 5 == 
+# make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 61  -last_problem 61 -layers 12 &
+# make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 72  -last_problem 72 -layers 11 &
+# make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 86  -last_problem 86 -layers 10 &
+# wait
+#
+
+# == Iter 6 ==
+# make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 86  -last_problem 86 -layers 13 &

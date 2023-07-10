@@ -1,6 +1,8 @@
 #!/bin/bash
 set -ex
-# m./b  @
+make
+#executing args command
+$@
 ./main.solver -mode update -solution vintlucky
 git add ../..
 git commit -m 'new solutions'

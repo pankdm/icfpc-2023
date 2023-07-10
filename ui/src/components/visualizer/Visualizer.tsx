@@ -36,6 +36,7 @@ export default function Visualizer({
   solution,
   problemStats,
   zoomMode,
+  onPointerPositionChange,
   onHoverMusician,
   onBlurMusician,
   ...props
@@ -48,8 +49,9 @@ export default function Visualizer({
   problemStats?: ProblemStats | null
   solution?: Solution | null
   zoomMode: String
-  onHoverMusician?: (instrumentId: number) => void
-  onBlurMusician?: (instrumentId: number) => void
+  onPointerPositionChange?: (position: [number, number]) => void
+  onHoverMusician?: (instrumentId: number, musicianId: number) => void
+  onBlurMusician?: (instrumentId: number, musicianId: number) => void
 } & PaperProps) {
   const {
     room_width,
@@ -129,8 +131,8 @@ export default function Visualizer({
               key={idx}
               x={p.x}
               y={p.y}
-              onMouseEnter={() => onHoverMusician?.(instrumentId)}
-              onMouseLeave={() => onBlurMusician?.(instrumentId)}
+              onMouseEnter={() => onHoverMusician?.(instrumentId, idx)}
+              onMouseLeave={() => onBlurMusician?.(instrumentId, idx)}
               color={
                 hoveredInstrumentId >= 0 && instrumentId === hoveredInstrumentId
                   ? '#f00'

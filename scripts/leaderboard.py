@@ -49,6 +49,8 @@ def dump_json(data):
 def send_message_to_slack(old_score, new_score, data):
     if old_score is None: old_score = 0
     if new_score is None: new_score = 0
+    if old_score == 0 or new_score == 0:
+        return
     # header
     table_data = [ ['Rank', 'Team', 'Score'] ]
 

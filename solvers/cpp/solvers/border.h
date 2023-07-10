@@ -23,13 +23,14 @@ class BorderSolver : public BaseSolver {
 
  public:
   BorderSolver() : BaseSolver() {}
-  explicit BorderSolver(unsigned _max_time, int layers)
-      : BaseSolver(_max_time), _layers(layers) {}
+  explicit BorderSolver(unsigned _max_time, int layers, int offset)
+      : BaseSolver(_max_time), _layers(layers), _offset(offset) {}
 
   PSolver Clone() const override {
     return std::make_shared<BorderSolver>(*this);
   }
-  int _layers;
+  int _layers = 0;
+  int _offset = 0;
 
   std::string Name() const override { return "dm_border2"; }
 
@@ -55,7 +56,7 @@ class BorderSolver : public BaseSolver {
     double OFFSET = sqrt(100 - HALF_STEP * HALF_STEP) + 0.01;
     {
       for (int layer = 0; layer < LAYERS; ++layer) {
-        double START_STEP = HALF_STEP * (layer % 2) + 1;
+        double START_STEP = HALF_STEP * (layer % 2) + _offset;
         double LAYER_OFFSET = OFFSET * layer;
         // double STEP = 11.;
         if (fill_left) {

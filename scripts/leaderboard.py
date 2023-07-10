@@ -70,7 +70,7 @@ def send_message_to_slack(old_score, new_score, data):
         str_idx = prefix + str(idx+1)
         rows.append([str_idx, entry['username'], f"{int(entry['score']):,}"])
 
-    filtered_rows = rows[our_idx - 6: our_idx + 2]
+    filtered_rows = rows[our_idx - 7: our_idx + 4]
     for r in filtered_rows:
         table_data.append(r)
 

@@ -47,7 +47,7 @@ class BorderSolver : public BaseSolver {
     output.push_back(D2Point{p.stage.p2.x, p.stage.p1.y});
     output.push_back(D2Point{p.stage.p2.x, p.stage.p2.y});
 
-    int LAYERS = 3;
+    int LAYERS = 4;
     double STEP = step;
     double HALF_STEP = STEP * 0.5;
     double OFFSET = sqrt(100 - HALF_STEP * HALF_STEP) + 0.01;

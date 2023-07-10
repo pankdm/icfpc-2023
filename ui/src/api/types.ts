@@ -35,6 +35,7 @@ export type ProblemStats = {
   stage_bottom_left: [number, number]
   score: number | null
   estimated_max: number | null
+  our_best: number | null
 }
 export type ProblemsStats = {
   problems: {

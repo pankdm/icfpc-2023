@@ -61,6 +61,8 @@ int main(int argc, char** argv) {
   const auto mode = cmd.GetString("mode");
   if (mode == "eval") {
     EvaluateSolution(cmd.GetString("solution"));
+  } else if (mode == "eval_json") {
+    EvaluateSolutionToJson(cmd.GetString("solution"));
   } else if (mode == "adjust") {
     auto name = cmd.GetString("adjuster");
     if (name == "assignment") {

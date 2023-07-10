@@ -115,6 +115,15 @@ export default function Problems() {
         <span> {formatNumber(cell.getValue<number>())} </span>
       ),
     },
+    ourBest: {
+      id: 'ourBest',
+      header: 'loks_best',
+      size: 90,
+      accessorKey: 'our_best',
+      Cell: ({ cell }) => (
+        <span> {formatNumber(cell.getValue<number>())} </span>
+      ),
+    },
     percentOfMax: {
       id: 'percentOfMax',
       header: '% of Max',
@@ -211,6 +220,7 @@ export default function Problems() {
           columns.pillars,
           columns.stageSize,
           columns.score,
+          columns.ourBest,
           columns.estimatedMax,
           columns.percentOfMax,
           columns.deltaWithMax,

@@ -48,6 +48,8 @@ class LBorder1 : public BaseSolver {
     double h = musician_collision_radius / 2.0 * sqrt(3.0) + 1e-6;
     double d2 = musician_collision_radius * musician_collision_radius;
 
+    if ((dx == 0) || (dy == 0)) return {};
+
     bool skip_x1 = true, skip_x2 = true, skip_y1 = true, skip_y2 = true;
     for (auto& a : p.attendees) {
       if (a.position.x < x1) skip_x1 = false;

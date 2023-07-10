@@ -5,9 +5,11 @@
 #include "common/geometry/d2/base.h"
 #include "common/geometry/d2/circle.h"
 #include "common/geometry/d2/distance/distance_l2.h"
+#include "common/geometry/d2/line_pv.h"
 #include "common/geometry/d2/point.h"
-// #include "common/geometry/d2/segment.h"
-// #include "common/geometry/d2/utils/intersect_segment.h"
+#include "common/geometry/d2/segment.h"
+#include "common/geometry/d2/utils/intersect_segment.h"
+#include "common/geometry/d2/utils/intersect_segment_dcircle.h"
 
 #include <algorithm>
 #include <iostream>
@@ -27,14 +29,49 @@ class CheckSilentLocation {
       for (auto& c : pillars2) c.c.x = xs - c.c.x;
       return Check(stage, pillars2, {xs - p.x, p.y}, print_debug_info);
     }
+
+    // Init angles
+    D2Point cl, ch;
+    if (p.x >= stage.p1.x) {
+      if (p.y >= stage.p2.y) {
+        cl = D2Point(stage.p1.x, stage.p2.y);
+        ch = D2Point(stage.p2.x, stage.p2.y);
+      } else {
+        assert(p.y <= stage.p1.y);
+        cl = D2Point(stage.p2.x, stage.p1.y);
+        ch = D2Point(stage.p1.x, stage.p1.y);
+      }
+    } else {
+      // p.x < stage.p1.x
+      if (p.y >= stage.p2.y) {
+        cl = D2Point(stage.p1.x, stage.p1.y);
+        ch = D2Point(stage.p2.x, stage.p2.y);
+      } else if (p.y >= stage.p1.y) {
+        cl = D2Point(stage.p1.x, stage.p1.y);
+        ch = D2Point(stage.p1.x, stage.p2.y);
+      } else {
+        // p.y < stage.p1.y
+        cl = D2Point(stage.p2.x, stage.p1.y);
+        ch = D2Point(stage.p1.x, stage.p2.y);
+      }
+    }
+    double a0 = D2Angle(cl - p).RAngle();
+    double a1 = D2Angle(ch - p).RAngle();
+    assert(a0 <= a1);
+    if (print_debug_info) {
+      std::cout << "Stage view:\t" << a0 << "\t" << a1 << std::endl;
+    }
+    D2ClosedSegment pcl(p, cl), pch(p, ch), slh(cl, ch);
+
     std::vector<std::pair<double, double>> vba;
-    // Check if pillar on other side of stage.
     for (auto& c : pillars) {
-      if (((c.c.x - stage.p1.x) * (p.x - stage.p1.x) < 0) ||
-          ((c.c.x - stage.p2.x) * (p.x - stage.p2.x) < 0) ||
-          ((c.c.y - stage.p1.y) * (p.y - stage.p1.y) < 0) ||
-          ((c.c.y - stage.p2.y) * (p.y - stage.p2.y) < 0))
-        continue;
+      // Check if pillar on other side of stage.
+      if (!Intersect(pcl, c) && !Intersect(pch, c)) {
+        D2ClosedSegment pcc(p, c.c);
+        if (Intersect(slh, pcc)) continue;
+        D2LinePV l(p, c.c);
+        if (!IntersectSegment(slh, l)) continue;
+      }
       double a = D2Angle(c.c - p).RAngle();
       double da = asin(c.r / DistanceL2(c.c, p));
       vba.push_back({a - da, a + da});
@@ -59,19 +96,6 @@ class CheckSilentLocation {
       for (auto& pa : vba) {
         std::cout << "\t" << pa.first << "\t" << pa.second << std::endl;
       }
-    }
-    std::vector<double> va4;
-    for (unsigned i = 0; i < 4; ++i) {
-      D2Point pi((i < 2) ? stage.p1.x : stage.p2.x,
-                 (i & 1) ? stage.p2.y : stage.p1.y);
-      va4.push_back(D2Angle(pi - p).RAngle());
-    }
-    auto a0 = *std::min_element(va4.begin(), va4.end());
-    auto a1 = *std::max_element(va4.begin(), va4.end());
-    if (print_debug_info) {
-      std::cout << "Stage view:" << std::endl;
-      for (auto& aa : va4) std::cout << "\t" << aa << std::endl;
-      std::cout << "\t" << a0 << "\t" << a1 << std::endl;
     }
     for (auto& p : vba) {
       if ((p.first < a0) && (p.second > a1)) return true;

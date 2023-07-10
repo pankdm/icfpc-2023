@@ -23,14 +23,19 @@ class BorderSolver : public BaseSolver {
 
  public:
   BorderSolver() : BaseSolver() {}
-  explicit BorderSolver(unsigned _max_time, int layers, int offset)
-      : BaseSolver(_max_time), _layers(layers), _offset(offset) {}
+  explicit BorderSolver(unsigned _max_time, int layers, int xoffset,
+                        int yoffset)
+      : BaseSolver(_max_time),
+        _layers(layers),
+        _xoffset(xoffset),
+        _yoffset(yoffset) {}
 
   PSolver Clone() const override {
     return std::make_shared<BorderSolver>(*this);
   }
   int _layers = 0;
-  int _offset = 0;
+  int _xoffset = 0;
+  int _yoffset = 0;
 
   std::string Name() const override { return "dm_border2"; }
 
@@ -56,26 +61,27 @@ class BorderSolver : public BaseSolver {
     double OFFSET = sqrt(100 - HALF_STEP * HALF_STEP) + 0.01;
     {
       for (int layer = 0; layer < LAYERS; ++layer) {
-        double START_STEP = HALF_STEP * (layer % 2) + _offset;
+        double START_STEP_X = HALF_STEP * (layer % 2) + _xoffset;
+        double START_STEP_Y = HALF_STEP * (layer % 2) + _yoffset;
         double LAYER_OFFSET = OFFSET * layer;
         // double STEP = 11.;
         if (fill_left) {
-          for (double x = p.stage.p1.x + START_STEP; x <= p.stage.p2.x;
+          for (double x = p.stage.p1.x + START_STEP_X; x <= p.stage.p2.x;
                x += STEP) {
             output.push_back(D2Point{x, p.stage.p1.y + LAYER_OFFSET});
           }
         }
-        for (double x = p.stage.p1.x + START_STEP; x <= p.stage.p2.x;
+        for (double x = p.stage.p1.x + START_STEP_X; x <= p.stage.p2.x;
              x += STEP) {
           output.push_back(D2Point{x, p.stage.p2.y - LAYER_OFFSET});
         }
         if (fill_bottom) {
-          for (double y = p.stage.p1.y + START_STEP; y <= p.stage.p2.y;
+          for (double y = p.stage.p1.y + START_STEP_Y; y <= p.stage.p2.y;
                y += STEP) {
             output.push_back(D2Point{p.stage.p1.x + LAYER_OFFSET, y});
           }
         }
-        for (double y = p.stage.p1.y + START_STEP; y <= p.stage.p2.y;
+        for (double y = p.stage.p1.y + START_STEP_Y; y <= p.stage.p2.y;
              y += STEP) {
           output.push_back(D2Point{p.stage.p2.x - LAYER_OFFSET, y});
         }
@@ -261,7 +267,8 @@ class BorderSolver : public BaseSolver {
     std::cout << "... >>> after : \t" << end_score << std::endl;
     // double score = SolveWithStep(p, 10.0);
 
-    std::cout << "..... problem " << p.Id() << " offset:" << _offset
+    std::cout << "..... problem " << p.Id() << " x_off: " << _xoffset
+              << " y_off:" << _yoffset << " layers: " << _layers
               << " -> before: " << start_score << " -> after: " << end_score
               << std::endl;
 

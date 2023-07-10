@@ -31,7 +31,8 @@ void InitCommaneLine(files::CommandLine& cmd) {
   cmd.AddArg("first_problem", 1);
   cmd.AddArg("last_problem", last_problem);
   cmd.AddArg("layers", 2);
-  cmd.AddArg("offset", 0);
+  cmd.AddArg("xoffset", 0);
+  cmd.AddArg("yoffset", 0);
 }
 
 BaseSolver::PSolver CreateSolver(const files::CommandLine& cmd,
@@ -39,7 +40,8 @@ BaseSolver::PSolver CreateSolver(const files::CommandLine& cmd,
   auto timelimit = cmd.GetInt("timelimit");
   if (solver_name == "border") {
     return std::make_shared<BorderSolver>(timelimit, cmd.GetInt("layers"),
-                                          cmd.GetInt("offset"));
+                                          cmd.GetInt("xoffset"),
+                                          cmd.GetInt("yoffset"));
   } else if (solver_name == "greedy1") {
     return std::make_shared<Greedy1>(timelimit);
   } else if (solver_name == "greedy2") {

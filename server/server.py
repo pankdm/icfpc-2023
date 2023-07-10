@@ -84,17 +84,17 @@ def get_problems():
 
 @cached(ttl=60)
 def get_cached_problem_stats():
-    scores = ICFPC.get_cached_userboard()
     stats = get_problem_stats()
     estimated_max = get_estimated_scores()
-    print(estimated_max)
+    scores = ICFPC.get_cached_userboard()
     merged_stats = {
         id: {
             **stats[id],
-            "score": scores[id],
+            "score": scores[id] if id in scores else -0,
             "estimated_max": estimated_max.get(id, -1)
         }
-    for id in stats.keys()}
+        for id in stats.keys()
+    }
     return merged_stats
 
 @app.get("/problems/stats")

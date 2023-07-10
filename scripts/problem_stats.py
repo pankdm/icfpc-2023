@@ -2,6 +2,7 @@ import json
 import itertools
 import os
 from types import SimpleNamespace
+from scripts.problem_ids import get_problem_ids
 
 def get_estimated_scores():
     path = "./metadata/estimated.json"
@@ -16,7 +17,7 @@ def get_estimated_scores():
 
 def get_problem_stats():
     all_problem_stats = {}
-    for i in itertools.count(start=1):
+    for i in get_problem_ids():
         path = f"./problems/{i}.json"
         if not os.path.exists(path):
             break

@@ -3,7 +3,7 @@ set -ex
 
 cd ../solvers/cpp
 make
-./main.solver -mode run -solver rgreedy2  -nthreads 8 -first_problem 11 -last_problem 30 -timelimit 120
+./main.solver -mode run -solver rgreedy2  -nthreads 8 -first_problem 31 -last_problem 55 -timelimit 120
 ./main.solver -mode update -solution vintlucky
 git add ../..
 git commit -m 'new solutions'

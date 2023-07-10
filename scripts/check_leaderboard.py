@@ -1,6 +1,6 @@
 
 
-from server.server import get_scoreboard
+from server.server import get_scoreboard, get_userboard
 from dotenv import load_dotenv
 import os
 import json

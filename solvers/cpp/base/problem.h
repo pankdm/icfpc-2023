@@ -29,7 +29,7 @@ class Problem : public solvers::Problem {
   bool Lighting() const { return std::stoi(id) <= last_problem_lighting; }
 
   bool Load(const std::string& _id) {
-    return Load(_id, "../../problems_clean/" + _id + ".json");
+    return Load(_id, "../../problems/" + _id + ".json");
   }
 
   bool Load(const std::string& _id, const std::string& filename) {

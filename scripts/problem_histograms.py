@@ -52,7 +52,7 @@ def get_sq_distance_to_rect(point, rect_xy):
     dy = max(ry0 - y, 0, y - ry1)
     return dx*dx + dy*dy
 
-def get_tastes_histogram(problem_id):
+def get_tastes_hist(problem_id):
     problem = get_problem(problem_id)
     attendees = problem['attendees']
     stage_x0y0 = np.array(problem['stage_bottom_left'])
@@ -72,6 +72,14 @@ def get_tastes_histogram(problem_id):
     sum_tastes = np.sum(weighted_tastes.T, 0)
     # print('>>> sum_tastes', sum_tastes)
     return sum_tastes
+
+def get_instruments_hist(problem_id):
+    problem = get_problem(problem_id)
+    musicians = problem['musicians']
+    instruments = np.zeros(len(problem['attendees'][0]['tastes']))
+    for i in musicians:
+        instruments[i] += 1
+    return instruments
 
 def plot_hist(name, x):
     abs_max = np.max(np.abs(x))
@@ -95,11 +103,17 @@ def np_log10p(x):
     return np.log(pos_vals+1.) - np.log(-neg_vals+1.)
 
 def generate_histograms(problem_id):
-    tastes_hist = get_tastes_histogram(problem_id)
-    tastes_log_hist = np_log10p(tastes_hist)
+    tastes_hist = get_tastes_hist(problem_id)
+    log_tastes_hist = np_log10p(tastes_hist)
+    instruments_hist = get_instruments_hist(problem_id)
+    potentials_hist = tastes_hist * instruments_hist
+    log_potentials_hist = np_log10p(potentials_hist)
     histograms = [
         [ 'Tastes', 'tastes', tastes_hist ],
-        [ 'Log Tastes', 'tastes.log', tastes_log_hist ],
+        [ 'Log Tastes', 'tastes.log', log_tastes_hist ],
+        [ 'Instruments', 'instruments', instruments_hist ],
+        [ 'Potential', 'potential', potentials_hist ],
+        [ 'Log Potential', 'potential.log', log_potentials_hist ],
     ]
     return histograms
 

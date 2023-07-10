@@ -151,25 +151,41 @@ export default function Problems() {
         originalRow.stage_width &&
         `${originalRow.stage_width} x ${originalRow.stage_height}`,
     },
-    tastes: {
-      id: 'tastes',
-      header: 'Tastes',
+    tastesAndPotential: {
+      id: 'tastesAndPotential',
+      header: 'Tastes and Available Gains',
       size: 140,
       Cell: ({ row }) => (
-        <Box pos="relative" w="16rem" h="8rem">
-          <Image
-            pos="absolute"
-            opacity={0.3}
-            sx={{
-              filter: 'hue-rotate(.5turn)',
-            }}
-            src={AssetURL.hishogram(row.getValue('id'), 'tastes.log')}
-          />
-          <Image
-            pos="absolute"
-            src={AssetURL.hishogram(row.getValue('id'), 'tastes')}
-          />
-        </Box>
+        <Stack spacing="xs">
+          <Box pos="relative" w="12rem" h="6rem">
+            <Image
+              pos="absolute"
+              opacity={0.2}
+              sx={{
+                filter: 'hue-rotate(.5turn)',
+              }}
+              src={AssetURL.hishogram(row.getValue('id'), 'tastes.log')}
+            />
+            <Image
+              pos="absolute"
+              src={AssetURL.hishogram(row.getValue('id'), 'tastes')}
+            />
+          </Box>
+          <Box pos="relative" w="12rem" h="6rem">
+            <Image
+              pos="absolute"
+              opacity={0.2}
+              sx={{
+                filter: 'hue-rotate(.5turn)',
+              }}
+              src={AssetURL.hishogram(row.getValue('id'), 'potential.log')}
+            />
+            <Image
+              pos="absolute"
+              src={AssetURL.hishogram(row.getValue('id'), 'potential')}
+            />
+          </Box>
+        </Stack>
       ),
     },
   }
@@ -216,7 +232,7 @@ export default function Problems() {
           columns.instruments,
           columns.musicians,
           columns.attendees,
-          columns.tastes,
+          columns.tastesAndPotential,
           columns.pillars,
           columns.stageSize,
           columns.score,

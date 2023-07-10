@@ -27,7 +27,7 @@ def get_from_file(solution):
 
 def get_our_best_scores():
     maps = {}
-    for solution in ["loks_best", "dm_border2", "loks_rgreedy1", "loks_border1"]:
+    for solution in ["loks_best", "dm_border2", "loks_rgreedy1", "loks_border1", "loks_rgreedy2"]:
         maps[solution] = get_from_file(solution)
     output = {}
     for i in range(1, 91):

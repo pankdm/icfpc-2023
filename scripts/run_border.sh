@@ -65,4 +65,23 @@
 
 
 # Test
-make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 56  -last_problem 87 -layers 7
+# make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 56  -last_problem 87 -layers 7
+
+for x in `jot - 1 5`; do
+  make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 56  -last_problem 60 -layers 5 -xoffset ${x}
+
+  make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 61  -last_problem 61 -layers 9 -xoffset ${x} &
+  make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 62  -last_problem 62 -layers 7 -xoffset ${x} &
+  make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 63  -last_problem 63 -layers 7 -xoffset ${x} &
+  make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 64  -last_problem 64 -layers 8 -xoffset ${x} & 
+  wait 
+
+  make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 65  -last_problem 65 -layers 5 -xoffset ${x} &
+  make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 66  -last_problem 66 -layers 6 -xoffset ${x} &
+  make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 72  -last_problem 72 -layers 10 -xoffset ${x} &
+  make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 86  -last_problem 86 -layers 10 -xoffset ${x} &
+  wait
+
+  make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 67  -last_problem 71 -layers 5 -xoffset ${x}
+  make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 73  -last_problem 85 -layers 5 -xoffset ${x}
+done

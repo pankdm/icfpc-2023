@@ -39,6 +39,8 @@ def generate_problem_preview(solution, id, preview_size=512, attendee_size=5, at
     view_width = (stage_x0 + 1.1 * stage_width) - offset_x0
     view_height = (stage_y0 + 1.1 * stage_height) - offset_y0
 
+    dims = max(view_width, view_height)
+
     if image_type == 'svg':
         draw_image = draw_svg_image
     elif image_type == 'png':
@@ -48,8 +50,8 @@ def generate_problem_preview(solution, id, preview_size=512, attendee_size=5, at
         x, y = pt
         return [x - offset_x0, y - offset_y0]
 
-    image = draw_image(preview_size, [view_width, view_height], [
-        ['bg', 'rect', (0, 0, view_width, view_height), bg_color],
+    image = draw_image(preview_size, [dims, dims], [
+        ['bg', 'rect', (0, 0, room_width - offset_x0, room_height - offset_y0), bg_color],
         ['stage', 'rect', (stage_x0 - offset_x0, stage_y0 - offset_y0, stage_x1 - offset_x0, stage_y1 - offset_y0), stage_color],
         *[
             ['pillar', 'circle', apply_offset(p['center']), p['radius'], pillar_color]

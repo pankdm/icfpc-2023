@@ -199,6 +199,8 @@ class BorderSolver : public BaseSolver {
       }
     }
 
+    s.SetMaxVolume();
+
     auto snew = s;
     // std::cout << " Started assignment run for problem " << p.Id() <<
     // std::endl;
@@ -209,15 +211,21 @@ class BorderSolver : public BaseSolver {
       // ":\t"
       //           << start_score << " -> " << score_new << std::endl;
 
-      std::cout << "  New solution from adjuster for problem " << p.Id()
+      std::cout << "  New solution from Assigner for problem " << p.Id()
                 << ":\t" << score_new << std::endl;
+      AdjusterSwaps adj2;
+      adj2.Check(p, snew);
+      auto score2 = Evaluator::Apply(p, snew).score;
+
+      std::cout << "  New solution from Swapper for problem " << p.Id() << ":\t"
+                << score2 << std::endl;
 
       s = snew;
       s.positions.resize(s.positions.size() - added);
-
-      s.Save(Name());
-      std::cout << "  ..saving solution to " << Name() << std::endl;
-      return score_new;
+      s.SetMaxVolume();
+      // s.Save(Name());
+      // std::cout << "  ..saving solution to " << Name() << std::endl;
+      return score2;
     }
     return -1;
   }
@@ -254,8 +262,11 @@ class BorderSolver : public BaseSolver {
 
     TSolution s;
     double step = 10.;
-    SolveWithStep(p, s, step);
+    auto end_score = SolveWithStep(p, s, step);
 
+    std::cout << "... >> problem " << p.Id() << std::endl;
+    std::cout << "... >>> before: \t" << start_score << std::endl;
+    std::cout << "... >>> after : \t" << end_score << std::endl;
     // double score = SolveWithStep(p, 10.0);
     s.Save(Name());
     std::cout << "  ..saving solution to " << Name() << std::endl;

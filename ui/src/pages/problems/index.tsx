@@ -108,7 +108,7 @@ export default function Problems() {
     },
     ourBest: {
       id: 'ourBest',
-      header: 'our_best',
+      header: 'loks_best',
       size: 90,
       accessorKey: 'our_best',
       Cell: ({ cell }) => (

@@ -23,11 +23,13 @@ class BorderSolver : public BaseSolver {
 
  public:
   BorderSolver() : BaseSolver() {}
-  explicit BorderSolver(unsigned _max_time) : BaseSolver(_max_time) {}
+  explicit BorderSolver(unsigned _max_time, int layers)
+      : BaseSolver(_max_time), _layers(layers) {}
 
   PSolver Clone() const override {
     return std::make_shared<BorderSolver>(*this);
   }
+  int _layers;
 
   std::string Name() const override { return "dm_border2"; }
 
@@ -35,7 +37,7 @@ class BorderSolver : public BaseSolver {
   // bool SkipBest() const override { return true; }
 
   std::vector<D2Point> FindBorderCandidates(const TProblem& p,
-                                            const TSolution& s, double step) {
+                                            const TSolution& s, double layers) {
     std::vector<D2Point> output;
     auto fill_left = p.stage.p1.x > musician_collision_radius;
     auto fill_bottom = p.stage.p1.y > musician_collision_radius;
@@ -47,8 +49,8 @@ class BorderSolver : public BaseSolver {
     output.push_back(D2Point{p.stage.p2.x, p.stage.p1.y});
     output.push_back(D2Point{p.stage.p2.x, p.stage.p2.y});
 
-    int LAYERS = 4;
-    double STEP = step;
+    int LAYERS = layers;
+    double STEP = 10.0;
     double HALF_STEP = STEP * 0.5;
     double OFFSET = sqrt(100 - HALF_STEP * HALF_STEP) + 0.01;
     {
@@ -92,7 +94,7 @@ class BorderSolver : public BaseSolver {
     return true;
   }
 
-  double SolveWithStep(const TProblem& p0, TSolution& s, double step) {
+  double SolveWithLayers(const TProblem& p0, TSolution& s, double layers) {
     auto p = p0;
     Timer t;
     auto start = t.GetMilliseconds();
@@ -105,7 +107,7 @@ class BorderSolver : public BaseSolver {
     s.SetId(p.Id());
     s.positions.resize(p.instruments.size());
     s.SetMaxVolume();
-    const auto candidates = FindBorderCandidates(p, s, step);
+    const auto candidates = FindBorderCandidates(p, s, layers);
 
     int candidate_idx = 0;
     int m_idx = 0;
@@ -251,8 +253,7 @@ class BorderSolver : public BaseSolver {
               << "ms" << std::endl;
 
     TSolution s;
-    double step = 10.;
-    int end_score = SolveWithStep(p, s, step);
+    int end_score = SolveWithLayers(p, s, _layers);
 
     std::cout << "... >> problem " << p.Id() << "\n";
     std::cout << "... >>> before: \t" << start_score << "\n";
@@ -262,8 +263,9 @@ class BorderSolver : public BaseSolver {
     std::cout << "..... problem " << p.Id() << " -> before: " << start_score
               << " -> after: " << end_score << std::endl;
 
-    s.Save(Name() + "_tmp");
-    std::cout << "  ..saving solution to " << Name() << std::endl;
+    auto name_tmp = Name() + "_tmp";
+    s.Save(name_tmp);
+    std::cout << "  ..saving solution to " << name_tmp << std::endl;
 
     return s;
   }

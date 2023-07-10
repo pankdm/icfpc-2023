@@ -30,13 +30,14 @@ void InitCommaneLine(files::CommandLine& cmd) {
   cmd.AddArg("nthreads", 4);
   cmd.AddArg("first_problem", 1);
   cmd.AddArg("last_problem", last_problem);
+  cmd.AddArg("layers", 2);
 }
 
 BaseSolver::PSolver CreateSolver(const files::CommandLine& cmd,
                                  const std::string& solver_name) {
   auto timelimit = cmd.GetInt("timelimit");
   if (solver_name == "border") {
-    return std::make_shared<BorderSolver>(timelimit);
+    return std::make_shared<BorderSolver>(timelimit, cmd.GetInt("layers"));
   } else if (solver_name == "greedy1") {
     return std::make_shared<Greedy1>(timelimit);
   } else if (solver_name == "greedy2") {

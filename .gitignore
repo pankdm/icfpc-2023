@@ -166,4 +166,7 @@ temp/
 perception_luts/*/*.lut.bin
 perception_luts/*/*px/
 
+leaderboard.txt
+
+
 .DS_Store

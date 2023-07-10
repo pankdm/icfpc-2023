@@ -158,6 +158,28 @@ def post_update_server():
             "error": str(err),
         }
 
+
+@app.post("/server/hard-reset")
+def hard_reset():
+    try:
+        done = subprocess.run(
+            [
+                'bash', '-ec', 'git add . && git stash && git fetch && git reset --hard origin/main'
+            ],
+            capture_output=True,
+            text=True,
+        )
+        return {
+            "status_code": done.check_returncode(),
+            "stdout": done.stdout,
+            "stderr": done.stderr,
+        }
+    except Exception as err:
+        return {
+            "error": str(err),
+        }
+
+
 # problem_data_cache = {}
 # def get_problem_data(id):
 #     if problem_data_cache.get(id):

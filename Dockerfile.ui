@@ -1,4 +1,7 @@
-FROM node:alpine
+FROM node:slim
 
 WORKDIR /src
+RUN npm i -g @esbuild/linux-arm64
 RUN npm i -g pnpm
+COPY ./ui /src
+RUN pnpm i

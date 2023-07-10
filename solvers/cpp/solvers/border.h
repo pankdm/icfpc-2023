@@ -261,7 +261,7 @@ class BorderSolver : public BaseSolver {
     std::cout << "... >>> after : \t" << end_score << std::endl;
     // double score = SolveWithStep(p, 10.0);
 
-    std::cout << "..... problem " << p.Id() << "offset:" << _offset
+    std::cout << "..... problem " << p.Id() << " offset:" << _offset
               << " -> before: " << start_score << " -> after: " << end_score
               << std::endl;
 

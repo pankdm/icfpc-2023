@@ -55,7 +55,7 @@ class BorderSolver : public BaseSolver {
     double OFFSET = sqrt(100 - HALF_STEP * HALF_STEP) + 0.01;
     {
       for (int layer = 0; layer < LAYERS; ++layer) {
-        double START_STEP = HALF_STEP * (layer % 2);
+        double START_STEP = HALF_STEP * (layer % 2) + 1;
         double LAYER_OFFSET = OFFSET * layer;
         // double STEP = 11.;
         if (fill_left) {

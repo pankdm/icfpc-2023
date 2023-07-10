@@ -48,6 +48,38 @@ Show problems stats:
 python3 ./scripts/problem_stats.py
 ```
 
+## Scripts
+
+Run leaderboard monitoring and post updates to slack:
+
+```bash
+bash ./scripts/monitor_leaderboard.sh
+```
+
+Update all metadata scores for solutions:
+
+```bash
+zsh ./scripts/update_metadata_scores.sh
+```
+
+Update scores and previews for `loks_best`
+
+```bash
+zsh ./scripts/update_best_meta_and_push.sh
+```
+
+Update solution in `best_loks` depending on local folder:
+
+```bash
+make compile && ./main.solver -mode update -solution dm_border2
+```
+
+Submit all solutions from a folder:
+
+```bash
+for i in `jot - 1 90`; do bash scripts/submit.sh loks_best $i; done
+```
+
 ## Repo Structure
 
 - `./problems`  - problem descriptions

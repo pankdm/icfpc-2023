@@ -47,48 +47,35 @@ class BorderSolver : public BaseSolver {
     output.push_back(D2Point{p.stage.p2.x, p.stage.p1.y});
     output.push_back(D2Point{p.stage.p2.x, p.stage.p2.y});
 
+    int LAYERS = 4;
     double STEP = step;
+    double HALF_STEP = STEP * 0.5;
+    double OFFSET = sqrt(100 - HALF_STEP * HALF_STEP) + 0.01;
     {
-      // double STEP = 11.;
-      if (fill_left) {
-        for (double x = p.stage.p1.x; x <= p.stage.p2.x; x += STEP) {
-          output.push_back(D2Point{x, p.stage.p1.y});
+      for (int layer = 0; layer < LAYERS; ++layer) {
+        double START_STEP = HALF_STEP * (layer % 2);
+        double LAYER_OFFSET = OFFSET * layer;
+        // double STEP = 11.;
+        if (fill_left) {
+          for (double x = p.stage.p1.x + START_STEP; x <= p.stage.p2.x;
+               x += STEP) {
+            output.push_back(D2Point{x, p.stage.p1.y + LAYER_OFFSET});
+          }
         }
-      }
-      for (double x = p.stage.p1.x; x <= p.stage.p2.x; x += STEP) {
-        output.push_back(D2Point{x, p.stage.p2.y});
-      }
-
-      if (fill_bottom) {
-        for (double y = p.stage.p1.y; y <= p.stage.p2.y; y += STEP) {
-          output.push_back(D2Point{p.stage.p1.x, y});
-        }
-      }
-      for (double y = p.stage.p1.y; y <= p.stage.p2.y; y += STEP) {
-        output.push_back(D2Point{p.stage.p2.x, y});
-      }
-    }
-    {
-      // double STEP = 11.;
-      double HALF_STEP = STEP * 0.5;
-      double OFFSET = sqrt(100 - HALF_STEP * HALF_STEP) + 0.01;
-      if (fill_left) {
-        for (double x = p.stage.p1.x + HALF_STEP; x <= p.stage.p2.x;
+        for (double x = p.stage.p1.x + START_STEP; x <= p.stage.p2.x;
              x += STEP) {
-          output.push_back(D2Point{x, p.stage.p1.y + OFFSET});
+          output.push_back(D2Point{x, p.stage.p2.y - LAYER_OFFSET});
         }
-      }
-      for (double x = p.stage.p1.x + HALF_STEP; x <= p.stage.p2.x; x += STEP) {
-        output.push_back(D2Point{x, p.stage.p2.y - OFFSET});
-      }
-      if (fill_bottom) {
-        for (double y = p.stage.p1.y + HALF_STEP; y <= p.stage.p2.y;
+        if (fill_bottom) {
+          for (double y = p.stage.p1.y + START_STEP; y <= p.stage.p2.y;
+               y += STEP) {
+            output.push_back(D2Point{p.stage.p1.x + LAYER_OFFSET, y});
+          }
+        }
+        for (double y = p.stage.p1.y + START_STEP; y <= p.stage.p2.y;
              y += STEP) {
-          output.push_back(D2Point{p.stage.p1.x + OFFSET, y});
+          output.push_back(D2Point{p.stage.p2.x - LAYER_OFFSET, y});
         }
-      }
-      for (double y = p.stage.p1.y + HALF_STEP; y <= p.stage.p2.y; y += STEP) {
-        output.push_back(D2Point{p.stage.p2.x - OFFSET, y});
       }
     }
 
@@ -212,13 +199,16 @@ class BorderSolver : public BaseSolver {
       //           << start_score << " -> " << score_new << std::endl;
 
       std::cout << "  New solution from Assigner for problem " << p.Id()
-                << ":\t" << score_new << std::endl;
+                << ":\t" << score_new
+                << ", time = " << t.GetMilliseconds() - start << "ms"
+                << std::endl;
       AdjusterSwaps adj2;
       adj2.Check(p, snew);
       auto score2 = Evaluator::Apply(p, snew).score;
 
       std::cout << "  New solution from Swapper for problem " << p.Id() << ":\t"
-                << score2 << std::endl;
+                << score2 << ", time = " << t.GetMilliseconds() - start << "ms"
+                << std::endl;
 
       s = snew;
       s.positions.resize(s.positions.size() - added);
@@ -262,12 +252,16 @@ class BorderSolver : public BaseSolver {
 
     TSolution s;
     double step = 10.;
-    auto end_score = SolveWithStep(p, s, step);
+    int end_score = SolveWithStep(p, s, step);
 
-    std::cout << "... >> problem " << p.Id() << std::endl;
-    std::cout << "... >>> before: \t" << start_score << std::endl;
+    std::cout << "... >> problem " << p.Id() << "\n";
+    std::cout << "... >>> before: \t" << start_score << "\n";
     std::cout << "... >>> after : \t" << end_score << std::endl;
     // double score = SolveWithStep(p, 10.0);
+
+    std::cout << "..... problem " << p.Id() << " -> before: " << start_score
+              << " -> after: " << end_score << std::endl;
+
     s.Save(Name());
     std::cout << "  ..saving solution to " << Name() << std::endl;
 

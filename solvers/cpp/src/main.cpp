@@ -8,6 +8,7 @@
 #include "solvers/greedy1.h"
 #include "solvers/greedy2.h"
 #include "solvers/greedy3.h"
+#include "solvers/lborder1.h"
 #include "solvers/rgreedy1.h"
 #include "solvers/shaker.h"
 #include "utils/check_silent_location.h"
@@ -48,6 +49,8 @@ BaseSolver::PSolver CreateSolver(const files::CommandLine& cmd,
     return std::make_shared<Greedy2>(timelimit, cmd.GetInt("extra"));
   } else if (solver_name == "greedy3") {
     return std::make_shared<Greedy3>(timelimit, cmd.GetInt("extra"));
+  } else if (solver_name == "lborder1") {
+    return std::make_shared<LBorder1>(timelimit);
   } else if (solver_name == "rgreedy1") {
     return std::make_shared<RGreedy1>(timelimit, cmd.GetInt("extra"));
   } else if (solver_name == "shaker") {

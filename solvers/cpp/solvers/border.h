@@ -246,14 +246,14 @@ class BorderSolver : public BaseSolver {
       exit(1);
     }
 
-    auto start_score = Evaluator::Apply(p, best_s).score;
-    auto current_score = start_score;
+    int64_t start_score = Evaluator::Apply(p, best_s).score;
+    int64_t current_score = start_score;
     std::cout << "Loaded, current score = "
               << "\t" << start_score << ", time = " << t.GetMilliseconds()
               << "ms" << std::endl;
 
     TSolution s;
-    int end_score = SolveWithLayers(p, s, _layers);
+    int64_t end_score = SolveWithLayers(p, s, _layers);
 
     std::cout << "... >> problem " << p.Id() << "\n";
     std::cout << "... >>> before: \t" << start_score << "\n";

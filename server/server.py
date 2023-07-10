@@ -51,17 +51,19 @@ def post_check_auth():
 @app.post("/run_solver")
 def post_run_solver():
     payload = request.get_json()
-    problem_id = payload["problem_id"]
+    problem_id = payload.get("problem_id")
     lang = payload["lang"]
-    solver = payload["solver"]
+    solver = payload.get("solver", 'main')
+    args = payload.get("args", '')
 
     if lang == 'cpp':
         done = subprocess.run(
-            [f'solvers/cpp/{solver}/solver', str(problem_id)],
+            [f'./build_run_and_submit.sh', f'./{solver}.solver', *args.split(' ')],
+            cwd='solvers/cpp',
             capture_output=True,
             text=True
         )
-        return { "output": str(done.stdout), "code": done.returncode }
+        return { "output": str(done.stdout), "stderr": str(done.stderr), "code": done.returncode }
     elif lang == 'python':
         done = subprocess.run(
             ['python', f'solvers/python/{solver}/solver.py', str(problem_id)],
@@ -69,6 +71,30 @@ def post_run_solver():
             text=True
         )
         return { "output": str(done.stdout), "code": done.returncode }
+
+@app.post("/run_main_solver")
+def post_run_main_solver():
+    payload = request.get_json()
+    args = payload.get("args", '')
+    done = subprocess.run(
+        [f'./build_run_and_submit.sh', './main.solver', *args.split(' ')],
+        cwd='scripts',
+        capture_output=True,
+        text=True
+    )
+    return { "output": str(done.stdout), "stderr": str(done.stderr), "code": done.returncode }
+
+
+@app.post("/kill_main_solver")
+def post_kill_main_solver():
+    done = subprocess.run(
+        [f'./kill_main_solver.sh'],
+        cwd='scripts',
+        capture_output=True,
+        text=True
+    )
+    return { "output": str(done.stdout), "stderr": str(done.stderr), "code": done.returncode }
+
 
 def get_problem_ids():
     problems_dir = os.path.dirname(__file__)+'/../problems'

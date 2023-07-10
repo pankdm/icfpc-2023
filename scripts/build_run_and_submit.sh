@@ -1,6 +1,7 @@
 #!/bin/bash
 set -ex
 
+cd ../solvers/cpp
 make
 # #executing args command
 $@

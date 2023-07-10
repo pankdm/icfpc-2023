@@ -1,11 +1,9 @@
 #!/bin/bash
 set -ex
-# make
-# #executing args command
-# $@
+# m./b  @
 ./main.solver -mode update -solution vintlucky
 git add .
 git commit -m 'new solutions'
 git fetch
-git rebase origin/master
+git rebase origin/main
 git push

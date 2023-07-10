@@ -262,7 +262,7 @@ class BorderSolver : public BaseSolver {
     std::cout << "..... problem " << p.Id() << " -> before: " << start_score
               << " -> after: " << end_score << std::endl;
 
-    s.Save(Name());
+    s.Save(Name() + "_tmp");
     std::cout << "  ..saving solution to " << Name() << std::endl;
 
     return s;

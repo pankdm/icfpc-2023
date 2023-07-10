@@ -167,6 +167,6 @@ perception_luts/*/*.lut.bin
 perception_luts/*/*px/
 
 leaderboard.txt
-
+solutions/dm_border2_tmp
 
 .DS_Store

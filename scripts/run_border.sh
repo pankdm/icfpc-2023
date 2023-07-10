@@ -32,9 +32,29 @@
 
 # make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 56  -last_problem 87 -layers 5
 
+# Iter 3
+# make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 61  -last_problem 61 -layers 6
+# make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 62  -last_problem 62 -layers 6
+# make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 64  -last_problem 64 -layers 6
+# make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 69  -last_problem 73 -layers 6
+# make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 86  -last_problem 86 -layers 6
 
-make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 61  -last_problem 61 -layers 6
-make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 62  -last_problem 62 -layers 6
-make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 64  -last_problem 64 -layers 6
-make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 69  -last_problem 73 -layers 6
-make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 86  -last_problem 86 -layers 6
+
+# Iter 4
+# make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 61  -last_problem 61 -layers 9 &
+# make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 62  -last_problem 62 -layers 7 &
+# make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 64  -last_problem 64 -layers 8 &
+# make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 69  -last_problem 69 -layers 7 &
+# wait 
+
+
+# make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 70  -last_problem 70 -layers 10 &
+# make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 72  -last_problem 72 -layers 10 &
+# make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 86  -last_problem 86 -layers 7 &
+# wait
+
+# == Iter 5 == 
+make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 61  -last_problem 61 -layers 12 &
+make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 72  -last_problem 72 -layers 11 &
+make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 86  -last_problem 86 -layers 10 &
+wait

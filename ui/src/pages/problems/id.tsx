@@ -285,7 +285,7 @@ export default function ProblemInspector() {
               <Space h="xl" />
               <Stack spacing={0}>
                 <Text size="sm">Best score: {formatNumber(stats?.score)}</Text>
-                <Text size="sm">
+                <Text size="sm" sx={{ whiteSpace: 'pre' }}>
                   Our scores: {JSON.stringify(stats?.our_best, null, 2)}
                 </Text>
                 <Text size="sm">

@@ -27,6 +27,11 @@ const fetchAPI = async (
       throw err
     })
 
+export const AssetURL = {
+  hishogram: (problemId: string, type: string) =>
+    `${API_URL}/problems/${problemId}/histograms/${type}`,
+}
+
 const API = {
   updateServer: async () =>
     fetchAPI(`/update-server`, { method: 'POST' }) as Promise<SubprocessResult>,
@@ -41,13 +46,6 @@ const API = {
     fetchAPI(`/problems/${problemId}`) as Promise<Problem>,
   getProblemSolutions: async (problemId: number | string) =>
     fetchAPI(`/problems/${problemId}/solutions`) as Promise<Solutions>,
-  // getProblemInstrumentLUT: async (
-  //   problemId: number | string,
-  //   instrumentId: number
-  // ) =>
-  //   fetchAPI(
-  //     `/problems/${problemId}/instruments/${instrumentId}/lut`
-  //   ) as Promise<Blob>,
   getSolution: async (solutionId: string) =>
     fetchAPI(`/solutions/${solutionId}`) as Promise<Solution>,
   uploadPreview: async (problemId: number | string, imageBlob: Blob) =>

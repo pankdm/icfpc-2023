@@ -109,6 +109,10 @@ def get_problem(id):
 def get_problem_preview(id):
     return send_from_directory('../previews_best', id+'.svg')
 
+@app.get("/problems/<id>/histograms/<type>")
+def handle_get_problem_histogram(id, type):
+    return send_from_directory(root_folder_path(f'histograms/{id}'), f'{type}.png')
+
 @app.post("/problems/<id>/preview")
 def handle_post_problem_preview(id):
     print(f'>>>> received image preview for problem {id}:', request.headers.get('content-type'), request.content_length, 'bytes')

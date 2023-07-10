@@ -2,9 +2,17 @@ import _ from 'lodash'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet'
 import { useStore } from '@nanostores/react'
-import { Container, Group, SegmentedControl, Space } from '@mantine/core'
+import {
+  Box,
+  Container,
+  Group,
+  Image,
+  SegmentedControl,
+  Space,
+  Stack,
+} from '@mantine/core'
 import { MantineReactTable as Table, MRT_ColumnDef } from 'mantine-react-table'
-import API, { useAPIData } from '../../api'
+import API, { AssetURL, useAPIData } from '../../api'
 import { ProblemStats } from '../../api/types'
 import { formatNumber, formatNumberExp } from '../../utils/numbers'
 import ProblemPreview from '../../components/ProblemPreview'
@@ -76,9 +84,9 @@ export default function Problems() {
     },
     ...Object.fromEntries(
       [
-        ['instruments', 'Instruments'],
-        ['musicians', 'Musicians'],
-        ['attendees', 'Attendees'],
+        ['instruments', 'Instrs'],
+        ['musicians', 'Musicns'],
+        ['attendees', 'Attends'],
         ['pillars', 'Pillars'],
       ].map(([accessorKey, header]) => [
         accessorKey,
@@ -134,6 +142,27 @@ export default function Problems() {
         originalRow.stage_width &&
         `${originalRow.stage_width} x ${originalRow.stage_height}`,
     },
+    tastes: {
+      id: 'tastes',
+      header: 'Tastes',
+      size: 140,
+      Cell: ({ row }) => (
+        <Box pos="relative" w="16rem" h="8rem">
+          <Image
+            pos="absolute"
+            opacity={0.3}
+            sx={{
+              filter: 'hue-rotate(.5turn)',
+            }}
+            src={AssetURL.hishogram(row.getValue('id'), 'tastes.log')}
+          />
+          <Image
+            pos="absolute"
+            src={AssetURL.hishogram(row.getValue('id'), 'tastes')}
+          />
+        </Box>
+      ),
+    },
   }
   return (
     <Container maw={2500} h="100%" p={0}>
@@ -178,6 +207,7 @@ export default function Problems() {
           columns.instruments,
           columns.musicians,
           columns.attendees,
+          columns.tastes,
           columns.pillars,
           columns.stageSize,
           columns.score,

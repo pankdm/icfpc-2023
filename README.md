@@ -18,31 +18,33 @@ ICFPC_USER_PASSWORD="password"
 - `make start-server` to start utility server
 - `make start-ui` to start the visuzliser.
 
-To check server authentication with ICFPC API, do this:
+
+- To check server authentication with ICFPC API, do this:
 
 ```bash
 curl -X POST localhost:8000/check-auth
 ```
 
-Download all problems:
+- Download all problems:
 
 ```bash
 curl localhost:8000/problems/download
 ```
 
-Submit a solution:
+- Submit a solution:
 
 ```bash
 curl -X POST localhost:8000/solutions/<username>/<task_id>
 ```
 
-Submit all solutions:
+- Submit all solutions:
 
 ```bash
 curl -X POST localhost:8000/solutions/username
 ```
 
-Show problems stats:
+- Show problems stats:
+
 
 ```bash
 python3 ./scripts/problem_stats.py
@@ -50,31 +52,31 @@ python3 ./scripts/problem_stats.py
 
 ## Scripts
 
-Run leaderboard monitoring and post updates to slack:
+- Run leaderboard monitoring and post updates to slack:
 
 ```bash
 bash ./scripts/monitor_leaderboard.sh
 ```
 
-Update all metadata scores for solutions:
+- Update all metadata scores for solutions:
 
 ```bash
 zsh ./scripts/update_metadata_scores.sh
 ```
 
-Update scores and previews for `loks_best`
+- Update scores and previews for `loks_best`:
 
 ```bash
 zsh ./scripts/update_best_meta_and_push.sh
 ```
 
-Update solution in `best_loks` depending on local folder:
+- Update solution in `best_loks` depending on local folder:
 
 ```bash
 make compile && ./main.solver -mode update -solution dm_border2
 ```
 
-Submit all solutions from a folder:
+- Submit all solutions from a folder:
 
 ```bash
 for i in `jot - 1 90`; do bash scripts/submit.sh loks_best $i; done

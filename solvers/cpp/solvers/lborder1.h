@@ -29,7 +29,7 @@ class LBorder1 : public BaseSolver {
 
   std::string Name() const override { return "loks_border1"; }
 
-  // bool SkipSolutionRead() const override { return true; }
+  bool SkipSolutionRead() const override { return true; }
   // bool SkipBest() const override { return true; }
 
   Solution Solve(const TProblem& p) override {

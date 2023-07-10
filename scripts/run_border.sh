@@ -62,3 +62,7 @@
 
 # == Iter 6 ==
 # make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 86  -last_problem 86 -layers 13 &
+
+
+# Test
+make compile && ./main.solver -mode run -solver border  -nthreads 4 -first_problem 56  -last_problem 87 -layers 7

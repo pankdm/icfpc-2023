@@ -23,7 +23,7 @@ inline void EvaluateSolution(const std::string& solver_name) {
 inline void EvaluateSolutionToJson(const std::string& solver_name) {
   int64_t total = 0;
 
-  std::string fileName = "../../metadata/" + solver_name + ".json";
+  std::string fileName = "../../metadata/scores/" + solver_name + ".json";
   files::JSON json;
   json.SetDictionary();
 

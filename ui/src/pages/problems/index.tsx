@@ -108,11 +108,11 @@ export default function Problems() {
     },
     ourBest: {
       id: 'ourBest',
-      header: 'loks_best',
+      header: 'our_best',
       size: 90,
       accessorKey: 'our_best',
       Cell: ({ cell }) => (
-        <span> {formatNumber(cell.getValue<number>())} </span>
+        <span> {formatNumber(cell.getValue<any>()["loks_best"])} </span>
       ),
     },
     estimatedMax: {

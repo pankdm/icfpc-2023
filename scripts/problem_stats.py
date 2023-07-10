@@ -14,8 +14,8 @@ def get_estimated_scores():
         # convert keys to strings
         return {int(i): value for (i, value) in js.items()}
 
-def get_our_best_scores():
-    path = "./metadata/loks_best.json"
+def get_from_file(solution):
+    path = f"./metadata/scores/{solution}.json"
     if not os.path.exists(path):
         return {}
     with open(path, "r") as f:
@@ -23,6 +23,20 @@ def get_our_best_scores():
         js = json.loads(data)
         # convert keys to strings
         return {int(i): value for (i, value) in js.items()}
+
+
+def get_our_best_scores():
+    maps = {}
+    for solution in ["loks_best", "dm_border2", "loks_rgreedy1", "loks_border1"]:
+        maps[solution] = get_from_file(solution)
+    output = {}
+    for i in range(1, 91):
+        entry = {}
+        for solution, data in maps.items():
+            entry[solution] = data.get(i, -1)
+        output[i] = entry
+    return output
+
 
 
 def get_problem_stats():

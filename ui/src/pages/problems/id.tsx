@@ -286,7 +286,7 @@ export default function ProblemInspector() {
               <Stack spacing={0}>
                 <Text size="sm">Best score: {formatNumber(stats?.score)}</Text>
                 <Text size="sm">
-                  loks_best: {formatNumber(stats?.our_best)}
+                  Our scores: {JSON.stringify(stats?.our_best, null, 2)}
                 </Text>
                 <Text size="sm">
                   Estimated max: {formatNumber(stats?.estimated_max)}

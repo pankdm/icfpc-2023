@@ -86,14 +86,14 @@ def get_problems():
 def get_cached_problem_stats():
     stats = get_problem_stats()
     estimated_max = get_estimated_scores()
-    our_best = get_our_best_scores();
+    our_best = get_our_best_scores()
     scores = ICFPC.get_cached_userboard()
     merged_stats = {
         id: {
             **stats[id],
             "score": scores[id] if id in scores else -0,
             "estimated_max": estimated_max.get(id, -1),
-            "our_best": our_best.get(id, -1)
+            "our_best": our_best.get(id, {})
         }
         for id in stats.keys()
     }

@@ -106,20 +106,20 @@ export default function Problems() {
         <span> {formatNumber(cell.getValue<number>())} </span>
       ),
     },
-    estimatedMax: {
-      id: 'estimatedMax',
-      header: 'Approx Max',
-      size: 90,
-      accessorKey: 'estimated_max',
-      Cell: ({ cell }) => (
-        <span> {formatNumber(cell.getValue<number>())} </span>
-      ),
-    },
     ourBest: {
       id: 'ourBest',
       header: 'loks_best',
       size: 90,
       accessorKey: 'our_best',
+      Cell: ({ cell }) => (
+        <span> {formatNumber(cell.getValue<number>())} </span>
+      ),
+    },
+    estimatedMax: {
+      id: 'estimatedMax',
+      header: 'Approx Max',
+      size: 90,
+      accessorKey: 'estimated_max',
       Cell: ({ cell }) => (
         <span> {formatNumber(cell.getValue<number>())} </span>
       ),

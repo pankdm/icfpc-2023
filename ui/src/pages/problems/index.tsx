@@ -119,7 +119,7 @@ export default function Problems() {
       id: 'scoreMismatch',
       header: 'score - loks_best',
       size: 90,
-      accessorFn: (originalRow) => ((originalRow.score || 0) - originalRow.our_best["loks_best"]),
+      accessorFn: (originalRow) => ((originalRow.score || 0) - (originalRow.our_best && originalRow.our_best["loks_best"])),
 
     },
     estimatedMax: {

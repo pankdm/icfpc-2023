@@ -115,6 +115,13 @@ export default function Problems() {
         <span> {formatNumber(cell.getValue<any>()["loks_best"])} </span>
       ),
     },
+    scoreMismatch: {
+      id: 'scoreMismatch',
+      header: 'score - loks_best',
+      size: 90,
+      accessorFn: (originalRow) => ((originalRow.score || 0) - originalRow.our_best["loks_best"]),
+
+    },
     estimatedMax: {
       id: 'estimatedMax',
       header: 'Approx Max',
@@ -237,6 +244,7 @@ export default function Problems() {
           columns.stageSize,
           columns.score,
           columns.ourBest,
+          columns.scoreMismatch,
           columns.estimatedMax,
           columns.percentOfMax,
           columns.deltaWithMax,

@@ -139,9 +139,6 @@ class RGreedy1 : public BaseSolver {
         }
       }
 
-      for (unsigned i = 0; i < p.total_instruments; ++i) {
-        if (vic[i] == p.musicians[i].size()) continue;
-      }
       if (best_i == p.total_instruments) {
         // Can't insert any good candidate
         all_found = false;

@@ -14,7 +14,8 @@
 
 class AdjusterAssignment {
  public:
-  static bool Check(const Problem& p, Solution& s) {
+  static bool Check(const Problem& p, Solution& s,
+                    bool skip_full_verificaton = false) {
     if (!Evaluator::Valid(p, s)) return false;
     int64_t old_iscore = 0.;
     std::vector<std::vector<int64_t>> vs(
@@ -52,11 +53,13 @@ class AdjusterAssignment {
         snew.positions[i] = s.positions[a[i]];
         if (vs[a[i]][p.instruments[i]] == 0) snew.volume[i] = 0.;
       }
-      auto old_iscore2 = Evaluator::IScore(p, s),
-           new_iscore2 = Evaluator::IScore(p, snew);
-      // std::cout << "\tFinal   : " << old_iscore2 << " -> " << new_iscore2
-      //           << std::endl;
-      if (new_iscore2 > old_iscore2) {
+      if (!skip_full_verificaton && !p.Lighting()) {
+        old_iscore = Evaluator::IScore(p, s);
+        new_iscore = Evaluator::IScore(p, snew);
+        // std::cout << "\tFinal   : " << old_iscore << " -> " << new_iscore
+        //           << std::endl;
+      }
+      if (new_iscore > old_iscore) {
         s.positions.swap(snew.positions);
         s.volume.swap(snew.volume);
         return true;

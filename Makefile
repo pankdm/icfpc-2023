@@ -12,6 +12,9 @@ install-prompt:
 start-server:
 	${EXPORT_PYTHONPATH} ${FLASK} --app server/server --debug run --port=8000
 
+python-repl:
+	PYTHONPATH=. python -i repl.py
+
 start-ui:
 	cd ui; pnpm dev
 

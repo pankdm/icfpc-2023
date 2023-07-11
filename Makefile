@@ -9,11 +9,11 @@ install:
 install-prompt:
 	bash ./install.sh
 
-build-docker:
-	docker compose build
-
 start-docker:
 	docker compose up
+
+rebuild-docker:
+	docker compose build
 
 start-server:
 	${EXPORT_PYTHONPATH} ${FLASK} --app server/server --debug run --host=0.0.0.0 --port=8000

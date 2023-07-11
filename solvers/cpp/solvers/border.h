@@ -122,9 +122,15 @@ class BorderSolver : public BaseSolver {
       auto candidate_position = D2Point{-50, -50};
       bool found = false;
       for (; candidate_idx < candidates.size(); ++candidate_idx) {
+        candidate_position = candidates[candidate_idx];
+        if (!(p.stage.p1.x <= candidate_position.x &&
+              candidate_position.x <= p.stage.p2.x &&
+              p.stage.p1.y <= candidate_position.y &&
+              candidate_position.y <= p.stage.p2.y)) {
+          continue;
+        }
         if (CheckNonOverlapping(candidates[candidate_idx], s)) {
           found = true;
-          candidate_position = candidates[candidate_idx];
           break;
         }
       }
@@ -152,9 +158,15 @@ class BorderSolver : public BaseSolver {
         std::vector<unsigned> fake_mapping;
 
         for (; candidate_idx < candidates.size(); ++candidate_idx) {
-          if (CheckNonOverlapping(candidates[candidate_idx], s)) {
-            auto candidate_position = candidates[candidate_idx];
+          auto candidate_position = candidates[candidate_idx];
+          if (!(p.stage.p1.x <= candidate_position.x &&
+                candidate_position.x <= p.stage.p2.x &&
+                p.stage.p1.y <= candidate_position.y &&
+                candidate_position.y <= p.stage.p2.y)) {
+            continue;
+          }
 
+          if (CheckNonOverlapping(candidates[candidate_idx], s)) {
             fake_mapping.push_back(s.positions.size());
             s.positions.push_back(candidate_position);
             p.instruments.push_back(fake_ins);

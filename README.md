@@ -2,6 +2,8 @@
 
 ## Team: Snakes, Monkeys and Two Smoking Lambdas
 
+<img width="1626" alt="image" src="https://github.com/pankdm/icfpc-2023/assets/3831006/67477c55-8404-4ac3-a5a3-640e825eaecf">
+
 ## Installation
 
 1. Create `.env` file with access creds to ICFPC API

@@ -67,10 +67,6 @@ export default function ProblemInspector() {
     (v) => Number.isFinite(v) && v >= 0
   )
 
-  const [pointerPosition, setPointerPosition] = useState<
-    [number, number] | null
-  >(null)
-
   // Data
   const { data: problemsData } = useAPIData({
     fetch: API.getProblems,
@@ -243,7 +239,6 @@ export default function ProblemInspector() {
                       previewInstrumentId={
                         previewInstruments ? previewInstrumentId : -1
                       }
-                      onPointerPositionChange={setPointerPosition}
                       onHoverMusician={handleHoverMusician}
                       onBlurMusician={handleBlurMusician}
                       problemStats={stats}
@@ -321,7 +316,6 @@ export default function ProblemInspector() {
                 <Text size="sm" mt="md">
                   Hovered:
                 </Text>
-                {/* <Text size="sm">Cursor: {pointerPosition?.toString()}</Text> */}
                 <Text size="sm">Musician: {hoveredMusicianId}</Text>
                 <Text size="sm">Instrument: {hoveredInstrumentId}</Text>
               </Stack>

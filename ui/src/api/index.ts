@@ -7,7 +7,6 @@ import {
   Scoreboard,
   Solution,
   Solutions,
-  SubprocessResult,
   Userboard,
 } from './types'
 import useRandomKey from '../hooks/useRandomKey'

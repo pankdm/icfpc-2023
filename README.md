@@ -2,7 +2,7 @@
 
 ## Team: Snakes, Monkeys and Two Smoking Lambdas
 
-<img width="1626" alt="image" src="https://github.com/pankdm/icfpc-2023/assets/3831006/67477c55-8404-4ac3-a5a3-640e825eaecf">
+<img width="1516" alt="image" src="https://github.com/pankdm/icfpc-2023/assets/3831006/3a44b0b7-0419-47b5-89cb-82c630b4d430">
 
 ## Installation
 

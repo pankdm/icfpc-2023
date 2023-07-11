@@ -12,10 +12,10 @@ ICFPC_USER_EMAIL="team@email.com"
 ICFPC_USER_PASSWORD="password"
 ```
 
-2. If you have Docker and Docker Compose installed in the system - use `make start-docker` to run locally.
+2. If you have Docker and Docker Compose installed - you're done!
 3. Otherwise, use `make` to install dependencies.
 
-## Usage
+## Running locally
 
 If you have Docker and Docker Compose:
 
@@ -25,6 +25,8 @@ If you have Docker and Docker Compose:
 
 - `make start-server` to start utility server
 - `make start-ui` to start the visuzliser.
+
+## Usage
 
 - To check server authentication with ICFPC API, do this:
 
@@ -98,6 +100,6 @@ for i in `jot - 1 90`; do bash scripts/submit.sh loks_best $i; done
   - `./solvers/cpp` - C++
   - `./solvers/cpp/*.solver` - binaries for C++ solvers
   - `./solvers/python` - Python
-- `./solvers/python/*.py` -- python sources корневые скрипты питонячих солверов
+- `./solvers/python/*.py` -- python sources
 - `./server` -- python flask server. Uses ICFPC API: download leaderboard, upload solutions, provides files for UI
-- `./ui` -- DO NOT GO HERE!! It's a hell of UI! (каша, мёд, говно и пчёлы)
+- `./ui` -- UI: visualizer, scoreboard, leaderboard

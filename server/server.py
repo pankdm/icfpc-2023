@@ -25,19 +25,6 @@ CORS(app)
 def root_folder_path(path):
     return os.path.dirname(__file__)+'/../' + path
 
-# IMG_CACHE = {}
-# def open_image_as_np(n):
-#     global IMG_CACHE
-
-#     if n in IMG_CACHE:
-#         return IMG_CACHE[n]
-
-#     img = Image.open(f"./problems/{n}.png")
-#     a = np.asarray(img)
-#     result = a[::-1, :].swapaxes(0, 1)
-#     IMG_CACHE[n] = result
-#     return result
-
 
 @app.route("/")
 def ping():
@@ -84,7 +71,6 @@ def post_run_main_solver():
     )
     return { "output": str(done.stdout), "stderr": str(done.stderr), "code": done.returncode }
 
-
 @app.post("/kill_main_solver")
 def post_kill_main_solver():
     done = subprocess.run(
@@ -94,7 +80,6 @@ def post_kill_main_solver():
         text=True
     )
     return { "output": str(done.stdout), "stderr": str(done.stderr), "code": done.returncode }
-
 
 def get_problem_ids():
     problems_dir = os.path.dirname(__file__)+'/../problems'
@@ -163,64 +148,6 @@ def get_problem_instrument_lut(id, instrument_id, mode):
     if os.path.exists(full_path):
         return send_from_directory(root_folder_path(folder), file_name)
     return Response(status=404)
-
-@app.post("/update-server")
-def post_update_server():
-    try:
-        done = subprocess.run(
-            [
-                'git', 'pull',
-            ],
-            capture_output=True,
-            text=True,
-        )
-        return {
-            "status_code": done.check_returncode(),
-            "stdout": done.stdout,
-            "stderr": done.stderr,
-        }
-    except Exception as err:
-        return {
-            "error": str(err),
-        }
-
-
-@app.post("/server/hard-reset")
-def hard_reset():
-    try:
-        done = subprocess.run(
-            [
-                'bash', '-ec', 'git add . && git stash && git fetch && git reset --hard origin/main'
-            ],
-            capture_output=True,
-            text=True,
-        )
-        return {
-            "status_code": done.check_returncode(),
-            "stdout": done.stdout,
-            "stderr": done.stderr,
-        }
-    except Exception as err:
-        return {
-            "error": str(err),
-        }
-
-
-# problem_data_cache = {}
-# def get_problem_data(id):
-#     if problem_data_cache.get(id):
-#         return problem_data_cache[id]
-#     with open(f'problems/{id}.json', 'r') as file:
-#         data = json.loads(file.read())
-#         problem_data_cache[id] = data
-#         return data
-
-# @app.get("/problems/all")
-# def get_problems_all():
-#     problems_data = []
-#     for id in get_problem_ids():
-#         problems_data.append(get_problem_data(id))
-#     return { 'problems': problems_data }
 
 @app.get("/problems/total")
 def get_total_available_problems():
@@ -319,7 +246,6 @@ def get_best_solution(path):
             print ('Best = ', solution)
             return send_from_directory(f"{solutions_dir}/{last_ts}", solution)
     return ""
-
 
 @app.get('/icfpc/<path:path>')
 def get_icfpc_endpoint(path):

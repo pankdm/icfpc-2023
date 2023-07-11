@@ -1,5 +1,13 @@
 import { NavLink } from 'react-router-dom'
-import { Button, Group, GroupProps, Text, Title } from '@mantine/core'
+import {
+  Box,
+  Button,
+  Group,
+  GroupProps,
+  Space,
+  Text,
+  Title,
+} from '@mantine/core'
 import { IconRefresh } from '@tabler/icons-react'
 import API from '../api'
 import { useState } from 'react'
@@ -19,6 +27,7 @@ export default function HeaderBar({ children, ...props }: GroupProps) {
   return (
     <Group
       position="apart"
+      spacing={0}
       c="white"
       bg="orange.8"
       p="sm"
@@ -35,7 +44,7 @@ export default function HeaderBar({ children, ...props }: GroupProps) {
           ICFPC 2023
         </Title>
       </NavLink>
-      <Group>
+      <Group sx={{ flexGrow: 1 }} position="center">
         <NavLink to="/problems">
           {({ isActive }) => (
             <Text fw="bolder" td={isActive ? 'underline' : 'none'}>
@@ -51,15 +60,7 @@ export default function HeaderBar({ children, ...props }: GroupProps) {
           )}
         </NavLink>
       </Group>
-      <Group w={150} position="right">
-        <Button
-          leftIcon={<IconRefresh />}
-          loading={isUpdatingServer}
-          onClick={triggerServerUpdate}
-        >
-          Git {!isUpdatingServer ? 'pull' : 'pulling'}
-        </Button>
-      </Group>
+      <Box maw={150} sx={{ flexGrow: 0.125 }} />
     </Group>
   )
 }

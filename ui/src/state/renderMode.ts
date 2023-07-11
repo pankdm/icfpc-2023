@@ -22,4 +22,4 @@ export const togglePreviewInstruments = () =>
 
 export const $previewInstrumentsMode = persistentAtom<
   'musicians_only' | 'linear' | 'log'
->('icfpc-2023:preview_instruments:mode', 'linear')
+>('icfpc-2023:preview_instruments:mode', 'musicians_only')

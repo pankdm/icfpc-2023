@@ -4,13 +4,15 @@ services:
   ui:
     container_name: icfpc2023-ui
     volumes:
-      - ./ui:/src
+      - ./ui/:/src
+      - /src/node_modules   # ignore node_modules
     build:
       context: .
       dockerfile: Dockerfile.ui
-    command: pnpm dev:docker
+    command: pnpm dev:server
     ports:
       - "5173:5173"
+
   server:
     container_name: icfpc2023-server
     build:
@@ -19,7 +21,6 @@ services:
     command: make start-server
     volumes:
       - .:/src
+      - /src/ui  # ignore all UI
     ports:
       - "8000:8000"
-    env_file:
-      - .env

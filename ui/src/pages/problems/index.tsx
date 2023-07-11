@@ -72,7 +72,7 @@ export default function Problems() {
               <ProblemPreview
                 problemId={row.id}
                 problemStats={row as ProblemStats}
-                size={isShowBigPreviews ? '50vmin' : '8rem'}
+                size={isShowBigPreviews ? '75vmin' : 'min(20vmin, 8rem)'}
                 zoomMode={zoomMode}
               />
             </Group>
@@ -112,15 +112,16 @@ export default function Problems() {
       size: 90,
       accessorKey: 'our_best',
       Cell: ({ cell }) => (
-        <span> {formatNumber(cell.getValue<any>()["loks_best"])} </span>
+        <span> {formatNumber(cell.getValue<any>()['loks_best'])} </span>
       ),
     },
     scoreMismatch: {
       id: 'scoreMismatch',
       header: 'score - loks_best',
       size: 90,
-      accessorFn: (originalRow) => ((originalRow.score || 0) - (originalRow.our_best && originalRow.our_best["loks_best"])),
-
+      accessorFn: (originalRow) =>
+        (originalRow.score || 0) -
+        (originalRow.our_best && originalRow.our_best['loks_best']),
     },
     estimatedMax: {
       id: 'estimatedMax',
@@ -163,8 +164,17 @@ export default function Problems() {
       header: 'Tastes and Available Gains',
       size: 140,
       Cell: ({ row }) => (
-        <Stack spacing="xs">
-          <Box pos="relative" w="12rem" h="6rem">
+        <Stack
+          spacing="xs"
+          sx={{
+            '--problem-hist-size': isShowBigPreviews
+              ? '12rem'
+              : 'min(25vmin, 12rem)',
+          }}
+          w="var(--problem-hist-size)"
+          h="var(--problem-hist-size)"
+        >
+          <Box pos="relative" w="100%" h="50%">
             <Image
               pos="absolute"
               opacity={0.2}
@@ -178,7 +188,7 @@ export default function Problems() {
               src={AssetURL.hishogram(row.getValue('id'), 'tastes')}
             />
           </Box>
-          <Box pos="relative" w="12rem" h="6rem">
+          <Box pos="relative" w="100%" h="50%">
             <Image
               pos="absolute"
               opacity={0.2}

@@ -17,6 +17,7 @@ import {
   NativeSelect,
   Slider,
   Switch,
+  MediaQuery,
 } from '@mantine/core'
 import { $problem, setProblemId } from '../../state/problem'
 import API, { useAPIData } from '../../api'
@@ -150,37 +151,39 @@ export default function ProblemInspector() {
           Problem {problemId.toString()} - {config.HTML_TITLE}
         </title>
       </Helmet>
-      <Stack
-        h="100%"
-        bg="gray.3"
-        w={200}
-        spacing={0}
-        sx={{ overflow: 'auto', flexShrink: 0 }}
-      >
-        {problemsData?.problems &&
-          _.map(problemsData.problems, (_problemId) => (
-            <Link key={_problemId} to={`/problems/${_problemId}`}>
-              <NavLink
-                key={_problemId}
-                onClick={() => setProblemId(_problemId)}
-                active={_problemId === problemId}
-                p={4}
-                label={
-                  <Group>
-                    <ProblemPreview
-                      size="4rem"
-                      problemId={_problemId}
-                      radius={0}
-                      problemStats={allProblemsStats?.problems[_problemId]}
-                      zoomMode={previewsZoomMode}
-                    />
-                    # {_problemId}
-                  </Group>
-                }
-              />
-            </Link>
-          ))}
-      </Stack>
+      <MediaQuery styles={{ display: 'none' }} smallerThan="xl">
+        <Stack
+          h="100%"
+          bg="gray.3"
+          w={200}
+          spacing={0}
+          sx={{ overflow: 'auto', flexShrink: 0 }}
+        >
+          {problemsData?.problems &&
+            _.map(problemsData.problems, (_problemId) => (
+              <Link key={_problemId} to={`/problems/${_problemId}`}>
+                <NavLink
+                  key={_problemId}
+                  onClick={() => setProblemId(_problemId)}
+                  active={_problemId === problemId}
+                  p={4}
+                  label={
+                    <Group>
+                      <ProblemPreview
+                        size="4rem"
+                        problemId={_problemId}
+                        radius={0}
+                        problemStats={allProblemsStats?.problems[_problemId]}
+                        zoomMode={previewsZoomMode}
+                      />
+                      # {_problemId}
+                    </Group>
+                  }
+                />
+              </Link>
+            ))}
+        </Stack>
+      </MediaQuery>
       <Box sx={{ flex: 1 }}>
         <Stack
           pos="absolute"
@@ -189,11 +192,13 @@ export default function ProblemInspector() {
           right={0}
           align="center"
         >
-          <TrafficLight
-            size="10rem"
-            red={isProblemLoading || isStatsLoading}
-            green={!isProblemLoading && !isStatsLoading}
-          />
+          <MediaQuery styles={{ display: 'none' }} smallerThan="sm">
+            <TrafficLight
+              size="10rem"
+              red={isProblemLoading || isStatsLoading}
+              green={!isProblemLoading && !isStatsLoading}
+            />
+          </MediaQuery>
           <SegmentedControl
             color="orange.4"
             data={[
@@ -210,7 +215,7 @@ export default function ProblemInspector() {
             onChange={(v) => $zoomMode.set(v)}
           />
         </Stack>
-        <Center>
+        <Center p="md">
           <Stack align="center" spacing={0}>
             <Title order={2}>Problem {problemId}</Title>
             <NativeSelect
@@ -222,7 +227,7 @@ export default function ProblemInspector() {
             />
             <Space h="xl" />
             <Group position="center">
-              <Stack>
+              <Stack align="center">
                 <Box w={'70vmin'} h={'70vmin'} pos="relative">
                   <LoadingOverlay
                     visible={isProblemLoading || isStatsLoading}
@@ -259,28 +264,6 @@ export default function ProblemInspector() {
                         </Text>
                       }
                     />
-                    <Text size="sm">LUT Mode:</Text>
-                    <SegmentedControl
-                      color={previewInstruments ? 'orange.4' : 'gray.0'}
-                      size="xs"
-                      disabled={!previewInstruments}
-                      value={previewInstrumentsMode}
-                      data={[
-                        {
-                          value: 'musicians_only',
-                          label: 'None (J)',
-                        },
-                        {
-                          value: 'linear',
-                          label: 'Normal (K)',
-                        },
-                        {
-                          value: 'log',
-                          label: 'Log10 (L)',
-                        },
-                      ]}
-                      onChange={$previewInstrumentsMode.set}
-                    />
                   </Group>
                   <Slider
                     disabled={!previewInstruments}
@@ -291,6 +274,30 @@ export default function ProblemInspector() {
                     labelTransition="fade"
                     labelTransitionDuration={150}
                   />
+                  <Group>
+                    <Text size="sm">Preview Mode:</Text>
+                    <SegmentedControl
+                      color={previewInstruments ? 'orange.4' : 'gray.0'}
+                      size="xs"
+                      disabled={!previewInstruments}
+                      value={previewInstrumentsMode}
+                      data={[
+                        {
+                          value: 'musicians_only',
+                          label: 'Simple (J)',
+                        },
+                        {
+                          value: 'linear',
+                          label: 'Attractions (K)',
+                        },
+                        {
+                          value: 'log',
+                          label: 'Attractions Log10 (L)',
+                        },
+                      ]}
+                      onChange={$previewInstrumentsMode.set}
+                    />
+                  </Group>
                 </Stack>
               </Stack>
               <Space h="xl" />

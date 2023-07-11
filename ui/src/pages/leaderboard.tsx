@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet'
-import { Box, Container } from '@mantine/core'
+import { Box, Container, Text } from '@mantine/core'
 import { MantineReactTable as Table } from 'mantine-react-table'
 import API, { useAPIData } from '../api'
 import { Scoreboard } from '../api/types'
@@ -26,6 +26,15 @@ export default function Leaderboard() {
             {
               accessorKey: 'username',
               header: 'Name',
+              size: 120,
+              Cell: ({ cell }) => (
+                <Text
+                  maw="40vw"
+                  sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
+                >
+                  {cell.getValue<string>()}
+                </Text>
+              ),
             },
             {
               accessorKey: 'score',

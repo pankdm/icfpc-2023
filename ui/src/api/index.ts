@@ -33,8 +33,6 @@ export const AssetURL = {
 }
 
 const API = {
-  updateServer: async () =>
-    fetchAPI(`/update-server`, { method: 'POST' }) as Promise<SubprocessResult>,
   getScoreboard: async () => fetchAPI(`/scoreboard`) as Promise<Scoreboard>,
   getUserboard: async () => fetchAPI(`/userboard`) as Promise<Userboard>,
   getProblems: async () => fetchAPI(`/problems`) as Promise<Problems>,
@@ -48,11 +46,6 @@ const API = {
     fetchAPI(`/problems/${problemId}/solutions`) as Promise<Solutions>,
   getSolution: async (solutionId: string) =>
     fetchAPI(`/solutions/${solutionId}`) as Promise<Solution>,
-  uploadPreview: async (problemId: number | string, imageBlob: Blob) =>
-    fetchAPI(`/problems/${problemId}/preview`, {
-      method: 'POST',
-      body: imageBlob,
-    }) as Promise<Problem>,
 }
 
 export function useAPIData<T extends Record<string, any>>({

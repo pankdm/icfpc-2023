@@ -1,4 +1,4 @@
-FROM node:slim
+FROM node:alpine
 
 WORKDIR /src
 RUN npm i -g @esbuild/linux-arm64

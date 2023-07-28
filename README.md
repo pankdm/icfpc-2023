@@ -2,9 +2,10 @@
 
 ## Team: Snakes, Monkeys and Two Smoking Lambdas
 
+Write-up: [https://pankdm.github.io/icfpc-2023.html](https://pankdm.github.io/icfpc-2023.html)
+
 <img width="1516" alt="image" src="https://github.com/pankdm/icfpc-2023/assets/3831006/3a44b0b7-0419-47b5-89cb-82c630b4d430">
 
-Write-up: [https://pankdm.github.io/icfpc-2023.html](https://pankdm.github.io/icfpc-2023.html)
 
 ## Installation
 
